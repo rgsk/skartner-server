@@ -7,7 +7,7 @@
     "dev": "NODE_PATH=src ts-node-dev --transpile-only --no-notify src/app.ts",
     "build": "tsc",
     "kill:process": "kill -9 $(lsof -t -i:8000)",
-    "generate": "ts-node --transpile-only src/schema",
+    "generate": "NODE_PATH=src ts-node --transpile-only src/schema.ts",
     "test": "npm run generate && jest",
     "init:prisma": "prisma generate",
     "studio": "prisma studio",
@@ -16,17 +16,6 @@
     "migrate:deploy": "prisma migrate deploy",
     "migrate:reset": "prisma migrate reset",
     "migrate:force-reset": "prisma migrate reset --force"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "globals": {
-      "ts-jest": {
-        "diagnostics": {
-          "warnOnly": true
-        }
-      }
-    },
-    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",

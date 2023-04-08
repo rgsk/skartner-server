@@ -5,8 +5,8 @@ import { execSync } from 'child_process';
 import { GraphQLClient } from 'graphql-request';
 import { join } from 'path';
 import { Database } from 'sqlite3';
-import { db } from '../src/db';
-import { server } from '../src/server';
+import { db } from 'db';
+import { server } from 'server';
 
 type TestContext = {
   client: GraphQLClient;
