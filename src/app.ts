@@ -1,3 +1,4 @@
+require('dotenv').config();
 // api/index.ts
 import { environmentVariables } from './lib/environmentVariables';
 import { server } from './server';
