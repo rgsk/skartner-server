@@ -4,14 +4,16 @@
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  publish(draftId: Int!): Post
+  publish(draftId: String!): Post
 }
 
 type Post {
   body: String
-  id: Int!
-  published: Boolean
+  createdAt: String
+  id: String!
+  isPublished: Boolean
   title: String
+  updatedAt: String
 }
 
 type Query {

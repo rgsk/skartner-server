@@ -9,8 +9,13 @@ generator client {
 }
 
 model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  body      String
-  published Boolean
+  id          String  @id @default(uuid())
+  title       String
+  body        String
+  isPublished Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Posts")
 }

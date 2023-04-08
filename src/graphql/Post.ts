@@ -1,14 +1,17 @@
 // api/graphql/Post.ts
 
+import { parseEntitiesDates, parseEntityDates } from 'lib/generalUtils';
 import { extendType, stringArg, intArg, nonNull, objectType } from 'nexus';
 
 export const Post = objectType({
   name: 'Post', // <- Name of your type
   definition(t) {
-    t.nonNull.int('id'); // <- Field named `id` of type `Int`
+    t.nonNull.string('id'); // <- Field named `id` of type `Int`
     t.string('title'); // <- Field named `title` of type `String`
     t.string('body'); // <- Field named `body` of type `String`
-    t.boolean('published'); // <- Field named `published` of type `Boolean`
+    t.boolean('isPublished'); // <- Field named `isPublished` of type `Boolean`
+    t.string('createdAt');
+    t.string('updatedAt');
   },
 });
 
@@ -17,14 +20,20 @@ export const PostQuery = extendType({
   definition(t) {
     t.list.field('drafts', {
       type: 'Post',
-      resolve(_root, _args, ctx) {
-        return ctx.db.post.findMany({ where: { published: false } });
+      async resolve(_root, _args, ctx) {
+        const posts = await ctx.db.post.findMany({
+          where: { isPublished: false },
+        });
+        return parseEntitiesDates(posts);
       },
     });
     t.list.field('posts', {
       type: 'Post',
-      resolve(_root, _args, ctx) {
-        return ctx.db.post.findMany({ where: { published: true } });
+      async resolve(_root, _args, ctx) {
+        const posts = await ctx.db.post.findMany({
+          where: { isPublished: true },
+        });
+        return parseEntitiesDates(posts);
       },
     });
   },
@@ -38,29 +47,31 @@ export const PostMutation = extendType({
         title: nonNull(stringArg()),
         body: nonNull(stringArg()),
       },
-      resolve(_root, args, ctx) {
+      async resolve(_root, args, ctx) {
         const draft = {
           title: args.title,
           body: args.body,
-          published: false,
+          isPublished: false,
         };
-        return ctx.db.post.create({ data: draft });
+        const post = await ctx.db.post.create({ data: draft });
+        return parseEntityDates(post);
       },
     });
     t.field('publish', {
       type: 'Post',
       args: {
-        draftId: nonNull(intArg()),
+        draftId: nonNull(stringArg()),
       },
-      resolve(_root, args, ctx) {
-        return ctx.db.post.update({
+      async resolve(_root, args, ctx) {
+        const post = await ctx.db.post.update({
           where: {
             id: args.draftId,
           },
           data: {
-            published: true,
+            isPublished: true,
           },
         });
+        return parseEntityDates(post);
       },
     });
   },
