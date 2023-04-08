@@ -4,10 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only --no-notify api/index.ts",
+    "dev": "ts-node-dev --transpile-only --no-notify src/app.ts",
     "build": "tsc",
-    "generate": "ts-node --transpile-only api/schema",
-    "test": "npm run generate && jest"
+    "kill:process": "kill -9 $(lsof -t -i:8000)",
+    "generate": "ts-node --transpile-only src/schema",
+    "test": "npm run generate && jest",
+    "init:prisma": "prisma generate",
+    "studio": "prisma studio",
+    "migrate": "prisma migrate deploy",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:reset": "prisma migrate reset",
+    "migrate:force-reset": "prisma migrate reset --force"
   },
   "jest": {
     "preset": "ts-jest",
@@ -35,6 +43,7 @@
     "get-port": "^6.1.2",
     "graphql-request": "^4.3.0",
     "jest": "^28.1.3",
+    "nodemon": "^2.0.22",
     "prisma": "^4.1.0",
     "sqlite3": "^5.0.9",
     "ts-jest": "^28.0.7",

@@ -1,0 +1,3 @@
+#!/bin/bash 
+
+docker cp skartner-services-skartner-server-1:/opt/www/dist .
