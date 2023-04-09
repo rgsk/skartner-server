@@ -18,6 +18,5 @@ type Post {
 
 type Query {
   drafts: [Post]
-  friends: [Post]
   posts: [Post]
 }

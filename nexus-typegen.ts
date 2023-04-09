@@ -65,7 +65,6 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
-    friends: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
   }
 }
@@ -85,7 +84,6 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     drafts: 'Post'
-    friends: 'Post'
     posts: 'Post'
   }
 }
