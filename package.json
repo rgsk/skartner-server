@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "NODE_PATH=dist node dist/app.js",
     "dev": "NODE_PATH=src ts-node-dev --transpile-only --no-notify src/app.ts",
     "build": "tsc",
     "kill:process": "kill -9 $(lsof -t -i:8000)",
