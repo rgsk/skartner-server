@@ -2,11 +2,11 @@
 import { makeSchema } from 'nexus';
 import { join } from 'path';
 import * as types from './graphql';
-import { environmentVariables } from 'lib/environmentVariables';
+import environmentVars from 'lib/environmentVars';
 
 export const schema = makeSchema({
   types: types,
-  ...(environmentVariables.NODE_ENV === 'development'
+  ...(environmentVars.NODE_ENV === 'development'
     ? {
         outputs: {
           typegen: join(__dirname, '..', 'nexus-typegen.ts'),
