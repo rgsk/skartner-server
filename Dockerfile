@@ -12,11 +12,11 @@ RUN yarn
 
 COPY ./ ./
 
-RUN yarn init:prisma
-RUN yarn build
-
 ARG LOCAL_IP
 ENV LOCAL_IP=${LOCAL_IP:?error}
+
+RUN yarn init:prisma
+RUN yarn build
 
 CMD ["yarn", "start"]
 
