@@ -1,6 +1,5 @@
 import { config } from 'dotenv';
-import { join } from 'path';
-config({ path: join(__dirname, '..', 'envs', '.env') });
+config();
 // api/index.ts
 import { environmentVariables } from 'lib/environmentVariables';
 import { server } from './server';
