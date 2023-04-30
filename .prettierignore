@@ -1,0 +1,11 @@
+# .prettierignore specific
+nexus-typegen.ts
+schema.graphql
+
+dist
+node_modules
+.env
+
+
+/logs/file-logs.txt
+/logs/file-js-logs.js

@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Check if the COMMIT_AMEND environment variable is set
+if [ -z "$COMMIT_AMEND" ]; then
+  # Set the COMMIT_AMEND environment variable to prevent recursive commits
+  export COMMIT_AMEND=true
+  
+  # Format the code
+  yarn format 
+  
+  # Add the formatted changes to the staging area
+  git add .
+  
+  # Amend the most recent commit with the formatted changes
+  git commit --amend --no-edit
+  
+  # Unset the COMMIT_AMEND environment variable
+  unset COMMIT_AMEND
+else
+  # The COMMIT_AMEND environment variable is already set, so exit without making any changes
+  exit 0
+fi
