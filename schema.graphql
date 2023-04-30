@@ -17,6 +17,7 @@ type Post {
 }
 
 type Query {
+  allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
   posts: [Post]
 }

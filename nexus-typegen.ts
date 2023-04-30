@@ -64,6 +64,7 @@ export interface NexusGenFieldTypes {
     updatedAt: string | null; // String
   }
   Query: { // field return type
+    allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
   }
@@ -83,6 +84,7 @@ export interface NexusGenFieldTypeNames {
     updatedAt: 'String'
   }
   Query: { // field return type name
+    allPosts: 'Post'
     drafts: 'Post'
     posts: 'Post'
   }
@@ -96,6 +98,12 @@ export interface NexusGenArgTypes {
     }
     publish: { // args
       draftId: string; // String!
+    }
+  }
+  Query: {
+    allPosts: { // args
+      isPublished: boolean; // Boolean!
+      token?: string | null; // String
     }
   }
 }

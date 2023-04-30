@@ -1,7 +1,7 @@
 // api/graphql/Post.ts
 
 import { parseEntitiesDates, parseEntityDates } from 'lib/generalUtils';
-import { extendType, stringArg, intArg, nonNull, objectType } from 'nexus';
+import { booleanArg, extendType, nonNull, objectType, stringArg } from 'nexus';
 
 export const Post = objectType({
   name: 'Post', // <- Name of your type
@@ -32,6 +32,23 @@ export const PostQuery = extendType({
       async resolve(_root, _args, ctx) {
         const posts = await ctx.db.post.findMany({
           where: { isPublished: true },
+        });
+        return parseEntitiesDates(posts);
+      },
+    });
+    t.list.field('allPosts', {
+      type: 'Post',
+      args: {
+        isPublished: nonNull(booleanArg()),
+        token: stringArg(),
+      },
+      async resolve(_root, _args, ctx) {
+        console.log('_args.token', _args.token);
+        if (!_args.token) {
+          return [];
+        }
+        const posts = await ctx.db.post.findMany({
+          where: { isPublished: _args.isPublished },
         });
         return parseEntitiesDates(posts);
       },

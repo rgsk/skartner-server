@@ -1,4 +1,4 @@
-type TAppEnvironment = 'development' | 'staging' | 'production';
+export type TAppEnvironment = 'development' | 'staging' | 'production';
 const environmentVars = {
   PORT: process.env.PORT,
   DATABASE_URL: process.env.DATABASE_URL,
