@@ -2,8 +2,27 @@
 ### Do not make changes to this file directly
 
 
+type GptPrompt {
+  createdAt: String!
+  greWord: GreWord
+  greWordId: String
+  id: String!
+  input: String!
+  response: String!
+  updatedAt: String!
+}
+
+type GreWord {
+  createdAt: String!
+  gptPrompts: [GptPrompt]!
+  id: String!
+  spelling: String!
+  updatedAt: String!
+}
+
 type Mutation {
   createDraft(body: String!, title: String!): Post
+  createGreWord(promptInput: String!, promptResponse: String!, spelling: String!): GreWord
   publish(draftId: String!): Post
 }
 
@@ -19,5 +38,8 @@ type Post {
 type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
+  gptPrompts: [GptPrompt]
+  greWords: [GreWord]
   posts: [Post]
+  sendSinglePrompt(input: String!): String
 }

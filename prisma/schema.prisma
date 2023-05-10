@@ -19,3 +19,28 @@ model Post {
 
   @@map("Posts")
 }
+
+model GreWord {
+  id         String      @id @default(uuid())
+  spelling   String      @unique
+  gptPrompts GptPrompt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("GreWords")
+}
+
+model GptPrompt {
+  id       String @id @default(uuid())
+  input    String
+  response String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  greWord   GreWord? @relation(fields: [greWordId], references: [id])
+  greWordId String?
+
+  @@map("GptPrompts")
+}

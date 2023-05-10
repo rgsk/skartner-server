@@ -28,6 +28,20 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  GptPrompt: { // root type
+    createdAt: string; // String!
+    greWordId?: string | null; // String
+    id: string; // String!
+    input: string; // String!
+    response: string; // String!
+    updatedAt: string; // String!
+  }
+  GreWord: { // root type
+    createdAt: string; // String!
+    id: string; // String!
+    spelling: string; // String!
+    updatedAt: string; // String!
+  }
   Mutation: {};
   Post: { // root type
     body?: string | null; // String
@@ -51,8 +65,25 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  GptPrompt: { // field return type
+    createdAt: string; // String!
+    greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
+    greWordId: string | null; // String
+    id: string; // String!
+    input: string; // String!
+    response: string; // String!
+    updatedAt: string; // String!
+  }
+  GreWord: { // field return type
+    createdAt: string; // String!
+    gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null>; // [GptPrompt]!
+    id: string; // String!
+    spelling: string; // String!
+    updatedAt: string; // String!
+  }
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
+    createGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     publish: NexusGenRootTypes['Post'] | null; // Post
   }
   Post: { // field return type
@@ -66,13 +97,33 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
+    greWords: Array<NexusGenRootTypes['GreWord'] | null> | null; // [GreWord]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    sendSinglePrompt: string | null; // String
   }
 }
 
 export interface NexusGenFieldTypeNames {
+  GptPrompt: { // field return type name
+    createdAt: 'String'
+    greWord: 'GreWord'
+    greWordId: 'String'
+    id: 'String'
+    input: 'String'
+    response: 'String'
+    updatedAt: 'String'
+  }
+  GreWord: { // field return type name
+    createdAt: 'String'
+    gptPrompts: 'GptPrompt'
+    id: 'String'
+    spelling: 'String'
+    updatedAt: 'String'
+  }
   Mutation: { // field return type name
     createDraft: 'Post'
+    createGreWord: 'GreWord'
     publish: 'Post'
   }
   Post: { // field return type name
@@ -86,7 +137,10 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     allPosts: 'Post'
     drafts: 'Post'
+    gptPrompts: 'GptPrompt'
+    greWords: 'GreWord'
     posts: 'Post'
+    sendSinglePrompt: 'String'
   }
 }
 
@@ -96,6 +150,11 @@ export interface NexusGenArgTypes {
       body: string; // String!
       title: string; // String!
     }
+    createGreWord: { // args
+      promptInput: string; // String!
+      promptResponse: string; // String!
+      spelling: string; // String!
+    }
     publish: { // args
       draftId: string; // String!
     }
@@ -104,6 +163,9 @@ export interface NexusGenArgTypes {
     allPosts: { // args
       isPublished: boolean; // Boolean!
       token?: string | null; // String
+    }
+    sendSinglePrompt: { // args
+      input: string; // String!
     }
   }
 }

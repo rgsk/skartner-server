@@ -101,5 +101,5 @@
     "sourceMap": true,
     "baseUrl": "src"
   },
-  "include": ["src/**/*.ts", "typings"]
+  "include": ["src/**/*.ts", "typings", "nexus-typegen.ts"]
 }
