@@ -1,26 +1,24 @@
-import { GreWord } from '@prisma/client';
+import { GreWord, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
-import {
-  ParsedDatesEntity,
-  deriveEntityMapFromArray,
-  parseEntitiesDates,
-} from 'lib/generalUtils';
+import { deriveEntityMapFromArray } from 'lib/generalUtils';
+import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
 import openAIApi from 'lib/openAIApi';
+import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 import { ChatCompletionRequestMessage } from 'openai';
 
 function createGreWordsLoader(ctx: Context) {
-  return new DataLoader<string, ParsedDatesEntity<GreWord>>(
+  return new DataLoader<string, GreWord>(
     async (ids) => {
-      const _greWords = await ctx.db.greWord.findMany({
+      const greWords = await ctx.db.greWord.findMany({
         where: { id: { in: [...ids] } },
       });
-      const greWords = parseEntitiesDates(_greWords);
       const idToGreWordMap = deriveEntityMapFromArray(
         greWords,
         (greWord: GreWord) => greWord.id
       );
+      console.log({ greWordsLoaderIds: ids });
       return ids.map((id) => idToGreWordMap.get(id));
     },
     { cache: false }
@@ -29,15 +27,19 @@ function createGreWordsLoader(ctx: Context) {
 
 const greWordsLoader = createGreWordsLoader(context);
 
-export const GptPrompt = objectType({
+export const GptPromptObject = objectType({
   name: 'GptPrompt',
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('input');
     t.nonNull.string('response');
+
     t.field('greWord', {
       type: 'GreWord',
-      resolve: async (gptPrompt, args, ctx) => {
+      resolve: async (gptPrompt: any, args, ctx) => {
+        if (gptPrompt.greWord) {
+          return gptPrompt.greWord;
+        }
         if (!gptPrompt.greWordId) {
           return null;
         }
@@ -45,8 +47,7 @@ export const GptPrompt = objectType({
       },
     });
     t.string('greWordId');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    addDateFieldsDefinitions(t);
   },
 });
 
@@ -54,10 +55,12 @@ export const GptPromptQuery = extendType({
   type: 'Query',
   definition(t) {
     t.list.field('gptPrompts', {
-      type: GptPrompt,
-      async resolve(root, args, ctx) {
-        const gptPrompts = await ctx.db.gptPrompt.findMany();
-        return parseEntitiesDates(gptPrompts);
+      type: GptPromptObject,
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.GptPromptFindManyArgs =
+          parseGraphQLQuery(info);
+        const gptPrompts = await ctx.db.gptPrompt.findMany(prismaArgs);
+        return gptPrompts;
       },
     });
     t.string('sendSinglePrompt', {

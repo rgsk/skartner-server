@@ -28,11 +28,11 @@ type Mutation {
 
 type Post {
   body: String
-  createdAt: String
+  createdAt: String!
   id: String!
   isPublished: Boolean
   title: String
-  updatedAt: String
+  updatedAt: String!
 }
 
 type Query {

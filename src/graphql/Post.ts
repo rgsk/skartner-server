@@ -1,17 +1,16 @@
 // api/graphql/Post.ts
 
-import { parseEntitiesDates, parseEntityDates } from 'lib/generalUtils';
+import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
 import { booleanArg, extendType, nonNull, objectType, stringArg } from 'nexus';
 
-export const Post = objectType({
+export const PostObject = objectType({
   name: 'Post', // <- Name of your type
   definition(t) {
     t.nonNull.string('id'); // <- Field named `id` of type `Int`
     t.string('title'); // <- Field named `title` of type `String`
     t.string('body'); // <- Field named `body` of type `String`
     t.boolean('isPublished'); // <- Field named `isPublished` of type `Boolean`
-    t.string('createdAt');
-    t.string('updatedAt');
+    addDateFieldsDefinitions(t);
   },
 });
 
@@ -24,7 +23,7 @@ export const PostQuery = extendType({
         const posts = await ctx.db.post.findMany({
           where: { isPublished: false },
         });
-        return parseEntitiesDates(posts);
+        return posts;
       },
     });
     t.list.field('posts', {
@@ -33,7 +32,7 @@ export const PostQuery = extendType({
         const posts = await ctx.db.post.findMany({
           where: { isPublished: true },
         });
-        return parseEntitiesDates(posts);
+        return posts;
       },
     });
     t.list.field('allPosts', {
@@ -50,7 +49,7 @@ export const PostQuery = extendType({
         const posts = await ctx.db.post.findMany({
           where: { isPublished: args.isPublished },
         });
-        return parseEntitiesDates(posts);
+        return posts;
       },
     });
   },
@@ -71,7 +70,7 @@ export const PostMutation = extendType({
           isPublished: false,
         };
         const post = await ctx.db.post.create({ data: draft });
-        return parseEntityDates(post);
+        return post;
       },
     });
     t.field('publish', {
@@ -88,7 +87,7 @@ export const PostMutation = extendType({
             isPublished: true,
           },
         });
-        return parseEntityDates(post);
+        return post;
       },
     });
   },

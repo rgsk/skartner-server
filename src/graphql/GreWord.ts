@@ -1,25 +1,22 @@
-import { GptPrompt } from '@prisma/client';
+import { GptPrompt, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
-import {
-  ParsedDatesEntity,
-  deriveEntityArrayMapFromArray,
-  parseEntitiesDates,
-  parseEntityDates,
-} from 'lib/generalUtils';
+import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
+import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
+import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 
 function createGptPromptsLoader(ctx: Context) {
-  return new DataLoader<string, ParsedDatesEntity<GptPrompt>[]>(
+  return new DataLoader<string, GptPrompt[]>(
     async (ids) => {
-      const _gptPrompts = await ctx.db.gptPrompt.findMany({
+      const gptPrompts = await ctx.db.gptPrompt.findMany({
         where: { greWordId: { in: [...ids] } },
       });
-      const gptPrompts = parseEntitiesDates(_gptPrompts);
       const idToGrePromptsMap = deriveEntityArrayMapFromArray(
         gptPrompts,
         (gptPrompt: GptPrompt) => gptPrompt.greWordId
       );
+      console.log({ grePromptsLoaderIds: ids });
       return ids.map((id) => idToGrePromptsMap.get(id) ?? []);
     },
     { cache: false }
@@ -28,16 +25,18 @@ function createGptPromptsLoader(ctx: Context) {
 
 const grePromptsLoader = createGptPromptsLoader(context);
 
-export const GreWord = objectType({
+export const GreWordObject = objectType({
   name: 'GreWord',
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('spelling');
-    t.nonNull.string('createdAt');
-    t.nonNull.string('updatedAt');
+    addDateFieldsDefinitions(t);
     t.nonNull.list.field('gptPrompts', {
       type: 'GptPrompt',
-      resolve: async (greWord, args, ctx) => {
+      resolve: async (greWord: any, args, ctx) => {
+        if (greWord.gptPrompts) {
+          return greWord.gptPrompts;
+        }
         return grePromptsLoader.load(greWord.id);
       },
     });
@@ -48,10 +47,11 @@ export const GreWordQuery = extendType({
   type: 'Query',
   definition(t) {
     t.list.field('greWords', {
-      type: GreWord,
-      async resolve(root, args, ctx) {
-        const greWords = await ctx.db.greWord.findMany();
-        return parseEntitiesDates(greWords);
+      type: GreWordObject,
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(info);
+        const greWords = await ctx.db.greWord.findMany(prismaArgs);
+        return greWords;
       },
     });
   },
@@ -61,7 +61,7 @@ export const GreWordMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createGreWord', {
-      type: GreWord,
+      type: GreWordObject,
       args: {
         spelling: nonNull(stringArg()),
         promptInput: nonNull(stringArg()),
@@ -90,7 +90,7 @@ export const GreWordMutation = extendType({
             },
           },
         });
-        return parseEntityDates(greWord);
+        return greWord;
       },
     });
   },

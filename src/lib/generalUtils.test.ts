@@ -1,8 +1,6 @@
-import { addDays } from 'date-fns';
 import {
   deriveEntityArrayMapFromArray,
   deriveEntityMapFromArray,
-  parseEntityDates,
 } from './generalUtils';
 test('deriveEntityMapFromArray', () => {
   const posts = [
@@ -102,27 +100,5 @@ test('deriveEntityArrayMapFromArray', () => {
         },
       ],
     ]
-  `);
-});
-
-test('parseEntityDates', () => {
-  const samplePost = {
-    id: 'fa94ff93-0f09-4578-93ed-6bc9db7d3414',
-    title: 'second title',
-    body: 'second body',
-    isPublished: false,
-    createdAt: new Date(Date.UTC(1999, 8, 6)),
-    updatedAt: addDays(new Date(Date.UTC(1999, 8, 6)), 1),
-  };
-
-  expect(parseEntityDates(samplePost)).toMatchInlineSnapshot(`
-    Object {
-      "body": "second body",
-      "createdAt": "1999-09-06T00:00:00.000Z",
-      "id": "fa94ff93-0f09-4578-93ed-6bc9db7d3414",
-      "isPublished": false,
-      "title": "second title",
-      "updatedAt": "1999-09-07T00:00:00.000Z",
-    }
   `);
 });

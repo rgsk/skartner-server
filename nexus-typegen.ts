@@ -29,27 +29,21 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   GptPrompt: { // root type
-    createdAt: string; // String!
     greWordId?: string | null; // String
     id: string; // String!
     input: string; // String!
     response: string; // String!
-    updatedAt: string; // String!
   }
   GreWord: { // root type
-    createdAt: string; // String!
     id: string; // String!
     spelling: string; // String!
-    updatedAt: string; // String!
   }
   Mutation: {};
   Post: { // root type
     body?: string | null; // String
-    createdAt?: string | null; // String
     id: string; // String!
     isPublished?: boolean | null; // Boolean
     title?: string | null; // String
-    updatedAt?: string | null; // String
   }
   Query: {};
 }
@@ -88,11 +82,11 @@ export interface NexusGenFieldTypes {
   }
   Post: { // field return type
     body: string | null; // String
-    createdAt: string | null; // String
+    createdAt: string; // String!
     id: string; // String!
     isPublished: boolean | null; // Boolean
     title: string | null; // String
-    updatedAt: string | null; // String
+    updatedAt: string; // String!
   }
   Query: { // field return type
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
