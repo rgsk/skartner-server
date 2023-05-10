@@ -1,6 +1,32 @@
-import { parseEntitiesDates, parseEntityDates } from 'lib/generalUtils';
+import { GptPrompt } from '@prisma/client';
+import { Context, context } from 'context';
+import DataLoader from 'dataloader';
+import {
+  ParsedDatesEntity,
+  deriveEntityArrayMapFromArray,
+  parseEntitiesDates,
+  parseEntityDates,
+} from 'lib/generalUtils';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
-import { GptPrompt } from './GptPrompt';
+
+function createGptPromptsLoader(ctx: Context) {
+  return new DataLoader<string, ParsedDatesEntity<GptPrompt>[]>(
+    async (ids) => {
+      const _gptPrompts = await ctx.db.gptPrompt.findMany({
+        where: { greWordId: { in: [...ids] } },
+      });
+      const gptPrompts = parseEntitiesDates(_gptPrompts);
+      const idToGrePromptsMap = deriveEntityArrayMapFromArray(
+        gptPrompts,
+        (gptPrompt: GptPrompt) => gptPrompt.greWordId
+      );
+      return ids.map((id) => idToGrePromptsMap.get(id) ?? []);
+    },
+    { cache: false }
+  );
+}
+
+const grePromptsLoader = createGptPromptsLoader(context);
 
 export const GreWord = objectType({
   name: 'GreWord',
@@ -10,12 +36,9 @@ export const GreWord = objectType({
     t.nonNull.string('createdAt');
     t.nonNull.string('updatedAt');
     t.nonNull.list.field('gptPrompts', {
-      type: GptPrompt,
-      resolve: async (parent, args, ctx) => {
-        const gptPrompts = await ctx.db.gptPrompt.findMany({
-          where: { greWordId: parent.id },
-        });
-        return parseEntitiesDates(gptPrompts);
+      type: 'GptPrompt',
+      resolve: async (greWord, args, ctx) => {
+        return grePromptsLoader.load(greWord.id);
       },
     });
   },
@@ -26,7 +49,7 @@ export const GreWordQuery = extendType({
   definition(t) {
     t.list.field('greWords', {
       type: GreWord,
-      async resolve(_root, _args, ctx) {
+      async resolve(root, args, ctx) {
         const greWords = await ctx.db.greWord.findMany();
         return parseEntitiesDates(greWords);
       },
@@ -44,25 +67,25 @@ export const GreWordMutation = extendType({
         promptInput: nonNull(stringArg()),
         promptResponse: nonNull(stringArg()),
       },
-      async resolve(_root, _args, ctx) {
+      async resolve(root, args, ctx) {
         const greWord = await ctx.db.greWord.upsert({
           create: {
-            spelling: _args.spelling,
+            spelling: args.spelling,
             gptPrompts: {
               create: {
-                input: _args.promptInput,
-                response: _args.promptResponse,
+                input: args.promptInput,
+                response: args.promptResponse,
               },
             },
           },
           where: {
-            spelling: _args.spelling,
+            spelling: args.spelling,
           },
           update: {
             gptPrompts: {
               create: {
-                input: _args.promptInput,
-                response: _args.promptResponse,
+                input: args.promptInput,
+                response: args.promptResponse,
               },
             },
           },

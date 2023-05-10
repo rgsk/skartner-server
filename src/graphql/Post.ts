@@ -20,7 +20,7 @@ export const PostQuery = extendType({
   definition(t) {
     t.list.field('drafts', {
       type: 'Post',
-      async resolve(_root, _args, ctx) {
+      async resolve(root, args, ctx) {
         const posts = await ctx.db.post.findMany({
           where: { isPublished: false },
         });
@@ -29,7 +29,7 @@ export const PostQuery = extendType({
     });
     t.list.field('posts', {
       type: 'Post',
-      async resolve(_root, _args, ctx) {
+      async resolve(root, args, ctx) {
         const posts = await ctx.db.post.findMany({
           where: { isPublished: true },
         });
@@ -42,13 +42,13 @@ export const PostQuery = extendType({
         isPublished: nonNull(booleanArg()),
         token: stringArg(),
       },
-      async resolve(_root, _args, ctx) {
-        console.log('_args.token', _args.token);
-        if (!_args.token) {
+      async resolve(root, args, ctx) {
+        console.log('args.token', args.token);
+        if (!args.token) {
           return [];
         }
         const posts = await ctx.db.post.findMany({
-          where: { isPublished: _args.isPublished },
+          where: { isPublished: args.isPublished },
         });
         return parseEntitiesDates(posts);
       },
@@ -64,7 +64,7 @@ export const PostMutation = extendType({
         title: nonNull(stringArg()),
         body: nonNull(stringArg()),
       },
-      async resolve(_root, args, ctx) {
+      async resolve(root, args, ctx) {
         const draft = {
           title: args.title,
           body: args.body,
@@ -79,7 +79,7 @@ export const PostMutation = extendType({
       args: {
         draftId: nonNull(stringArg()),
       },
-      async resolve(_root, args, ctx) {
+      async resolve(root, args, ctx) {
         const post = await ctx.db.post.update({
           where: {
             id: args.draftId,

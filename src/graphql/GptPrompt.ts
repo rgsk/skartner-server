@@ -1,8 +1,33 @@
-import { parseEntitiesDates, parseEntityDates } from 'lib/generalUtils';
+import { GreWord } from '@prisma/client';
+import { Context, context } from 'context';
+import DataLoader from 'dataloader';
+import {
+  ParsedDatesEntity,
+  deriveEntityMapFromArray,
+  parseEntitiesDates,
+} from 'lib/generalUtils';
 import openAIApi from 'lib/openAIApi';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 import { ChatCompletionRequestMessage } from 'openai';
-import { GreWord } from './GreWord';
+
+function createGreWordsLoader(ctx: Context) {
+  return new DataLoader<string, ParsedDatesEntity<GreWord>>(
+    async (ids) => {
+      const _greWords = await ctx.db.greWord.findMany({
+        where: { id: { in: [...ids] } },
+      });
+      const greWords = parseEntitiesDates(_greWords);
+      const idToGreWordMap = deriveEntityMapFromArray(
+        greWords,
+        (greWord: GreWord) => greWord.id
+      );
+      return ids.map((id) => idToGreWordMap.get(id));
+    },
+    { cache: false }
+  );
+}
+
+const greWordsLoader = createGreWordsLoader(context);
 
 export const GptPrompt = objectType({
   name: 'GptPrompt',
@@ -11,15 +36,12 @@ export const GptPrompt = objectType({
     t.nonNull.string('input');
     t.nonNull.string('response');
     t.field('greWord', {
-      type: GreWord,
+      type: 'GreWord',
       resolve: async (gptPrompt, args, ctx) => {
         if (!gptPrompt.greWordId) {
           return null;
         }
-        const greWord = await ctx.db.greWord.findUnique({
-          where: { id: gptPrompt.greWordId },
-        });
-        return greWord && parseEntityDates(greWord);
+        return greWordsLoader.load(gptPrompt.greWordId);
       },
     });
     t.string('greWordId');
@@ -33,7 +55,7 @@ export const GptPromptQuery = extendType({
   definition(t) {
     t.list.field('gptPrompts', {
       type: GptPrompt,
-      async resolve(_root, _args, ctx) {
+      async resolve(root, args, ctx) {
         const gptPrompts = await ctx.db.gptPrompt.findMany();
         return parseEntitiesDates(gptPrompts);
       },
@@ -42,9 +64,9 @@ export const GptPromptQuery = extendType({
       args: {
         input: nonNull(stringArg()),
       },
-      async resolve(_root, _args, ctx) {
+      async resolve(root, args, ctx) {
         const message = await sendPrompt([
-          { role: 'user', content: _args.input },
+          { role: 'user', content: args.input },
         ]);
         return message?.content ?? null;
       },
