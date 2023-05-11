@@ -3,11 +3,19 @@ import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
 import {
+  StringComparisonExp,
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
+  uuidComparisonExp,
 } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, nonNull, objectType, stringArg } from 'nexus';
+import {
+  extendType,
+  inputObjectType,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 function createGptPromptsLoader(ctx: Context) {
   return new DataLoader<string, GptPrompt[]>(
@@ -51,7 +59,20 @@ export const GreWordQuery = extendType({
   definition(t) {
     t.list.field('greWords', {
       type: GreWordObject,
-      args: findManyGraphqlArgs(),
+      args: {
+        ...findManyGraphqlArgs,
+        where: inputObjectType({
+          name: 'greWords_bool_exp',
+          definition(t) {
+            t.field('id', {
+              type: uuidComparisonExp,
+            });
+            t.field('spelling', {
+              type: StringComparisonExp,
+            });
+          },
+        }),
+      },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(
           info,

@@ -14,6 +14,16 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  String_comparison_exp: { // input type
+    _eq?: string | null; // String
+  }
+  greWords_bool_exp: { // input type
+    id?: NexusGenInputs['uuid_comparison_exp'] | null; // uuid_comparison_exp
+    spelling?: NexusGenInputs['String_comparison_exp'] | null; // String_comparison_exp
+  }
+  uuid_comparison_exp: { // input type
+    _eq?: string | null; // String
+  }
 }
 
 export interface NexusGenEnums {
@@ -165,6 +175,7 @@ export interface NexusGenArgTypes {
     greWords: { // args
       limit?: number | null; // Int
       offset?: number | null; // Int
+      where?: NexusGenInputs['greWords_bool_exp'] | null; // greWords_bool_exp
     }
     sendSinglePrompt: { // args
       input: string; // String!
@@ -180,7 +191,7 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = never;
+export type NexusGenInputNames = keyof NexusGenInputs;
 
 export type NexusGenEnumNames = never;
 

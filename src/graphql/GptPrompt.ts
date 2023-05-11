@@ -59,7 +59,7 @@ export const GptPromptQuery = extendType({
   definition(t) {
     t.list.field('gptPrompts', {
       type: GptPromptObject,
-      args: findManyGraphqlArgs(),
+      args: findManyGraphqlArgs,
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GptPromptFindManyArgs = parseGraphQLQuery(
           info,

@@ -30,6 +30,14 @@ function parseGraphQLQuery(info, args) {
   if (typeof args.limit === 'number') {
     data['take'] = args.limit;
   }
+  if (args.where) {
+    data['where'] = {};
+    for (let key in args.where) {
+      if (args.where[key]._eq) {
+        data['where'][key] = args.where[key]._eq;
+      }
+    }
+  }
   // return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };
   return data;
 }
