@@ -158,6 +158,14 @@ export interface NexusGenArgTypes {
       isPublished: boolean; // Boolean!
       token?: string | null; // String
     }
+    gptPrompts: { // args
+      limit?: number | null; // Int
+      offset?: number | null; // Int
+    }
+    greWords: { // args
+      limit?: number | null; // Int
+      offset?: number | null; // Int
+    }
     sendSinglePrompt: { // args
       input: string; // String!
     }

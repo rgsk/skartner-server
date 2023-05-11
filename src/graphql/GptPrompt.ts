@@ -2,7 +2,10 @@ import { GreWord, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityMapFromArray } from 'lib/generalUtils';
-import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
+import {
+  addDateFieldsDefinitions,
+  findManyGraphqlArgs,
+} from 'lib/graphqlUtils';
 import openAIApi from 'lib/openAIApi';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
@@ -56,9 +59,12 @@ export const GptPromptQuery = extendType({
   definition(t) {
     t.list.field('gptPrompts', {
       type: GptPromptObject,
+      args: findManyGraphqlArgs(),
       async resolve(root, args, ctx, info) {
-        const prismaArgs: Prisma.GptPromptFindManyArgs =
-          parseGraphQLQuery(info);
+        const prismaArgs: Prisma.GptPromptFindManyArgs = parseGraphQLQuery(
+          info,
+          args
+        );
         const gptPrompts = await ctx.db.gptPrompt.findMany(prismaArgs);
         return gptPrompts;
       },

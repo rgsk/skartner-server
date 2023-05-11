@@ -38,8 +38,8 @@ type Post {
 type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
-  gptPrompts: [GptPrompt]
-  greWords: [GreWord]
+  gptPrompts(limit: Int, offset: Int): [GptPrompt]
+  greWords(limit: Int, offset: Int): [GreWord]
   posts: [Post]
   sendSinglePrompt(input: String!): String
 }

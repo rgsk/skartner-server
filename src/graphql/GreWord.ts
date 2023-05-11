@@ -2,7 +2,10 @@ import { GptPrompt, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
-import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
+import {
+  addDateFieldsDefinitions,
+  findManyGraphqlArgs,
+} from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 
@@ -48,8 +51,12 @@ export const GreWordQuery = extendType({
   definition(t) {
     t.list.field('greWords', {
       type: GreWordObject,
+      args: findManyGraphqlArgs(),
       async resolve(root, args, ctx, info) {
-        const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(info);
+        const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(
+          info,
+          args
+        );
         const greWords = await ctx.db.greWord.findMany(prismaArgs);
         return greWords;
       },
@@ -67,8 +74,10 @@ export const GreWordMutation = extendType({
         promptInput: nonNull(stringArg()),
         promptResponse: nonNull(stringArg()),
       },
-      async resolve(root, args, ctx) {
+      async resolve(root, args, ctx, info) {
+        const prismaArgs = parseGraphQLQuery(info, args);
         const greWord = await ctx.db.greWord.upsert({
+          ...prismaArgs,
           create: {
             spelling: args.spelling,
             gptPrompts: {

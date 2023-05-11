@@ -20,8 +20,17 @@ function parseFieldNode(fieldNode) {
   }
 }
 
-function parseGraphQLQuery(info) {
-  const args = parseFieldNode(info.fieldNodes[0]);
-  return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };
+function parseGraphQLQuery(info, args) {
+  const parseRes = parseFieldNode(info.fieldNodes[0]);
+  const data: any = {};
+  data['select'] = parseRes.select;
+  if (typeof args.offset === 'number') {
+    data['skip'] = args.offset;
+  }
+  if (typeof args.limit === 'number') {
+    data['take'] = args.limit;
+  }
+  // return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };
+  return data;
 }
 export default parseGraphQLQuery;
