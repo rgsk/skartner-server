@@ -36,9 +36,21 @@ function parseGraphQLQuery(info, args) {
   if (args.where) {
     data['where'] = {};
     for (let key in args.where) {
-      if (args.where[key]._eq) {
-        data['where'][key] = args.where[key]._eq;
-      }
+      /*
+        contains,
+        endsWith,
+        equals,
+        gt,
+        gte,
+        in,
+        lt, 
+        lte,
+        mode,
+        not,
+        notIn,
+        startsWith,
+    */
+      data['where'][key] = args.where[key];
     }
   }
   // return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };

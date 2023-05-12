@@ -14,14 +14,17 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  String_comparison_exp: { // input type
-    _eq?: string | null; // String
+  StringComparisonExp: { // input type
+    equals?: string | null; // String
+    in?: string[] | null; // [String!]
+    not?: string | null; // String
+    notIn?: string[] | null; // [String!]
   }
-  greWords_bool_exp: { // input type
-    id?: NexusGenInputs['uuid_comparison_exp'] | null; // uuid_comparison_exp
-    spelling?: NexusGenInputs['String_comparison_exp'] | null; // String_comparison_exp
+  greWordsBoolExp: { // input type
+    id?: NexusGenInputs['uuidComparisonExp'] | null; // uuidComparisonExp
+    spelling?: NexusGenInputs['StringComparisonExp'] | null; // StringComparisonExp
   }
-  uuid_comparison_exp: { // input type
+  uuidComparisonExp: { // input type
     _eq?: string | null; // String
   }
 }
@@ -175,7 +178,7 @@ export interface NexusGenArgTypes {
     greWords: { // args
       limit?: number | null; // Int
       offset?: number | null; // Int
-      where?: NexusGenInputs['greWords_bool_exp'] | null; // greWords_bool_exp
+      where?: NexusGenInputs['greWordsBoolExp'] | null; // greWordsBoolExp
     }
     sendSinglePrompt: { // args
       input: string; // String!

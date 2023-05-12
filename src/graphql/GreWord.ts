@@ -62,7 +62,7 @@ export const GreWordQuery = extendType({
       args: {
         ...findManyGraphqlArgs,
         where: inputObjectType({
-          name: 'greWords_bool_exp',
+          name: 'greWordsBoolExp',
           definition(t) {
             t.field('id', {
               type: uuidComparisonExp,

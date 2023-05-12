@@ -39,20 +39,23 @@ type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
   gptPrompts(limit: Int, offset: Int): [GptPrompt]
-  greWords(limit: Int, offset: Int, where: greWords_bool_exp): [GreWord]
+  greWords(limit: Int, offset: Int, where: greWordsBoolExp): [GreWord]
   posts: [Post]
   sendSinglePrompt(input: String!): String
 }
 
-input String_comparison_exp {
-  _eq: String
+input StringComparisonExp {
+  equals: String
+  in: [String!]
+  not: String
+  notIn: [String!]
 }
 
-input greWords_bool_exp {
-  id: uuid_comparison_exp
-  spelling: String_comparison_exp
+input greWordsBoolExp {
+  id: uuidComparisonExp
+  spelling: StringComparisonExp
 }
 
-input uuid_comparison_exp {
+input uuidComparisonExp {
   _eq: String
 }

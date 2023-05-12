@@ -16,15 +16,33 @@ export const findManyGraphqlArgs = {
 };
 
 export const uuidComparisonExp = inputObjectType({
-  name: 'uuid_comparison_exp',
+  name: 'uuidComparisonExp',
   definition(t) {
     t.string('_eq');
   },
 });
 
+/*
+    contains,
+    endsWith,
+    equals,
+    gt,
+    gte,
+    in,
+    lt,
+    lte,
+    mode,
+    not,
+    notIn,
+    startsWith,
+*/
+
 export const StringComparisonExp = inputObjectType({
-  name: 'String_comparison_exp',
+  name: 'StringComparisonExp',
   definition(t) {
-    t.string('_eq');
+    t.string('equals');
+    t.string('not');
+    t.list.nonNull.string('in');
+    t.list.nonNull.string('notIn');
   },
 });
