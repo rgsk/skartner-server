@@ -6,7 +6,10 @@ function parseFieldNode(fieldNode) {
     const nestedArgs = {};
 
     nestedFieldNodes.forEach((nestedFieldNode) => {
-      if (nestedFieldNode.kind !== 'Field') {
+      if (
+        nestedFieldNode.kind !== 'Field' ||
+        nestedFieldNode.name.value === '__typename'
+      ) {
         return;
       }
       nestedArgs[nestedFieldNode.name.value] = parseFieldNode(nestedFieldNode);
