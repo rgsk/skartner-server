@@ -11,8 +11,8 @@ export const addDateFieldsDefinitions = (t: any) => {
   });
 };
 export const findManyGraphqlArgs = {
-  offset: intArg(),
-  limit: intArg(),
+  skip: intArg(),
+  take: intArg(),
 };
 
 export const uuidComparisonExp = inputObjectType({
@@ -23,7 +23,7 @@ export const uuidComparisonExp = inputObjectType({
 });
 
 /*
-    contains,
+    contains, 
     endsWith,
     equals,
     gt,

@@ -23,36 +23,9 @@ function parseFieldNode(fieldNode) {
   }
 }
 
-function parseGraphQLQuery(info, args) {
+function parseGraphQLQuery(info, args?) {
   const parseRes = parseFieldNode(info.fieldNodes[0]);
-  const data: any = {};
-  data['select'] = parseRes.select;
-  if (typeof args.offset === 'number') {
-    data['skip'] = args.offset;
-  }
-  if (typeof args.limit === 'number') {
-    data['take'] = args.limit;
-  }
-  if (args.where) {
-    data['where'] = {};
-    for (let key in args.where) {
-      /*
-        contains,
-        endsWith,
-        equals,
-        gt,
-        gte,
-        in,
-        lt, 
-        lte,
-        mode,
-        not,
-        notIn,
-        startsWith,
-    */
-      data['where'][key] = args.where[key];
-    }
-  }
+  const data: any = { ...args, ...parseRes };
   // return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };
   return data;
 }

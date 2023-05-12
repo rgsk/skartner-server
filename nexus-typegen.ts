@@ -179,12 +179,12 @@ export interface NexusGenArgTypes {
       token?: string | null; // String
     }
     gptPrompts: { // args
-      limit?: number | null; // Int
-      offset?: number | null; // Int
+      skip?: number | null; // Int
+      take?: number | null; // Int
     }
     greWords: { // args
-      limit?: number | null; // Int
-      offset?: number | null; // Int
+      skip?: number | null; // Int
+      take?: number | null; // Int
       where?: NexusGenInputs['greWordsBoolExp'] | null; // greWordsBoolExp
     }
     sendSinglePrompt: { // args
