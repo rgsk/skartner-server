@@ -54,6 +54,18 @@ export const GreWordObject = objectType({
   },
 });
 
+const GreWordWhereInput = inputObjectType({
+  name: 'GreWordWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: uuidComparisonExp,
+    });
+    t.field('spelling', {
+      type: StringComparisonExp,
+    });
+  },
+});
+
 export const GreWordQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -61,17 +73,7 @@ export const GreWordQuery = extendType({
       type: nonNull('GreWord'),
       args: {
         ...findManyGraphqlArgs,
-        where: inputObjectType({
-          name: 'greWordsBoolExp',
-          definition(t) {
-            t.field('id', {
-              type: uuidComparisonExp,
-            });
-            t.field('spelling', {
-              type: StringComparisonExp,
-            });
-          },
-        }),
+        where: GreWordWhereInput,
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(
@@ -80,6 +82,19 @@ export const GreWordQuery = extendType({
         );
         const greWords = await ctx.db.greWord.findMany(prismaArgs);
         return greWords;
+      },
+    });
+    t.nonNull.int('greWordsCount', {
+      args: {
+        where: GreWordWhereInput,
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.GreWordCountArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const greWordsCount = await ctx.db.greWord.count(prismaArgs);
+        return greWordsCount;
       },
     });
   },
@@ -96,26 +111,27 @@ export const GreWordMutation = extendType({
         promptResponse: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const prismaArgs = parseGraphQLQuery(info, args);
+        const { spelling, promptInput, promptResponse, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
         const greWord = await ctx.db.greWord.upsert({
           ...prismaArgs,
           create: {
-            spelling: args.spelling,
+            spelling: spelling,
             gptPrompts: {
               create: {
-                input: args.promptInput,
-                response: args.promptResponse,
+                input: promptInput,
+                response: promptResponse,
               },
             },
           },
           where: {
-            spelling: args.spelling,
+            spelling: spelling,
           },
           update: {
             gptPrompts: {
               create: {
-                input: args.promptInput,
-                response: args.promptResponse,
+                input: promptInput,
+                response: promptResponse,
               },
             },
           },

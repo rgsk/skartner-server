@@ -20,6 +20,11 @@ type GreWord {
   updatedAt: String!
 }
 
+input GreWordWhereInput {
+  id: uuidComparisonExp
+  spelling: StringComparisonExp
+}
+
 type Mutation {
   createDraft(body: String!, title: String!): Post
   createGreWord(promptInput: String!, promptResponse: String!, spelling: String!): GreWord
@@ -39,7 +44,8 @@ type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
   gptPrompts(skip: Int, take: Int): [GptPrompt]
-  greWords(skip: Int, take: Int, where: greWordsBoolExp): [GreWord!]!
+  greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
+  greWordsCount(where: GreWordWhereInput): Int!
   posts: [Post]
   sendSinglePrompt(input: String!): String
 }
@@ -56,11 +62,6 @@ input StringComparisonExp {
   not: String
   notIn: [String!]
   startsWith: String
-}
-
-input greWordsBoolExp {
-  id: uuidComparisonExp
-  spelling: StringComparisonExp
 }
 
 input uuidComparisonExp {
