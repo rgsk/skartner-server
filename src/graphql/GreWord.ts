@@ -43,7 +43,7 @@ export const GreWordObject = objectType({
     t.nonNull.string('spelling');
     addDateFieldsDefinitions(t);
     t.nonNull.list.field('gptPrompts', {
-      type: 'GptPrompt',
+      type: nonNull('GptPrompt'),
       resolve: async (greWord: any, args, ctx) => {
         if (greWord.gptPrompts) {
           return greWord.gptPrompts;
@@ -57,8 +57,8 @@ export const GreWordObject = objectType({
 export const GreWordQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('greWords', {
-      type: GreWordObject,
+    t.nonNull.list.field('greWords', {
+      type: nonNull('GreWord'),
       args: {
         ...findManyGraphqlArgs,
         where: inputObjectType({

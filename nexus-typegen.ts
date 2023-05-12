@@ -15,10 +15,17 @@ declare global {
 
 export interface NexusGenInputs {
   StringComparisonExp: { // input type
+    contains?: string | null; // String
+    endsWith?: string | null; // String
     equals?: string | null; // String
+    gt?: string | null; // String
+    gte?: string | null; // String
     in?: string[] | null; // [String!]
+    lt?: string | null; // String
+    lte?: string | null; // String
     not?: string | null; // String
     notIn?: string[] | null; // [String!]
+    startsWith?: string | null; // String
   }
   greWordsBoolExp: { // input type
     id?: NexusGenInputs['uuidComparisonExp'] | null; // uuidComparisonExp
@@ -83,7 +90,7 @@ export interface NexusGenFieldTypes {
   }
   GreWord: { // field return type
     createdAt: string; // String!
-    gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null>; // [GptPrompt]!
+    gptPrompts: NexusGenRootTypes['GptPrompt'][]; // [GptPrompt!]!
     id: string; // String!
     spelling: string; // String!
     updatedAt: string; // String!
@@ -105,7 +112,7 @@ export interface NexusGenFieldTypes {
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
-    greWords: Array<NexusGenRootTypes['GreWord'] | null> | null; // [GreWord]
+    greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
   }

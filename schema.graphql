@@ -14,7 +14,7 @@ type GptPrompt {
 
 type GreWord {
   createdAt: String!
-  gptPrompts: [GptPrompt]!
+  gptPrompts: [GptPrompt!]!
   id: String!
   spelling: String!
   updatedAt: String!
@@ -39,16 +39,23 @@ type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
   gptPrompts(limit: Int, offset: Int): [GptPrompt]
-  greWords(limit: Int, offset: Int, where: greWordsBoolExp): [GreWord]
+  greWords(limit: Int, offset: Int, where: greWordsBoolExp): [GreWord!]!
   posts: [Post]
   sendSinglePrompt(input: String!): String
 }
 
 input StringComparisonExp {
+  contains: String
+  endsWith: String
   equals: String
+  gt: String
+  gte: String
   in: [String!]
+  lt: String
+  lte: String
   not: String
   notIn: [String!]
+  startsWith: String
 }
 
 input greWordsBoolExp {
