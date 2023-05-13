@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import {
-  StringFilter,
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
@@ -34,13 +33,13 @@ const GreWordSearchPromptInputWhereInput = inputObjectType({
   name: 'GreWordSearchPromptInputWhereInput',
   definition(t) {
     t.field('id', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
     t.field('text', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
     t.field('userId', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
   },
 });

@@ -47,7 +47,7 @@ type Mutation {
   createDraft(body: String!, title: String!): Post
   createGreWord(promptInput: String!, promptResponse: String!, spelling: String!): GreWord
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
-  createUser(email: String!): User
+  createUser(email: String!, meta: Json): User
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   publish(draftId: String!): Post
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput

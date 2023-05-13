@@ -1,8 +1,8 @@
 // api/schema.ts
+import environmentVars from 'lib/environmentVars';
 import { makeSchema } from 'nexus';
 import { join } from 'path';
-import * as types from './graphql';
-import environmentVars from 'lib/environmentVars';
+import * as types from './gql';
 
 export const schema = makeSchema({
   types: types,

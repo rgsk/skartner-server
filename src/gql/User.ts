@@ -1,6 +1,5 @@
 import { Prisma } from '@prisma/client';
 import {
-  StringFilter,
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
@@ -13,31 +12,14 @@ import {
   stringArg,
 } from 'nexus';
 
-// TODO: if JSON input is needed then we can do below
-
-// export const Json = scalarType({
-//   name: 'Json',
-//   description: 'The `Json` scalar type represents JSON objects.',
-//   parseValue(value: any) {
-//     return JSON.parse(value);
-//   },
-//   serialize(value) {
-//     return JSON.stringify(value);
-//   },
-//   parseLiteral(ast) {
-//     if (ast.kind === Kind.STRING) {
-//       return JSON.parse(ast.value);
-//     }
-//     return null;
-//   },
-// });
-
 export const User = objectType({
   name: 'User',
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('email');
-    t.nonNull.string('meta');
+    t.field('meta', {
+      type: 'Json',
+    });
     t.nonNull.list.field('greWordSearchPromptInputs', {
       type: nonNull('GreWordSearchPromptInput'),
       resolve(user: any) {
@@ -53,10 +35,10 @@ const UserWhereInput = inputObjectType({
   name: 'UserWhereInput',
   definition(t) {
     t.field('id', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
     t.field('email', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
   },
 });
@@ -89,14 +71,16 @@ export const UserMutation = extendType({
       type: 'User',
       args: {
         email: nonNull(stringArg()),
+        meta: 'Json',
       },
       async resolve(root, args, ctx, info) {
-        const { email, ...restArgs } = args;
+        const { email, meta, ...restArgs } = args;
         const prismaArgs = parseGraphQLQuery(info, restArgs);
         const user = await ctx.db.user.create({
           ...prismaArgs,
           data: {
             email: email,
+            meta: meta,
           },
         });
         return user;

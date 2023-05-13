@@ -3,7 +3,6 @@ import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
 import {
-  StringFilter,
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
@@ -57,10 +56,10 @@ const GreWordWhereInput = inputObjectType({
   name: 'GreWordWhereInput',
   definition(t) {
     t.field('id', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
     t.field('spelling', {
-      type: StringFilter,
+      type: 'StringFilter',
     });
   },
 });

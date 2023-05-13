@@ -81,6 +81,7 @@ export interface NexusGenObjects {
   User: { // root type
     email: string; // String!
     id: string; // String!
+    meta?: NexusGenScalars['Json'] | null; // Json
   }
 }
 
@@ -237,6 +238,7 @@ export interface NexusGenArgTypes {
     }
     createUser: { // args
       email: string; // String!
+      meta?: NexusGenScalars['Json'] | null; // Json
     }
     deleteGreWordSearchPromptInput: { // args
       id: string; // String!
