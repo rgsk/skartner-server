@@ -15,13 +15,6 @@ export const findManyGraphqlArgs = {
   take: intArg(),
 };
 
-export const uuidComparisonExp = inputObjectType({
-  name: 'uuidComparisonExp',
-  definition(t) {
-    t.string('_eq');
-  },
-});
-
 /*
     contains, 
     endsWith,
@@ -37,8 +30,8 @@ export const uuidComparisonExp = inputObjectType({
     startsWith,
 */
 
-export const StringComparisonExp = inputObjectType({
-  name: 'StringComparisonExp',
+export const StringFilter = inputObjectType({
+  name: 'StringFilter',
   definition(t) {
     t.string('contains');
     t.string('endsWith');

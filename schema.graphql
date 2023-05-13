@@ -20,14 +20,25 @@ type GreWord {
   updatedAt: String!
 }
 
+type GreWordSearchPromptInput {
+  createdAt: String!
+  id: String!
+  text: String!
+  updatedAt: String!
+  user: User!
+  userId: String!
+}
+
 input GreWordWhereInput {
-  id: uuidComparisonExp
-  spelling: StringComparisonExp
+  id: StringFilter
+  spelling: StringFilter
 }
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
   createGreWord(promptInput: String!, promptResponse: String!, spelling: String!): GreWord
+  createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput
+  createUser(email: String!): User
   publish(draftId: String!): Post
 }
 
@@ -44,13 +55,15 @@ type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
   gptPrompts(skip: Int, take: Int): [GptPrompt]
+  greWordSearchPromptInputs(skip: Int, take: Int): [GreWordSearchPromptInput!]!
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   posts: [Post]
   sendSinglePrompt(input: String!): String
+  users(skip: Int, take: Int, where: UserWhereInput): [User!]!
 }
 
-input StringComparisonExp {
+input StringFilter {
   contains: String
   endsWith: String
   equals: String
@@ -64,6 +77,15 @@ input StringComparisonExp {
   startsWith: String
 }
 
-input uuidComparisonExp {
-  _eq: String
+type User {
+  createdAt: String!
+  email: String!
+  greWordSearchPromptInputs: [GreWordSearchPromptInput!]!
+  id: String!
+  updatedAt: String!
+}
+
+input UserWhereInput {
+  email: StringFilter
+  id: StringFilter
 }

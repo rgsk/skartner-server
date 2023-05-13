@@ -15,10 +15,10 @@ declare global {
 
 export interface NexusGenInputs {
   GreWordWhereInput: { // input type
-    id?: NexusGenInputs['uuidComparisonExp'] | null; // uuidComparisonExp
-    spelling?: NexusGenInputs['StringComparisonExp'] | null; // StringComparisonExp
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    spelling?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
-  StringComparisonExp: { // input type
+  StringFilter: { // input type
     contains?: string | null; // String
     endsWith?: string | null; // String
     equals?: string | null; // String
@@ -31,8 +31,9 @@ export interface NexusGenInputs {
     notIn?: string[] | null; // [String!]
     startsWith?: string | null; // String
   }
-  uuidComparisonExp: { // input type
-    _eq?: string | null; // String
+  UserWhereInput: { // input type
+    email?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
 }
 
@@ -58,6 +59,11 @@ export interface NexusGenObjects {
     id: string; // String!
     spelling: string; // String!
   }
+  GreWordSearchPromptInput: { // root type
+    id: string; // String!
+    text: string; // String!
+    userId: string; // String!
+  }
   Mutation: {};
   Post: { // root type
     body?: string | null; // String
@@ -66,6 +72,10 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   Query: {};
+  User: { // root type
+    email: string; // String!
+    id: string; // String!
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -95,9 +105,19 @@ export interface NexusGenFieldTypes {
     spelling: string; // String!
     updatedAt: string; // String!
   }
+  GreWordSearchPromptInput: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    text: string; // String!
+    updatedAt: string; // String!
+    user: NexusGenRootTypes['User']; // User!
+    userId: string; // String!
+  }
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
     createGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
+    createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
+    createUser: NexusGenRootTypes['User'] | null; // User
     publish: NexusGenRootTypes['Post'] | null; // Post
   }
   Post: { // field return type
@@ -112,10 +132,19 @@ export interface NexusGenFieldTypes {
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
+    greWordSearchPromptInputs: NexusGenRootTypes['GreWordSearchPromptInput'][]; // [GreWordSearchPromptInput!]!
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
+    users: NexusGenRootTypes['User'][]; // [User!]!
+  }
+  User: { // field return type
+    createdAt: string; // String!
+    email: string; // String!
+    greWordSearchPromptInputs: NexusGenRootTypes['GreWordSearchPromptInput'][]; // [GreWordSearchPromptInput!]!
+    id: string; // String!
+    updatedAt: string; // String!
   }
 }
 
@@ -136,9 +165,19 @@ export interface NexusGenFieldTypeNames {
     spelling: 'String'
     updatedAt: 'String'
   }
+  GreWordSearchPromptInput: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    text: 'String'
+    updatedAt: 'String'
+    user: 'User'
+    userId: 'String'
+  }
   Mutation: { // field return type name
     createDraft: 'Post'
     createGreWord: 'GreWord'
+    createGreWordSearchPromptInput: 'GreWordSearchPromptInput'
+    createUser: 'User'
     publish: 'Post'
   }
   Post: { // field return type name
@@ -153,10 +192,19 @@ export interface NexusGenFieldTypeNames {
     allPosts: 'Post'
     drafts: 'Post'
     gptPrompts: 'GptPrompt'
+    greWordSearchPromptInputs: 'GreWordSearchPromptInput'
     greWords: 'GreWord'
     greWordsCount: 'Int'
     posts: 'Post'
     sendSinglePrompt: 'String'
+    users: 'User'
+  }
+  User: { // field return type name
+    createdAt: 'String'
+    email: 'String'
+    greWordSearchPromptInputs: 'GreWordSearchPromptInput'
+    id: 'String'
+    updatedAt: 'String'
   }
 }
 
@@ -171,6 +219,13 @@ export interface NexusGenArgTypes {
       promptResponse: string; // String!
       spelling: string; // String!
     }
+    createGreWordSearchPromptInput: { // args
+      text: string; // String!
+      userId: string; // String!
+    }
+    createUser: { // args
+      email: string; // String!
+    }
     publish: { // args
       draftId: string; // String!
     }
@@ -184,6 +239,10 @@ export interface NexusGenArgTypes {
       skip?: number | null; // Int
       take?: number | null; // Int
     }
+    greWordSearchPromptInputs: { // args
+      skip?: number | null; // Int
+      take?: number | null; // Int
+    }
     greWords: { // args
       skip?: number | null; // Int
       take?: number | null; // Int
@@ -194,6 +253,11 @@ export interface NexusGenArgTypes {
     }
     sendSinglePrompt: { // args
       input: string; // String!
+    }
+    users: { // args
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     }
   }
 }

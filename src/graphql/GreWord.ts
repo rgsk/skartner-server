@@ -3,10 +3,9 @@ import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
 import {
-  StringComparisonExp,
+  StringFilter,
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
-  uuidComparisonExp,
 } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
@@ -58,10 +57,10 @@ const GreWordWhereInput = inputObjectType({
   name: 'GreWordWhereInput',
   definition(t) {
     t.field('id', {
-      type: uuidComparisonExp,
+      type: StringFilter,
     });
     t.field('spelling', {
-      type: StringComparisonExp,
+      type: StringFilter,
     });
   },
 });
