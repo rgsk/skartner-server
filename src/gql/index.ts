@@ -1,4 +1,5 @@
 // api/graphql/index.ts
+export * from './General';
 export * from './GptPrompt';
 export * from './GreWord';
 export * from './GreWordSearchPromptInput';

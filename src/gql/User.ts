@@ -86,5 +86,28 @@ export const UserMutation = extendType({
         return user;
       },
     });
+    t.field('updateUser', {
+      type: 'User',
+      args: {
+        id: stringArg(),
+        email: stringArg(),
+        meta: 'Json',
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, email, meta, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const user = await ctx.db.user.update({
+          ...prismaArgs,
+          data: {
+            meta: meta,
+          },
+          where: {
+            id,
+            email,
+          },
+        });
+        return user;
+      },
+    });
   },
 });
