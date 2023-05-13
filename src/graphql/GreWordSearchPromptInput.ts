@@ -1,10 +1,17 @@
 import { Prisma } from '@prisma/client';
 import {
+  StringFilter,
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, nonNull, objectType, stringArg } from 'nexus';
+import {
+  extendType,
+  inputObjectType,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 export const GreWordSearchPromptInputObject = objectType({
   name: 'GreWordSearchPromptInput',
@@ -23,6 +30,21 @@ export const GreWordSearchPromptInputObject = objectType({
   },
 });
 
+const GreWordSearchPromptInputWhereInput = inputObjectType({
+  name: 'GreWordSearchPromptInputWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: StringFilter,
+    });
+    t.field('text', {
+      type: StringFilter,
+    });
+    t.field('userId', {
+      type: StringFilter,
+    });
+  },
+});
+
 export const GreWordSearchPromptInputQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -30,6 +52,7 @@ export const GreWordSearchPromptInputQuery = extendType({
       type: nonNull('GreWordSearchPromptInput'),
       args: {
         ...findManyGraphqlArgs,
+        where: GreWordSearchPromptInputWhereInput,
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordSearchPromptInputFindManyArgs =

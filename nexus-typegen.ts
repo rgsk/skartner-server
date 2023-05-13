@@ -14,6 +14,11 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  GreWordSearchPromptInputWhereInput: { // input type
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    text?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   GreWordWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     spelling?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -242,6 +247,7 @@ export interface NexusGenArgTypes {
     greWordSearchPromptInputs: { // args
       skip?: number | null; // Int
       take?: number | null; // Int
+      where?: NexusGenInputs['GreWordSearchPromptInputWhereInput'] | null; // GreWordSearchPromptInputWhereInput
     }
     greWords: { // args
       skip?: number | null; // Int

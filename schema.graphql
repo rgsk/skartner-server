@@ -29,6 +29,12 @@ type GreWordSearchPromptInput {
   userId: String!
 }
 
+input GreWordSearchPromptInputWhereInput {
+  id: StringFilter
+  text: StringFilter
+  userId: StringFilter
+}
+
 input GreWordWhereInput {
   id: StringFilter
   spelling: StringFilter
@@ -55,7 +61,7 @@ type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   drafts: [Post]
   gptPrompts(skip: Int, take: Int): [GptPrompt]
-  greWordSearchPromptInputs(skip: Int, take: Int): [GreWordSearchPromptInput!]!
+  greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   posts: [Post]
