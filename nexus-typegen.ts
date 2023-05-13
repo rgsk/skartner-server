@@ -121,9 +121,11 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
     createGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
-    createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
+    createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput']; // GreWordSearchPromptInput!
     createUser: NexusGenRootTypes['User'] | null; // User
+    deleteGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     publish: NexusGenRootTypes['Post'] | null; // Post
+    updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
   }
   Post: { // field return type
     body: string | null; // String
@@ -183,7 +185,9 @@ export interface NexusGenFieldTypeNames {
     createGreWord: 'GreWord'
     createGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     createUser: 'User'
+    deleteGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     publish: 'Post'
+    updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
   }
   Post: { // field return type name
     body: 'String'
@@ -231,8 +235,15 @@ export interface NexusGenArgTypes {
     createUser: { // args
       email: string; // String!
     }
+    deleteGreWordSearchPromptInput: { // args
+      id: string; // String!
+    }
     publish: { // args
       draftId: string; // String!
+    }
+    updateGreWordSearchPromptInput: { // args
+      id: string; // String!
+      text: string; // String!
     }
   }
   Query: {

@@ -69,7 +69,7 @@ export const GreWordSearchPromptInputMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createGreWordSearchPromptInput', {
-      type: 'GreWordSearchPromptInput',
+      type: nonNull('GreWordSearchPromptInput'),
       args: {
         text: nonNull(stringArg()),
         userId: nonNull(stringArg()),
@@ -83,6 +83,46 @@ export const GreWordSearchPromptInputMutation = extendType({
             data: {
               text: text,
               userId: userId,
+            },
+          });
+        return greWordSearchPromptInput;
+      },
+    });
+    t.field('updateGreWordSearchPromptInput', {
+      type: 'GreWordSearchPromptInput',
+      args: {
+        text: nonNull(stringArg()),
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { text, id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const greWordSearchPromptInput =
+          await ctx.db.greWordSearchPromptInput.update({
+            ...prismaArgs,
+            data: {
+              text: text,
+            },
+            where: {
+              id: id,
+            },
+          });
+        return greWordSearchPromptInput;
+      },
+    });
+    t.field('deleteGreWordSearchPromptInput', {
+      type: 'GreWordSearchPromptInput',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const greWordSearchPromptInput =
+          await ctx.db.greWordSearchPromptInput.delete({
+            ...prismaArgs,
+            where: {
+              id: id,
             },
           });
         return greWordSearchPromptInput;
