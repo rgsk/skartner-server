@@ -40,6 +40,9 @@ input GreWordWhereInput {
   spelling: StringFilter
 }
 
+"""The `Json` scalar type represents JSON objects."""
+scalar Json
+
 type Mutation {
   createDraft(body: String!, title: String!): Post
   createGreWord(promptInput: String!, promptResponse: String!, spelling: String!): GreWord
@@ -90,6 +93,7 @@ type User {
   email: String!
   greWordSearchPromptInputs: [GreWordSearchPromptInput!]!
   id: String!
+  meta: Json
   updatedAt: String!
 }
 

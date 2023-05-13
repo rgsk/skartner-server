@@ -50,6 +50,8 @@ model User {
   email                     String                     @unique
   greWordSearchPromptInputs GreWordSearchPromptInput[]
 
+  meta Json @default("{}")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

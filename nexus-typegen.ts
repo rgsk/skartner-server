@@ -51,6 +51,7 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  Json: any
 }
 
 export interface NexusGenObjects {
@@ -151,6 +152,7 @@ export interface NexusGenFieldTypes {
     email: string; // String!
     greWordSearchPromptInputs: NexusGenRootTypes['GreWordSearchPromptInput'][]; // [GreWordSearchPromptInput!]!
     id: string; // String!
+    meta: NexusGenScalars['Json'] | null; // Json
     updatedAt: string; // String!
   }
 }
@@ -213,6 +215,7 @@ export interface NexusGenFieldTypeNames {
     email: 'String'
     greWordSearchPromptInputs: 'GreWordSearchPromptInput'
     id: 'String'
+    meta: 'Json'
     updatedAt: 'String'
   }
 }

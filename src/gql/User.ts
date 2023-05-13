@@ -13,11 +13,31 @@ import {
   stringArg,
 } from 'nexus';
 
+// TODO: if JSON input is needed then we can do below
+
+// export const Json = scalarType({
+//   name: 'Json',
+//   description: 'The `Json` scalar type represents JSON objects.',
+//   parseValue(value: any) {
+//     return JSON.parse(value);
+//   },
+//   serialize(value) {
+//     return JSON.stringify(value);
+//   },
+//   parseLiteral(ast) {
+//     if (ast.kind === Kind.STRING) {
+//       return JSON.parse(ast.value);
+//     }
+//     return null;
+//   },
+// });
+
 export const User = objectType({
   name: 'User',
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('email');
+    t.nonNull.string('meta');
     t.nonNull.list.field('greWordSearchPromptInputs', {
       type: nonNull('GreWordSearchPromptInput'),
       resolve(user: any) {
