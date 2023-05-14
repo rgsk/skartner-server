@@ -149,7 +149,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
-    createGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
+    createGreWord: NexusGenRootTypes['GreWord']; // GreWord!
     createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput']; // GreWordSearchPromptInput!
     createUser: NexusGenRootTypes['User'] | null; // User
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt

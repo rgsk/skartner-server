@@ -109,7 +109,7 @@ export const GreWordMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createGreWord', {
-      type: 'GreWord',
+      type: nonNull('GreWord'),
       args: {
         spelling: nonNull(stringArg()),
         promptInput: nonNull(stringArg()),
