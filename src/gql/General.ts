@@ -36,7 +36,7 @@ export const GeneralQuery = extendType({
       async resolve(root, args, ctx, info) {
         return {
           defaultGreWordSearchPromptInputs: [
-            'list meaning and 3 example sentences for word - {word}',
+            'list meaning and 3 easy example sentences for word - {word}',
             'list meaning in simple words and 5 easy example sentences for word - {word}',
           ],
         };
