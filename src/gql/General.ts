@@ -37,7 +37,7 @@ export const GeneralQuery = extendType({
         return {
           defaultGreWordSearchPromptInputs: [
             'list meaning and 3 easy example sentences for word - {word}',
-            'list meaning in simple words and 3 easy example sentences for word - {word}',
+            'list meaning in simple words and 5 easy example sentences for word - {word}',
           ],
         };
       },
