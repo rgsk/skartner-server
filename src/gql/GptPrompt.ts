@@ -50,6 +50,10 @@ export const GptPromptObject = objectType({
       },
     });
     t.string('greWordId');
+    t.field('user', {
+      type: 'User',
+    });
+    t.string('userId');
     addDateFieldsDefinitions(t);
   },
 });

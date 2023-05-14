@@ -26,7 +26,18 @@ export const User = objectType({
         return user.greWordSearchPromptInputs;
       },
     });
-
+    t.nonNull.list.field('greWords', {
+      type: nonNull('GreWord'),
+      resolve(user: any) {
+        return user.greWords;
+      },
+    });
+    t.nonNull.list.field('gptPrompts', {
+      type: nonNull('GptPrompt'),
+      resolve(user: any) {
+        return user.gptPrompts;
+      },
+    });
     addDateFieldsDefinitions(t);
   },
 });

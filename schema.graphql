@@ -10,6 +10,8 @@ type GptPrompt {
   input: String!
   response: String!
   updatedAt: String!
+  user: User
+  userId: String
 }
 
 type GreConfiguration {
@@ -22,6 +24,8 @@ type GreWord {
   id: String!
   spelling: String!
   updatedAt: String!
+  user: User
+  userId: String
 }
 
 type GreWordSearchPromptInput {
@@ -42,6 +46,7 @@ input GreWordSearchPromptInputWhereInput {
 input GreWordWhereInput {
   id: StringFilter
   spelling: StringFilter
+  userId: StringFilter
 }
 
 """The `Json` scalar type represents JSON objects."""
@@ -57,7 +62,7 @@ type MetaFields_User {
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  createGreWord(promptInput: String!, promptResponse: String!, spelling: String!): GreWord
+  createGreWord(promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createUser(email: String!, meta: Json): User
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
@@ -106,7 +111,9 @@ input StringFilter {
 type User {
   createdAt: String!
   email: String!
+  gptPrompts: [GptPrompt!]!
   greWordSearchPromptInputs: [GreWordSearchPromptInput!]!
+  greWords: [GreWord!]!
   id: String!
   meta: Json
   updatedAt: String!

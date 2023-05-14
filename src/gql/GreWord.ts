@@ -49,6 +49,10 @@ export const GreWordObject = objectType({
         return grePromptsLoader.load(greWord.id);
       },
     });
+    t.field('user', {
+      type: 'User',
+    });
+    t.string('userId');
   },
 });
 
@@ -59,6 +63,9 @@ const GreWordWhereInput = inputObjectType({
       type: 'StringFilter',
     });
     t.field('spelling', {
+      type: 'StringFilter',
+    });
+    t.field('userId', {
       type: 'StringFilter',
     });
   },
@@ -107,29 +114,37 @@ export const GreWordMutation = extendType({
         spelling: nonNull(stringArg()),
         promptInput: nonNull(stringArg()),
         promptResponse: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { spelling, promptInput, promptResponse, ...restArgs } = args;
+        const { spelling, promptInput, promptResponse, userId, ...restArgs } =
+          args;
         const prismaArgs = parseGraphQLQuery(info, restArgs);
         const greWord = await ctx.db.greWord.upsert({
           ...prismaArgs,
           create: {
             spelling: spelling,
+            userId: userId,
             gptPrompts: {
               create: {
                 input: promptInput,
                 response: promptResponse,
+                userId: userId,
               },
             },
           },
           where: {
-            spelling: spelling,
+            spelling_userId: {
+              spelling: spelling,
+              userId: userId,
+            },
           },
           update: {
             gptPrompts: {
               create: {
                 input: promptInput,
                 response: promptResponse,
+                userId: userId,
               },
             },
           },
