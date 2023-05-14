@@ -109,7 +109,7 @@ export const GreWordMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createGreWord', {
-      type: GreWordObject,
+      type: 'GreWord',
       args: {
         spelling: nonNull(stringArg()),
         promptInput: nonNull(stringArg()),
@@ -147,6 +147,23 @@ export const GreWordMutation = extendType({
                 userId: userId,
               },
             },
+          },
+        });
+        return greWord;
+      },
+    });
+    t.field('deleteGreWord', {
+      type: 'GreWord',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const greWord = await ctx.db.greWord.delete({
+          ...prismaArgs,
+          where: {
+            id: id,
           },
         });
         return greWord;

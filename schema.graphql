@@ -65,6 +65,8 @@ type Mutation {
   createGreWord(promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createUser(email: String!, meta: Json): User
+  deleteGptPrompt(id: String!): GptPrompt
+  deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   publish(draftId: String!): Post
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput

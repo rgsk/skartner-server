@@ -87,6 +87,29 @@ export const GptPromptQuery = extendType({
   },
 });
 
+export const GptPromptMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('deleteGptPrompt', {
+      type: 'GptPrompt',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const gptPrompt = await ctx.db.gptPrompt.delete({
+          ...prismaArgs,
+          where: {
+            id: id,
+          },
+        });
+        return gptPrompt;
+      },
+    });
+  },
+});
+
 export const sendPrompt = async (messages: ChatCompletionRequestMessage[]) => {
   return openAIApi
     .createChatCompletion({
