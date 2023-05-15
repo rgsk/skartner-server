@@ -57,6 +57,7 @@ type MetaFields {
 }
 
 type MetaFields_User {
+  defaultGreWordSearchPromptInput: String!
   showDefaultGreWordSearchPromptInputs: String!
 }
 

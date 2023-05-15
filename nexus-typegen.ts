@@ -82,6 +82,7 @@ export interface NexusGenObjects {
     user: NexusGenRootTypes['MetaFields_User']; // MetaFields_User!
   }
   MetaFields_User: { // root type
+    defaultGreWordSearchPromptInput: string; // String!
     showDefaultGreWordSearchPromptInputs: string; // String!
   }
   Mutation: {};
@@ -145,6 +146,7 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['MetaFields_User']; // MetaFields_User!
   }
   MetaFields_User: { // field return type
+    defaultGreWordSearchPromptInput: string; // String!
     showDefaultGreWordSearchPromptInputs: string; // String!
   }
   Mutation: { // field return type
@@ -228,6 +230,7 @@ export interface NexusGenFieldTypeNames {
     user: 'MetaFields_User'
   }
   MetaFields_User: { // field return type name
+    defaultGreWordSearchPromptInput: 'String'
     showDefaultGreWordSearchPromptInputs: 'String'
   }
   Mutation: { // field return type name

@@ -12,6 +12,7 @@ export const GeneralQuery = extendType({
               name: 'MetaFields_User',
               definition(t) {
                 t.nonNull.string('showDefaultGreWordSearchPromptInputs');
+                t.nonNull.string('defaultGreWordSearchPromptInput');
               },
             }),
           });
@@ -22,6 +23,7 @@ export const GeneralQuery = extendType({
           user: {
             showDefaultGreWordSearchPromptInputs:
               'showDefaultGreWordSearchPromptInputs',
+            defaultGreWordSearchPromptInput: 'defaultGreWordSearchPromptInput',
           },
         };
       },
