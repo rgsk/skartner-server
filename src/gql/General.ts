@@ -1,8 +1,22 @@
+import environmentVars from 'lib/environmentVars';
 import { extendType, objectType } from 'nexus';
 
 export const GeneralQuery = extendType({
   type: 'Query',
   definition(t) {
+    t.nonNull.field('hello', {
+      type: objectType({
+        name: 'helloWorld',
+        definition(t) {
+          t.nonNull.string('message');
+        },
+      }),
+      async resolve(root, args, ctx, info) {
+        return {
+          message: `Server is running on PORT: ${environmentVars.PORT}`,
+        };
+      },
+    });
     t.nonNull.field('metaFields', {
       type: objectType({
         name: 'MetaFields',

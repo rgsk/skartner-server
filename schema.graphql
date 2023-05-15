@@ -91,6 +91,7 @@ type Query {
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
+  hello: helloWorld!
   metaFields: MetaFields!
   posts: [Post]
   sendSinglePrompt(input: String!): String
@@ -125,4 +126,8 @@ type User {
 input UserWhereInput {
   email: StringFilter
   id: StringFilter
+}
+
+type helloWorld {
+  message: String!
 }

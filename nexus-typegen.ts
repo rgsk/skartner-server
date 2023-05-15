@@ -98,6 +98,9 @@ export interface NexusGenObjects {
     id: string; // String!
     meta?: NexusGenScalars['Json'] | null; // Json
   }
+  helloWorld: { // root type
+    message: string; // String!
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -177,6 +180,7 @@ export interface NexusGenFieldTypes {
     greWordSearchPromptInputs: NexusGenRootTypes['GreWordSearchPromptInput'][]; // [GreWordSearchPromptInput!]!
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
+    hello: NexusGenRootTypes['helloWorld']; // helloWorld!
     metaFields: NexusGenRootTypes['MetaFields']; // MetaFields!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
@@ -191,6 +195,9 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     meta: NexusGenScalars['Json'] | null; // Json
     updatedAt: string; // String!
+  }
+  helloWorld: { // field return type
+    message: string; // String!
   }
 }
 
@@ -261,6 +268,7 @@ export interface NexusGenFieldTypeNames {
     greWordSearchPromptInputs: 'GreWordSearchPromptInput'
     greWords: 'GreWord'
     greWordsCount: 'Int'
+    hello: 'helloWorld'
     metaFields: 'MetaFields'
     posts: 'Post'
     sendSinglePrompt: 'String'
@@ -275,6 +283,9 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     meta: 'Json'
     updatedAt: 'String'
+  }
+  helloWorld: { // field return type name
+    message: 'String'
   }
 }
 
