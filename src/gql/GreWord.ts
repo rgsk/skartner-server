@@ -85,7 +85,12 @@ export const GreWordQuery = extendType({
           info,
           args
         );
-        const greWords = await ctx.db.greWord.findMany(prismaArgs);
+        const greWords = await ctx.db.greWord.findMany({
+          ...prismaArgs,
+          orderBy: {
+            createdAt: 'asc',
+          },
+        });
         return greWords;
       },
     });
