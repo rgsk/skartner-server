@@ -4,6 +4,7 @@
 
 type GptPrompt {
   createdAt: String!
+  editedResponse: String
   greWord: GreWord
   greWordId: String
   id: String!
@@ -70,6 +71,7 @@ type Mutation {
   deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   publish(draftId: String!): Post
+  updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: Json): User
 }

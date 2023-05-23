@@ -36,6 +36,7 @@ export const GptPromptObject = objectType({
     t.nonNull.string('id');
     t.nonNull.string('input');
     t.nonNull.string('response');
+    t.string('editedResponse');
 
     t.field('greWord', {
       type: 'GreWord',
@@ -102,6 +103,27 @@ export const GptPromptMutation = extendType({
           ...prismaArgs,
           where: {
             id: id,
+          },
+        });
+        return gptPrompt;
+      },
+    });
+    t.field('updateGptPrompt', {
+      type: 'GptPrompt',
+      args: {
+        id: nonNull(stringArg()),
+        editedResponse: stringArg(),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, editedResponse, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const gptPrompt = await ctx.db.gptPrompt.update({
+          ...prismaArgs,
+          where: {
+            id: id,
+          },
+          data: {
+            editedResponse,
           },
         });
         return gptPrompt;

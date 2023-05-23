@@ -36,9 +36,10 @@ model GreWord {
 }
 
 model GptPrompt {
-  id       String @id @default(uuid())
-  input    String
-  response String
+  id             String  @id @default(uuid())
+  input          String
+  response       String
+  editedResponse String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

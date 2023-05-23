@@ -57,6 +57,7 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   GptPrompt: { // root type
+    editedResponse?: string | null; // String
     greWordId?: string | null; // String
     id: string; // String!
     input: string; // String!
@@ -116,6 +117,7 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 export interface NexusGenFieldTypes {
   GptPrompt: { // field return type
     createdAt: string; // String!
+    editedResponse: string | null; // String
     greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     greWordId: string | null; // String
     id: string; // String!
@@ -161,6 +163,7 @@ export interface NexusGenFieldTypes {
     deleteGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     deleteGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     publish: NexusGenRootTypes['Post'] | null; // Post
+    updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -204,6 +207,7 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   GptPrompt: { // field return type name
     createdAt: 'String'
+    editedResponse: 'String'
     greWord: 'GreWord'
     greWordId: 'String'
     id: 'String'
@@ -249,6 +253,7 @@ export interface NexusGenFieldTypeNames {
     deleteGreWord: 'GreWord'
     deleteGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     publish: 'Post'
+    updateGptPrompt: 'GptPrompt'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updateUser: 'User'
   }
@@ -320,6 +325,10 @@ export interface NexusGenArgTypes {
     }
     publish: { // args
       draftId: string; // String!
+    }
+    updateGptPrompt: { // args
+      editedResponse?: string | null; // String
+      id: string; // String!
     }
     updateGreWordSearchPromptInput: { // args
       id: string; // String!
