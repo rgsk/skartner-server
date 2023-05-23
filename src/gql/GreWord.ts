@@ -88,7 +88,7 @@ export const GreWordQuery = extendType({
         const greWords = await ctx.db.greWord.findMany({
           ...prismaArgs,
           orderBy: {
-            createdAt: 'asc',
+            updatedAt: 'desc',
           },
         });
         return greWords;
@@ -152,6 +152,7 @@ export const GreWordMutation = extendType({
                 userId: userId,
               },
             },
+            updatedAt: new Date(),
           },
         });
         return greWord;
