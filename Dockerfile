@@ -13,7 +13,7 @@ RUN yarn
 COPY ./ ./
 
 ARG LOCAL_IP
-ENV LOCAL_IP=${LOCAL_IP:?error}
+ENV LOCAL_IP=${LOCAL_IP}
 
 RUN yarn init:prisma
 RUN yarn build
