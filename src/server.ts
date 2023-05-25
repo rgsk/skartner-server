@@ -8,8 +8,7 @@ export const server = new ApolloServer({
   context,
   cache: 'bounded',
   cors: {
-    origin: 'https://skartner-web.vercel.app', // Replace with the allowed origin(s)
-    credentials: true, // Set to true if you're using cookies or authentication headers
+    origin: '*', // Replace with the allowed origin(s)
   },
   // @ts-ignore
   // plugins: [BASIC_LOGGING],
