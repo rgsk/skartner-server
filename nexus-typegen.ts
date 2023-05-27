@@ -409,6 +409,7 @@ export interface NexusGenArgTypes {
     updateGreWord: { // args
       greWordTagName?: string | null; // String
       id: string; // String!
+      status?: string | null; // String
     }
     updateGreWordSearchPromptInput: { // args
       id: string; // String!

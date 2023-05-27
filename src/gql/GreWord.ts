@@ -196,9 +196,10 @@ export const GreWordMutation = extendType({
       args: {
         id: nonNull(stringArg()),
         greWordTagName: stringArg(),
+        status: stringArg(),
       },
       async resolve(root, args, ctx, info) {
-        const { id, greWordTagName, ...restArgs } = args;
+        const { id, status, greWordTagName, ...restArgs } = args;
         const prismaArgs = parseGraphQLQuery(info, restArgs);
         const greWord = await ctx.db.greWord.update({
           ...prismaArgs,
@@ -217,6 +218,7 @@ export const GreWordMutation = extendType({
               : {
                   greWordTag: { disconnect: true },
                 }),
+            status,
           },
         });
         return greWord;
