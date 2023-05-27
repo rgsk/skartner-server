@@ -55,6 +55,9 @@ export const GptPromptObject = objectType({
       type: 'User',
     });
     t.string('userId');
+    t.nonNull.field('meta', {
+      type: 'Json',
+    });
     addDateFieldsDefinitions(t);
   },
 });

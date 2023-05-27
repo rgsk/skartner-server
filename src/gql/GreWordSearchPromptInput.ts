@@ -26,6 +26,9 @@ export const GreWordSearchPromptInputObject = objectType({
       },
     }),
       addDateFieldsDefinitions(t);
+    t.nonNull.field('meta', {
+      type: 'Json',
+    });
   },
 });
 

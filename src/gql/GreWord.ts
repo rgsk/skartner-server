@@ -63,6 +63,13 @@ export const GreWordObject = objectType({
     t.nonNull.field('status', {
       type: 'GreWordStatus',
     });
+    t.nonNull.field('meta', {
+      type: 'Json',
+    });
+    t.string('greWordTagId');
+    t.field('greWordTag', {
+      type: 'GreWordTag',
+    });
   },
 });
 

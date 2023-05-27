@@ -17,7 +17,7 @@ export const User = objectType({
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('email');
-    t.field('meta', {
+    t.nonNull.field('meta', {
       type: 'Json',
     });
     t.nonNull.list.field('greWordSearchPromptInputs', {
@@ -36,6 +36,12 @@ export const User = objectType({
       type: nonNull('GptPrompt'),
       resolve(user: any) {
         return user.gptPrompts;
+      },
+    });
+    t.nonNull.list.nonNull.field('greWordTags', {
+      type: 'GreWordTag',
+      resolve(user: any) {
+        return user.greWordTags;
       },
     });
     addDateFieldsDefinitions(t);

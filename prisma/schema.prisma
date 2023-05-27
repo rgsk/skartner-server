@@ -35,11 +35,15 @@ model GreWord {
   status     GreWordStatus @default(STARTED_LEARNING)
   gptPrompts GptPrompt[]
 
+  meta      Json     @default("{}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
+
+  greWordTag   GreWordTag? @relation(fields: [greWordTagId], references: [id])
+  greWordTagId String?
 
   @@unique([spelling, userId])
   @@map("GreWords")
@@ -51,6 +55,7 @@ model GptPrompt {
   response       String
   editedResponse String?
 
+  meta      Json     @default("{}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -63,17 +68,34 @@ model GptPrompt {
   @@map("GptPrompts")
 }
 
+model GreWordTag {
+  id   String @id @default(uuid())
+  name String @unique
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  greWords GreWord[]
+
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("GreWordTags")
+}
+
 model User {
   id                        String                     @id @default(uuid())
   email                     String                     @unique
   greWordSearchPromptInputs GreWordSearchPromptInput[]
 
-  meta Json @default("{}")
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  greWords   GreWord[]
-  gptPrompts GptPrompt[]
+  greWords    GreWord[]
+  gptPrompts  GptPrompt[]
+  greWordTags GreWordTag[]
 
   @@map("Users")
 }
@@ -85,6 +107,7 @@ model GreWordSearchPromptInput {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
+  meta      Json     @default("{}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

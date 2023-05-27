@@ -16,6 +16,7 @@ type GptPrompt {
   greWordId: String
   id: String!
   input: String!
+  meta: Json!
   response: String!
   updatedAt: String!
   user: User
@@ -29,7 +30,10 @@ type GreConfiguration {
 type GreWord {
   createdAt: String!
   gptPrompts: [GptPrompt!]!
+  greWordTag: GreWordTag
+  greWordTagId: String
   id: String!
+  meta: Json!
   spelling: String!
   status: GreWordStatus!
   updatedAt: String!
@@ -40,6 +44,7 @@ type GreWord {
 type GreWordSearchPromptInput {
   createdAt: String!
   id: String!
+  meta: Json!
   text: String!
   updatedAt: String!
   user: User!
@@ -59,6 +64,17 @@ enum GreWordStatus {
   MEMORY_MODE
   STARTED_LEARNING
   STILL_LEARNING
+}
+
+type GreWordTag {
+  createdAt: String!
+  greWords: [GreWord!]!
+  id: String!
+  meta: Json!
+  name: String!
+  updatedAt: String!
+  user: User!
+  userId: String!
 }
 
 input GreWordWhereInput {
@@ -109,6 +125,7 @@ type Query {
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
+  greWordTags: [GreWordTag!]!
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: helloWorld!
@@ -137,9 +154,10 @@ type User {
   email: String!
   gptPrompts: [GptPrompt!]!
   greWordSearchPromptInputs: [GreWordSearchPromptInput!]!
+  greWordTags: [GreWordTag!]!
   greWords: [GreWord!]!
   id: String!
-  meta: Json
+  meta: Json!
   updatedAt: String!
 }
 
