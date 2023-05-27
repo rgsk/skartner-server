@@ -87,6 +87,9 @@ const GreWordWhereInput = inputObjectType({
     t.field('userId', {
       type: 'StringFilter',
     });
+    t.field('greWordTagId', {
+      type: 'StringFilter',
+    });
     t.field('status', {
       type: 'EnumGreWordStatusFilter',
     });

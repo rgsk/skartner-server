@@ -25,7 +25,13 @@ export interface NexusGenInputs {
     text?: NexusGenInputs['StringFilter'] | null; // StringFilter
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  GreWordTagWhereInput: { // input type
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    name?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   GreWordWhereInput: { // input type
+    greWordTagId?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     spelling?: NexusGenInputs['StringFilter'] | null; // StringFilter
     status?: NexusGenInputs['EnumGreWordStatusFilter'] | null; // EnumGreWordStatusFilter
@@ -409,6 +415,11 @@ export interface NexusGenArgTypes {
       skip?: number | null; // Int
       take?: number | null; // Int
       where?: NexusGenInputs['GreWordSearchPromptInputWhereInput'] | null; // GreWordSearchPromptInputWhereInput
+    }
+    greWordTags: { // args
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['GreWordTagWhereInput'] | null; // GreWordTagWhereInput
     }
     greWords: { // args
       skip?: number | null; // Int

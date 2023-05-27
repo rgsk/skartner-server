@@ -1,7 +1,10 @@
 import { Prisma } from '@prisma/client';
-import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
+import {
+  addDateFieldsDefinitions,
+  findManyGraphqlArgs,
+} from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, objectType } from 'nexus';
+import { extendType, inputObjectType, objectType } from 'nexus';
 
 export const GreWordTagObject = objectType({
   name: 'GreWordTag',
@@ -29,12 +32,30 @@ export const GreWordTagObject = objectType({
   },
 });
 
+export const GreWordTagWhereInput = inputObjectType({
+  name: 'GreWordTagWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: 'StringFilter',
+    });
+    t.field('name', {
+      type: 'StringFilter',
+    });
+    t.field('userId', {
+      type: 'StringFilter',
+    });
+  },
+});
+
 export const GreWordTagQuery = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.list.nonNull.field('greWordTags', {
       type: 'GreWordTag',
-      args: {},
+      args: {
+        ...findManyGraphqlArgs,
+        where: 'GreWordTagWhereInput',
+      },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordTagFindManyArgs = parseGraphQLQuery(
           info,

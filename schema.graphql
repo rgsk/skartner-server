@@ -77,7 +77,14 @@ type GreWordTag {
   userId: String!
 }
 
+input GreWordTagWhereInput {
+  id: StringFilter
+  name: StringFilter
+  userId: StringFilter
+}
+
 input GreWordWhereInput {
+  greWordTagId: StringFilter
   id: StringFilter
   spelling: StringFilter
   status: EnumGreWordStatusFilter
@@ -125,7 +132,7 @@ type Query {
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
-  greWordTags: [GreWordTag!]!
+  greWordTags(skip: Int, take: Int, where: GreWordTagWhereInput): [GreWordTag!]!
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: helloWorld!
