@@ -15,6 +15,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import { getEnumFilter } from './Types';
 
 function createGptPromptsLoader(ctx: Context) {
   return new DataLoader<string, GptPrompt[]>(
@@ -65,6 +66,8 @@ export const GreWordObject = objectType({
   },
 });
 
+export const EnumGreWordStatusFilter = getEnumFilter('GreWordStatus');
+
 const GreWordWhereInput = inputObjectType({
   name: 'GreWordWhereInput',
   definition(t) {
@@ -76,6 +79,9 @@ const GreWordWhereInput = inputObjectType({
     });
     t.field('userId', {
       type: 'StringFilter',
+    });
+    t.field('status', {
+      type: 'EnumGreWordStatusFilter',
     });
   },
 });

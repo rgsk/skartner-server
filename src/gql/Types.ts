@@ -1,5 +1,6 @@
 import { Kind } from 'graphql';
 import { inputObjectType, scalarType } from 'nexus';
+import { NexusGenEnums } from '../../nexus-typegen';
 
 /*
     contains, 
@@ -52,3 +53,19 @@ export const Json = scalarType({
     return null;
   },
 });
+
+export const getEnumFilter = (type: keyof NexusGenEnums) => {
+  return inputObjectType({
+    name: `Enum${type}Filter`,
+    definition(t) {
+      t.field('equals', { type: type });
+      t.list.nonNull.field('in', {
+        type: type,
+      });
+      t.list.nonNull.field('notIn', {
+        type: type,
+      });
+      t.field('not', { type: type });
+    },
+  });
+};

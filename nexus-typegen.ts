@@ -14,6 +14,12 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  EnumGreWordStatusFilter: { // input type
+    equals?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
+    in?: NexusGenEnums['GreWordStatus'][] | null; // [GreWordStatus!]
+    not?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
+    notIn?: NexusGenEnums['GreWordStatus'][] | null; // [GreWordStatus!]
+  }
   GreWordSearchPromptInputWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     text?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -22,6 +28,7 @@ export interface NexusGenInputs {
   GreWordWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     spelling?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    status?: NexusGenInputs['EnumGreWordStatusFilter'] | null; // EnumGreWordStatusFilter
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
   StringFilter: { // input type

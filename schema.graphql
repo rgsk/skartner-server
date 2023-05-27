@@ -2,6 +2,13 @@
 ### Do not make changes to this file directly
 
 
+input EnumGreWordStatusFilter {
+  equals: GreWordStatus
+  in: [GreWordStatus!]
+  not: GreWordStatus
+  notIn: [GreWordStatus!]
+}
+
 type GptPrompt {
   createdAt: String!
   editedResponse: String
@@ -57,6 +64,7 @@ enum GreWordStatus {
 input GreWordWhereInput {
   id: StringFilter
   spelling: StringFilter
+  status: EnumGreWordStatusFilter
   userId: StringFilter
 }
 

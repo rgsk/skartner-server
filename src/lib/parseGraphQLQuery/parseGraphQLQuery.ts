@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import fileLogger from 'lib/fileLogger';
+
 function parseFieldNode(fieldNode) {
   if (fieldNode.selectionSet) {
     const nestedFieldNodes = fieldNode.selectionSet.selections;
@@ -26,6 +28,7 @@ function parseFieldNode(fieldNode) {
 function parseGraphQLQuery(info, args?) {
   const parseRes = parseFieldNode(info.fieldNodes[0]);
   const data: any = { ...args, ...parseRes };
+  fileLogger.logToJsFile(data);
   // return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };
   return data;
 }
