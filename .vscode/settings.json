@@ -3,7 +3,7 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true,
-    "source.fixAll": true
+    "source.fixAll": false
   },
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
