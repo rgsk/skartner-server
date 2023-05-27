@@ -20,9 +20,19 @@ model Post {
   @@map("Posts")
 }
 
+enum GreWordStatus {
+  STARTED_LEARNING
+  STILL_LEARNING
+  ALMOST_LEARNT
+  FINISHED_LEARNING
+  MEMORY_MODE
+  MASTERED
+}
+
 model GreWord {
-  id         String      @id @default(uuid())
+  id         String        @id @default(uuid())
   spelling   String
+  status     GreWordStatus @default(STARTED_LEARNING)
   gptPrompts GptPrompt[]
 
   createdAt DateTime @default(now())

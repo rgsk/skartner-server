@@ -1,4 +1,4 @@
-import { GptPrompt, Prisma } from '@prisma/client';
+import { GptPrompt, GreWordStatus, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
@@ -8,6 +8,7 @@ import {
 } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
+  enumType,
   extendType,
   inputObjectType,
   nonNull,
@@ -34,6 +35,11 @@ function createGptPromptsLoader(ctx: Context) {
 
 const grePromptsLoader = createGptPromptsLoader(context);
 
+export const GreWordStatusEnum = enumType({
+  name: 'GreWordStatus',
+  members: Object.values(GreWordStatus),
+});
+
 export const GreWordObject = objectType({
   name: 'GreWord',
   definition(t) {
@@ -53,6 +59,9 @@ export const GreWordObject = objectType({
       type: 'User',
     });
     t.string('userId');
+    t.nonNull.field('status', {
+      type: 'GreWordStatus',
+    });
   },
 });
 

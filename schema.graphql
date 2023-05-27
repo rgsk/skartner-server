@@ -24,6 +24,7 @@ type GreWord {
   gptPrompts: [GptPrompt!]!
   id: String!
   spelling: String!
+  status: GreWordStatus!
   updatedAt: String!
   user: User
   userId: String
@@ -42,6 +43,15 @@ input GreWordSearchPromptInputWhereInput {
   id: StringFilter
   text: StringFilter
   userId: StringFilter
+}
+
+enum GreWordStatus {
+  ALMOST_LEARNT
+  FINISHED_LEARNING
+  MASTERED
+  MEMORY_MODE
+  STARTED_LEARNING
+  STILL_LEARNING
 }
 
 input GreWordWhereInput {

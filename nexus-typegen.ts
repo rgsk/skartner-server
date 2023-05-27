@@ -44,6 +44,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  GreWordStatus: "ALMOST_LEARNT" | "FINISHED_LEARNING" | "MASTERED" | "MEMORY_MODE" | "STARTED_LEARNING" | "STILL_LEARNING"
 }
 
 export interface NexusGenScalars {
@@ -71,6 +72,7 @@ export interface NexusGenObjects {
   GreWord: { // root type
     id: string; // String!
     spelling: string; // String!
+    status: NexusGenEnums['GreWordStatus']; // GreWordStatus!
     user?: NexusGenRootTypes['User'] | null; // User
     userId?: string | null; // String
   }
@@ -112,7 +114,7 @@ export interface NexusGenUnions {
 
 export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
   GptPrompt: { // field return type
@@ -135,6 +137,7 @@ export interface NexusGenFieldTypes {
     gptPrompts: NexusGenRootTypes['GptPrompt'][]; // [GptPrompt!]!
     id: string; // String!
     spelling: string; // String!
+    status: NexusGenEnums['GreWordStatus']; // GreWordStatus!
     updatedAt: string; // String!
     user: NexusGenRootTypes['User'] | null; // User
     userId: string | null; // String
@@ -225,6 +228,7 @@ export interface NexusGenFieldTypeNames {
     gptPrompts: 'GptPrompt'
     id: 'String'
     spelling: 'String'
+    status: 'GreWordStatus'
     updatedAt: 'String'
     user: 'User'
     userId: 'String'
@@ -383,7 +387,7 @@ export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = keyof NexusGenInputs;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 
