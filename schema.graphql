@@ -115,6 +115,7 @@ type Mutation {
   deleteGreWordTag(name: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
+  updateGreWord(greWordTagName: String, id: String!): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: Json): User
 }

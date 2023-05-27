@@ -208,6 +208,7 @@ export interface NexusGenFieldTypes {
     deleteGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     publish: NexusGenRootTypes['Post'] | null; // Post
     updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
+    updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -318,6 +319,7 @@ export interface NexusGenFieldTypeNames {
     deleteGreWordTag: 'GreWordTag'
     publish: 'Post'
     updateGptPrompt: 'GptPrompt'
+    updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updateUser: 'User'
   }
@@ -402,6 +404,10 @@ export interface NexusGenArgTypes {
     }
     updateGptPrompt: { // args
       editedResponse?: string | null; // String
+      id: string; // String!
+    }
+    updateGreWord: { // args
+      greWordTagName?: string | null; // String
       id: string; // String!
     }
     updateGreWordSearchPromptInput: { // args

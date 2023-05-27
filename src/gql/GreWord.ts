@@ -191,6 +191,37 @@ export const GreWordMutation = extendType({
         return greWord;
       },
     });
+    t.field('updateGreWord', {
+      type: 'GreWord',
+      args: {
+        id: nonNull(stringArg()),
+        greWordTagName: stringArg(),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, greWordTagName, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const greWord = await ctx.db.greWord.update({
+          ...prismaArgs,
+          where: {
+            id: id,
+          },
+          data: {
+            ...(greWordTagName
+              ? {
+                  greWordTag: {
+                    connect: {
+                      name: greWordTagName,
+                    },
+                  },
+                }
+              : {
+                  greWordTag: { disconnect: true },
+                }),
+          },
+        });
+        return greWord;
+      },
+    });
     t.field('deleteGreWord', {
       type: 'GreWord',
       args: {
