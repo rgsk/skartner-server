@@ -105,12 +105,14 @@ type MetaFields_User {
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  createGreWord(promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord!
+  createGreWord(greWordTagId: String, promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord!
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
+  createGreWordTag(name: String!, userId: String!): GreWordTag!
   createUser(email: String!, meta: Json): User
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
+  deleteGreWordTag(name: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput

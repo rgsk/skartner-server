@@ -200,10 +200,12 @@ export interface NexusGenFieldTypes {
     createDraft: NexusGenRootTypes['Post'] | null; // Post
     createGreWord: NexusGenRootTypes['GreWord']; // GreWord!
     createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput']; // GreWordSearchPromptInput!
+    createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     createUser: NexusGenRootTypes['User'] | null; // User
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     deleteGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     deleteGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
+    deleteGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     publish: NexusGenRootTypes['Post'] | null; // Post
     updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
@@ -308,10 +310,12 @@ export interface NexusGenFieldTypeNames {
     createDraft: 'Post'
     createGreWord: 'GreWord'
     createGreWordSearchPromptInput: 'GreWordSearchPromptInput'
+    createGreWordTag: 'GreWordTag'
     createUser: 'User'
     deleteGptPrompt: 'GptPrompt'
     deleteGreWord: 'GreWord'
     deleteGreWordSearchPromptInput: 'GreWordSearchPromptInput'
+    deleteGreWordTag: 'GreWordTag'
     publish: 'Post'
     updateGptPrompt: 'GptPrompt'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
@@ -363,6 +367,7 @@ export interface NexusGenArgTypes {
       title: string; // String!
     }
     createGreWord: { // args
+      greWordTagId?: string | null; // String
       promptInput: string; // String!
       promptResponse: string; // String!
       spelling: string; // String!
@@ -370,6 +375,10 @@ export interface NexusGenArgTypes {
     }
     createGreWordSearchPromptInput: { // args
       text: string; // String!
+      userId: string; // String!
+    }
+    createGreWordTag: { // args
+      name: string; // String!
       userId: string; // String!
     }
     createUser: { // args
@@ -384,6 +393,9 @@ export interface NexusGenArgTypes {
     }
     deleteGreWordSearchPromptInput: { // args
       id: string; // String!
+    }
+    deleteGreWordTag: { // args
+      name: string; // String!
     }
     publish: { // args
       draftId: string; // String!

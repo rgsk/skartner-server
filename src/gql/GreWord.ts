@@ -145,10 +145,17 @@ export const GreWordMutation = extendType({
         promptInput: nonNull(stringArg()),
         promptResponse: nonNull(stringArg()),
         userId: nonNull(stringArg()),
+        greWordTagId: stringArg(),
       },
       async resolve(root, args, ctx, info) {
-        const { spelling, promptInput, promptResponse, userId, ...restArgs } =
-          args;
+        const {
+          spelling,
+          promptInput,
+          promptResponse,
+          userId,
+          greWordTagId,
+          ...restArgs
+        } = args;
         const prismaArgs = parseGraphQLQuery(info, restArgs);
         const greWord = await ctx.db.greWord.upsert({
           ...prismaArgs,
@@ -162,6 +169,7 @@ export const GreWordMutation = extendType({
                 userId: userId,
               },
             },
+            greWordTagId: greWordTagId,
           },
           where: {
             spelling_userId: {

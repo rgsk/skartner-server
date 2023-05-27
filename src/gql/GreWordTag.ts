@@ -4,7 +4,13 @@ import {
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, inputObjectType, objectType } from 'nexus';
+import {
+  extendType,
+  inputObjectType,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 export const GreWordTagObject = objectType({
   name: 'GreWordTag',
@@ -65,6 +71,48 @@ export const GreWordTagQuery = extendType({
           ...prismaArgs,
         });
         return greWordTags;
+      },
+    });
+  },
+});
+
+export const GreWordTagMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('createGreWordTag', {
+      type: nonNull('GreWordTag'),
+      args: {
+        name: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { name, userId, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const greWordTag = await ctx.db.greWordTag.create({
+          ...prismaArgs,
+          data: {
+            name: name,
+            userId,
+          },
+        });
+        return greWordTag;
+      },
+    });
+    t.field('deleteGreWordTag', {
+      type: nonNull('GreWordTag'),
+      args: {
+        name: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { name, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const greWordTag = await ctx.db.greWordTag.delete({
+          ...prismaArgs,
+          where: {
+            name: name,
+          },
+        });
+        return greWordTag;
       },
     });
   },
