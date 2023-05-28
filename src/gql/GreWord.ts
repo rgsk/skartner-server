@@ -215,10 +215,12 @@ export const GreWordMutation = extendType({
                     },
                   },
                 }
-              : {
+              : greWordTagName === null
+              ? {
                   greWordTag: { disconnect: true },
-                }),
-            status,
+                }
+              : {}),
+            status: status ?? undefined,
           },
         });
         return greWord;
