@@ -30,8 +30,7 @@ type GreConfiguration {
 type GreWord {
   createdAt: String!
   gptPrompts: [GptPrompt!]!
-  greWordTag: GreWordTag
-  greWordTagId: String
+  greWordTags: [GreWordTag!]
   id: String!
   meta: Json!
   spelling: String!
@@ -77,14 +76,25 @@ type GreWordTag {
   userId: String!
 }
 
+input GreWordTagListRelationFilter {
+  every: GreWordTagWhereInput
+  none: GreWordTagWhereInput
+  some: GreWordTagWhereInput
+}
+
 input GreWordTagWhereInput {
   id: StringFilter
   name: StringFilter
   userId: StringFilter
 }
 
+input GreWordTagWhereUniqueInput {
+  id: String
+  name: String
+}
+
 input GreWordWhereInput {
-  greWordTagId: StringFilter
+  greWordTags: GreWordTagListRelationFilter
   id: StringFilter
   spelling: StringFilter
   status: EnumGreWordStatusFilter
@@ -105,7 +115,7 @@ type MetaFields_User {
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  createGreWord(greWordTagId: String, promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord!
+  createGreWord(greWordTags: [GreWordTagWhereUniqueInput], promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord!
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createUser(email: String!, meta: Json): User
@@ -115,7 +125,7 @@ type Mutation {
   deleteGreWordTag(name: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
-  updateGreWord(greWordTagName: String, id: String!, status: String): GreWord
+  updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: String): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: Json): User
 }

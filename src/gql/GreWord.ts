@@ -11,6 +11,7 @@ import {
   enumType,
   extendType,
   inputObjectType,
+  list,
   nonNull,
   objectType,
   stringArg,
@@ -66,8 +67,7 @@ export const GreWordObject = objectType({
     t.nonNull.field('meta', {
       type: 'Json',
     });
-    t.string('greWordTagId');
-    t.field('greWordTag', {
+    t.list.nonNull.field('greWordTags', {
       type: 'GreWordTag',
     });
   },
@@ -87,11 +87,26 @@ const GreWordWhereInput = inputObjectType({
     t.field('userId', {
       type: 'StringFilter',
     });
-    t.field('greWordTagId', {
-      type: 'StringFilter',
+    t.field('greWordTags', {
+      type: 'GreWordTagListRelationFilter',
     });
     t.field('status', {
       type: 'EnumGreWordStatusFilter',
+    });
+  },
+});
+
+export const GreWordTagListRelationFilter = inputObjectType({
+  name: `GreWordTagListRelationFilter`,
+  definition(t) {
+    t.field('every', {
+      type: 'GreWordTagWhereInput',
+    });
+    t.field('some', {
+      type: 'GreWordTagWhereInput',
+    });
+    t.field('none', {
+      type: 'GreWordTagWhereInput',
     });
   },
 });
@@ -134,7 +149,13 @@ export const GreWordQuery = extendType({
     });
   },
 });
-
+export const GreWordTagWhereUniqueInput = inputObjectType({
+  name: 'GreWordTagWhereUniqueInput',
+  definition(t) {
+    t.string('id');
+    t.string('name');
+  },
+});
 export const GreWordMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -145,7 +166,7 @@ export const GreWordMutation = extendType({
         promptInput: nonNull(stringArg()),
         promptResponse: nonNull(stringArg()),
         userId: nonNull(stringArg()),
-        greWordTagId: stringArg(),
+        greWordTags: list('GreWordTagWhereUniqueInput'),
       },
       async resolve(root, args, ctx, info) {
         const {
@@ -153,7 +174,7 @@ export const GreWordMutation = extendType({
           promptInput,
           promptResponse,
           userId,
-          greWordTagId,
+          greWordTags,
           ...restArgs
         } = args;
         const prismaArgs = parseGraphQLQuery(info, restArgs);
@@ -169,7 +190,9 @@ export const GreWordMutation = extendType({
                 userId: userId,
               },
             },
-            greWordTagId: greWordTagId,
+            greWordTags: {
+              connect: greWordTags,
+            },
           },
           where: {
             spelling_userId: {
@@ -195,11 +218,11 @@ export const GreWordMutation = extendType({
       type: 'GreWord',
       args: {
         id: nonNull(stringArg()),
-        greWordTagName: stringArg(),
         status: stringArg(),
+        greWordTags: list('GreWordTagWhereUniqueInput'),
       },
       async resolve(root, args, ctx, info) {
-        const { id, status, greWordTagName, ...restArgs } = args;
+        const { id, status, greWordTags, ...restArgs } = args;
         const prismaArgs = parseGraphQLQuery(info, restArgs);
         const greWord = await ctx.db.greWord.update({
           ...prismaArgs,
@@ -207,20 +230,10 @@ export const GreWordMutation = extendType({
             id: id,
           },
           data: {
-            ...(greWordTagName
-              ? {
-                  greWordTag: {
-                    connect: {
-                      name: greWordTagName,
-                    },
-                  },
-                }
-              : greWordTagName === null
-              ? {
-                  greWordTag: { disconnect: true },
-                }
-              : {}),
             status: status ?? undefined,
+            greWordTags: {
+              set: greWordTags,
+            },
           },
         });
         return greWord;

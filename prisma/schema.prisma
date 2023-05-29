@@ -42,8 +42,7 @@ model GreWord {
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
 
-  greWordTag   GreWordTag? @relation(fields: [greWordTagId], references: [id])
-  greWordTagId String?
+  greWordTags GreWordTag[]
 
   @@unique([spelling, userId])
   @@map("GreWords")
