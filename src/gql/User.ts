@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
@@ -12,13 +12,33 @@ import {
   stringArg,
 } from 'nexus';
 
-export const User = objectType({
+export const UserMetaParsedJsonValue = objectType({
+  name: 'UserMetaParsedJsonValue',
+  definition(t) {
+    t.string('defaultGreWordSearchPromptInput');
+    t.boolean('showDefaultGreWordSearchPromptInputs');
+  },
+});
+
+export const UserMetaParsedJsonValueInput = inputObjectType({
+  name: 'UserMetaParsedJsonValueInput',
+  definition(t) {
+    t.string('defaultGreWordSearchPromptInput');
+    t.boolean('showDefaultGreWordSearchPromptInputs');
+  },
+});
+
+export const UserObject = objectType({
   name: 'User',
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('email');
     t.nonNull.field('meta', {
-      type: 'Json',
+      type: 'UserMetaParsedJsonValue',
+      resolve(_user: any) {
+        const user: User = _user;
+        return user.meta as any;
+      },
     });
     t.nonNull.list.field('greWordSearchPromptInputs', {
       type: nonNull('GreWordSearchPromptInput'),
@@ -88,7 +108,7 @@ export const UserMutation = extendType({
       type: 'User',
       args: {
         email: nonNull(stringArg()),
-        meta: 'Json',
+        meta: 'UserMetaParsedJsonValueInput',
       },
       async resolve(root, args, ctx, info) {
         const { email, meta, ...restArgs } = args;
@@ -108,7 +128,7 @@ export const UserMutation = extendType({
       args: {
         id: stringArg(),
         email: stringArg(),
-        meta: 'Json',
+        meta: 'UserMetaParsedJsonValueInput',
       },
       async resolve(root, args, ctx, info) {
         const { id, email, meta, ...restArgs } = args;

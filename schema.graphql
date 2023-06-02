@@ -104,21 +104,12 @@ input GreWordWhereInput {
 """The `Json` scalar type represents JSON objects."""
 scalar Json
 
-type MetaFields {
-  user: MetaFields_User!
-}
-
-type MetaFields_User {
-  defaultGreWordSearchPromptInput: String!
-  showDefaultGreWordSearchPromptInputs: String!
-}
-
 type Mutation {
   createDraft(body: String!, title: String!): Post
   createGreWord(greWordTags: [GreWordTagWhereUniqueInput], promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord!
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
-  createUser(email: String!, meta: Json): User
+  createUser(email: String!, meta: UserMetaParsedJsonValueInput): User
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
@@ -127,7 +118,7 @@ type Mutation {
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: String): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput
-  updateUser(email: String, id: String, meta: Json): User
+  updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
 
 type Post {
@@ -149,7 +140,6 @@ type Query {
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: helloWorld!
-  metaFields: MetaFields!
   posts: [Post]
   sendSinglePrompt(input: String!): String
   users(skip: Int, take: Int, where: UserWhereInput): [User!]!
@@ -177,8 +167,18 @@ type User {
   greWordTags: [GreWordTag!]!
   greWords: [GreWord!]!
   id: String!
-  meta: Json!
+  meta: UserMetaParsedJsonValue!
   updatedAt: String!
+}
+
+type UserMetaParsedJsonValue {
+  defaultGreWordSearchPromptInput: String
+  showDefaultGreWordSearchPromptInputs: Boolean
+}
+
+input UserMetaParsedJsonValueInput {
+  defaultGreWordSearchPromptInput: String
+  showDefaultGreWordSearchPromptInputs: Boolean
 }
 
 input UserWhereInput {

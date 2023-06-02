@@ -59,6 +59,10 @@ export interface NexusGenInputs {
     notIn?: string[] | null; // [String!]
     startsWith?: string | null; // String
   }
+  UserMetaParsedJsonValueInput: { // input type
+    defaultGreWordSearchPromptInput?: string | null; // String
+    showDefaultGreWordSearchPromptInputs?: boolean | null; // Boolean
+  }
   UserWhereInput: { // input type
     email?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -113,13 +117,6 @@ export interface NexusGenObjects {
     name: string; // String!
     userId: string; // String!
   }
-  MetaFields: { // root type
-    user: NexusGenRootTypes['MetaFields_User']; // MetaFields_User!
-  }
-  MetaFields_User: { // root type
-    defaultGreWordSearchPromptInput: string; // String!
-    showDefaultGreWordSearchPromptInputs: string; // String!
-  }
   Mutation: {};
   Post: { // root type
     body?: string | null; // String
@@ -131,7 +128,10 @@ export interface NexusGenObjects {
   User: { // root type
     email: string; // String!
     id: string; // String!
-    meta: NexusGenScalars['Json']; // Json!
+  }
+  UserMetaParsedJsonValue: { // root type
+    defaultGreWordSearchPromptInput?: string | null; // String
+    showDefaultGreWordSearchPromptInputs?: boolean | null; // Boolean
   }
   helloWorld: { // root type
     message: string; // String!
@@ -196,13 +196,6 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User']; // User!
     userId: string; // String!
   }
-  MetaFields: { // field return type
-    user: NexusGenRootTypes['MetaFields_User']; // MetaFields_User!
-  }
-  MetaFields_User: { // field return type
-    defaultGreWordSearchPromptInput: string; // String!
-    showDefaultGreWordSearchPromptInputs: string; // String!
-  }
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
     createGreWord: NexusGenRootTypes['GreWord']; // GreWord!
@@ -237,7 +230,6 @@ export interface NexusGenFieldTypes {
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['helloWorld']; // helloWorld!
-    metaFields: NexusGenRootTypes['MetaFields']; // MetaFields!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
     users: NexusGenRootTypes['User'][]; // [User!]!
@@ -250,8 +242,12 @@ export interface NexusGenFieldTypes {
     greWordTags: NexusGenRootTypes['GreWordTag'][]; // [GreWordTag!]!
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     id: string; // String!
-    meta: NexusGenScalars['Json']; // Json!
+    meta: NexusGenRootTypes['UserMetaParsedJsonValue']; // UserMetaParsedJsonValue!
     updatedAt: string; // String!
+  }
+  UserMetaParsedJsonValue: { // field return type
+    defaultGreWordSearchPromptInput: string | null; // String
+    showDefaultGreWordSearchPromptInputs: boolean | null; // Boolean
   }
   helloWorld: { // field return type
     message: string; // String!
@@ -306,13 +302,6 @@ export interface NexusGenFieldTypeNames {
     user: 'User'
     userId: 'String'
   }
-  MetaFields: { // field return type name
-    user: 'MetaFields_User'
-  }
-  MetaFields_User: { // field return type name
-    defaultGreWordSearchPromptInput: 'String'
-    showDefaultGreWordSearchPromptInputs: 'String'
-  }
   Mutation: { // field return type name
     createDraft: 'Post'
     createGreWord: 'GreWord'
@@ -347,7 +336,6 @@ export interface NexusGenFieldTypeNames {
     greWords: 'GreWord'
     greWordsCount: 'Int'
     hello: 'helloWorld'
-    metaFields: 'MetaFields'
     posts: 'Post'
     sendSinglePrompt: 'String'
     users: 'User'
@@ -360,8 +348,12 @@ export interface NexusGenFieldTypeNames {
     greWordTags: 'GreWordTag'
     greWords: 'GreWord'
     id: 'String'
-    meta: 'Json'
+    meta: 'UserMetaParsedJsonValue'
     updatedAt: 'String'
+  }
+  UserMetaParsedJsonValue: { // field return type name
+    defaultGreWordSearchPromptInput: 'String'
+    showDefaultGreWordSearchPromptInputs: 'Boolean'
   }
   helloWorld: { // field return type name
     message: 'String'
@@ -391,7 +383,7 @@ export interface NexusGenArgTypes {
     }
     createUser: { // args
       email: string; // String!
-      meta?: NexusGenScalars['Json'] | null; // Json
+      meta?: NexusGenInputs['UserMetaParsedJsonValueInput'] | null; // UserMetaParsedJsonValueInput
     }
     deleteGptPrompt: { // args
       id: string; // String!
@@ -424,7 +416,7 @@ export interface NexusGenArgTypes {
     updateUser: { // args
       email?: string | null; // String
       id?: string | null; // String
-      meta?: NexusGenScalars['Json'] | null; // Json
+      meta?: NexusGenInputs['UserMetaParsedJsonValueInput'] | null; // UserMetaParsedJsonValueInput
     }
   }
   Query: {

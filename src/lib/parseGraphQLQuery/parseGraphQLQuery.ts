@@ -14,7 +14,12 @@ function parseFieldNode(fieldNode) {
       ) {
         return;
       }
-      nestedArgs[nestedFieldNode.name.value] = parseFieldNode(nestedFieldNode);
+      if (nestedFieldNode.name.value === 'meta') {
+        nestedArgs[nestedFieldNode.name.value] = true;
+      } else {
+        nestedArgs[nestedFieldNode.name.value] =
+          parseFieldNode(nestedFieldNode);
+      }
     });
 
     return {

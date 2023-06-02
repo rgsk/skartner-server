@@ -17,31 +17,6 @@ export const GeneralQuery = extendType({
         };
       },
     });
-    t.nonNull.field('metaFields', {
-      type: objectType({
-        name: 'MetaFields',
-        definition(t) {
-          t.nonNull.field('user', {
-            type: objectType({
-              name: 'MetaFields_User',
-              definition(t) {
-                t.nonNull.string('showDefaultGreWordSearchPromptInputs');
-                t.nonNull.string('defaultGreWordSearchPromptInput');
-              },
-            }),
-          });
-        },
-      }),
-      async resolve(root, args, ctx, info) {
-        return {
-          user: {
-            showDefaultGreWordSearchPromptInputs:
-              'showDefaultGreWordSearchPromptInputs',
-            defaultGreWordSearchPromptInput: 'defaultGreWordSearchPromptInput',
-          },
-        };
-      },
-    });
     t.nonNull.field('greConfiguration', {
       type: objectType({
         name: 'GreConfiguration',
