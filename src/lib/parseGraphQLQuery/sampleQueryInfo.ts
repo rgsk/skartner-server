@@ -3108,6 +3108,92 @@ export const fragmentTestingSamples = {
         cacheControl: { cacheHint: {} },
       },
     },
+    multipleSpreads: {
+      withFragment: {
+        query: `
+        fragment GreWordFields on GreWord {
+          id
+          spelling
+        }
+        fragment PartialGreWordFields on GreWord {
+          spelling
+          createdAt
+        }
+        fragment GptPromptFields on GptPrompt {
+              id
+        }
+        query {
+          greWords {
+            ...GreWordFields
+            ...PartialGreWordFields
+            gptPrompts {
+              ...GptPromptFields
+              greWord {
+                ...PartialGreWordFields
+              }
+            }
+          }
+        }
+        `,
+        transpiledQuery: `
+        query {
+          greWords {
+            id
+            spelling
+            createdAt
+            gptPrompts {
+              id
+              greWord {
+                spelling
+                createdAt
+              }
+            }
+          }
+        }
+        `,
+      },
+    },
+    spreadInsideFragment: {
+      withFragment: {
+        query: `
+            fragment PartialGreWordFields on GreWord {
+              id
+              spelling
+            }
+
+            fragment GreWordFields on GreWord {
+              ...PartialGreWordFields
+              createdAt
+            }
+
+            query {
+              greWords {
+                ...GreWordFields
+                gptPrompts {
+                  greWord {
+                    ...PartialGreWordFields
+                  }
+                }
+              }
+            }
+        `,
+        transpiledQuery: `
+        query {
+          greWords {
+            id
+            spelling
+            createdAt
+            gptPrompts {
+              greWord {
+                id
+                spelling
+              }
+            }
+          }
+        }
+        `,
+      },
+    },
   },
 };
 
