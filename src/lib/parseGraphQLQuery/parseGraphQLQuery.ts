@@ -1,24 +1,23 @@
-// @ts-nocheck
-
-import fileLogger from 'lib/fileLogger';
-
-function parseFieldNode(fieldNode) {
+function parseFieldNode(fieldNode: any, fragments: any) {
   if (fieldNode.selectionSet) {
     const nestedFieldNodes = fieldNode.selectionSet.selections;
-    const nestedArgs = {};
-
-    nestedFieldNodes.forEach((nestedFieldNode) => {
-      if (
-        nestedFieldNode.kind !== 'Field' ||
-        nestedFieldNode.name.value === '__typename'
-      ) {
-        return;
-      }
-      if (nestedFieldNode.name.value === 'meta') {
-        nestedArgs[nestedFieldNode.name.value] = true;
+    let nestedArgs: any = {};
+    nestedFieldNodes.forEach((nestedFieldNode: any) => {
+      if (nestedFieldNode.kind === 'FragmentSpread') {
+        const res = parseFieldNode(
+          fragments[nestedFieldNode.name.value],
+          fragments
+        );
+        nestedArgs = { ...nestedArgs, ...res.select };
       } else {
-        nestedArgs[nestedFieldNode.name.value] =
-          parseFieldNode(nestedFieldNode);
+        if (nestedFieldNode.name.value === 'meta') {
+          nestedArgs[nestedFieldNode.name.value] = true;
+        } else {
+          nestedArgs[nestedFieldNode.name.value] = parseFieldNode(
+            nestedFieldNode,
+            fragments
+          );
+        }
       }
     });
 
@@ -26,15 +25,13 @@ function parseFieldNode(fieldNode) {
       select: nestedArgs,
     };
   } else {
-    return true;
+    return true as any;
   }
 }
 
-function parseGraphQLQuery(info, args?) {
-  const parseRes = parseFieldNode(info.fieldNodes[0]);
+function parseGraphQLQuery(info: any, args?: any) {
+  const parseRes = parseFieldNode(info.fieldNodes[0], info.fragments);
   const data: any = { ...args, ...parseRes };
-  fileLogger.logToJsFile(data);
-  // return { where: {}, orderBy: {}, skip: 0, take: 100, select: args.select };
   return data;
 }
 export default parseGraphQLQuery;
