@@ -118,6 +118,10 @@ export interface NexusGenObjects {
     userId: string; // String!
   }
   Mutation: {};
+  Notification: { // root type
+    message: string; // String!
+    userId: string; // String!
+  }
   Post: { // root type
     body?: string | null; // String
     id: string; // String!
@@ -202,6 +206,7 @@ export interface NexusGenFieldTypes {
     createGreWord: NexusGenRootTypes['GreWord']; // GreWord!
     createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput']; // GreWordSearchPromptInput!
     createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
+    createNotification: NexusGenRootTypes['Notification']; // Notification!
     createUser: NexusGenRootTypes['User'] | null; // User
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     deleteGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
@@ -212,6 +217,10 @@ export interface NexusGenFieldTypes {
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updateUser: NexusGenRootTypes['User'] | null; // User
+  }
+  Notification: { // field return type
+    message: string; // String!
+    userId: string; // String!
   }
   Post: { // field return type
     body: string | null; // String
@@ -237,6 +246,7 @@ export interface NexusGenFieldTypes {
   }
   Subscription: { // field return type
     greWordCreated: NexusGenRootTypes['GreWord'] | null; // GreWord
+    notificationReceived: NexusGenRootTypes['Notification'] | null; // Notification
     truths: boolean | null; // Boolean
   }
   User: { // field return type
@@ -312,6 +322,7 @@ export interface NexusGenFieldTypeNames {
     createGreWord: 'GreWord'
     createGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     createGreWordTag: 'GreWordTag'
+    createNotification: 'Notification'
     createUser: 'User'
     deleteGptPrompt: 'GptPrompt'
     deleteGreWord: 'GreWord'
@@ -322,6 +333,10 @@ export interface NexusGenFieldTypeNames {
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updateUser: 'User'
+  }
+  Notification: { // field return type name
+    message: 'String'
+    userId: 'String'
   }
   Post: { // field return type name
     body: 'String'
@@ -347,6 +362,7 @@ export interface NexusGenFieldTypeNames {
   }
   Subscription: { // field return type name
     greWordCreated: 'GreWord'
+    notificationReceived: 'Notification'
     truths: 'Boolean'
   }
   User: { // field return type name
@@ -388,6 +404,10 @@ export interface NexusGenArgTypes {
     }
     createGreWordTag: { // args
       name: string; // String!
+      userId: string; // String!
+    }
+    createNotification: { // args
+      message: string; // String!
       userId: string; // String!
     }
     createUser: { // args
@@ -466,6 +486,9 @@ export interface NexusGenArgTypes {
   }
   Subscription: {
     greWordCreated: { // args
+      userId: string; // String!
+    }
+    notificationReceived: { // args
       userId: string; // String!
     }
   }

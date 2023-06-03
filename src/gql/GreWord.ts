@@ -16,7 +16,6 @@ import {
   nonNull,
   objectType,
   stringArg,
-  subscriptionType,
 } from 'nexus';
 import { getEnumFilter } from './Types';
 
@@ -37,7 +36,8 @@ function createGptPromptsLoader(ctx: Context) {
   );
 }
 
-export const GreWordSubscriptions = subscriptionType({
+export const GreWordSubscription = extendType({
+  type: 'Subscription',
   definition(t) {
     t.field('greWordCreated', {
       type: 'GreWord',
