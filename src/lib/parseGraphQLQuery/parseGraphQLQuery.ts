@@ -10,6 +10,9 @@ function parseFieldNode(fieldNode: any, fragments: any) {
         );
         nestedArgs = { ...nestedArgs, ...res.select };
       } else {
+        if (nestedFieldNode.name.value === '__typename') {
+          return;
+        }
         if (nestedFieldNode.name.value === 'meta') {
           nestedArgs[nestedFieldNode.name.value] = true;
         } else {
