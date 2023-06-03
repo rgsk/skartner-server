@@ -160,7 +160,8 @@ input StringFilter {
 }
 
 type Subscription {
-  greWordCreated: GreWord
+  greWordCreated(userId: String!): GreWord
+  truths: Boolean
 }
 
 type User {

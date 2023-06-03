@@ -237,6 +237,7 @@ export interface NexusGenFieldTypes {
   }
   Subscription: { // field return type
     greWordCreated: NexusGenRootTypes['GreWord'] | null; // GreWord
+    truths: boolean | null; // Boolean
   }
   User: { // field return type
     createdAt: string; // String!
@@ -346,6 +347,7 @@ export interface NexusGenFieldTypeNames {
   }
   Subscription: { // field return type name
     greWordCreated: 'GreWord'
+    truths: 'Boolean'
   }
   User: { // field return type name
     createdAt: 'String'
@@ -460,6 +462,11 @@ export interface NexusGenArgTypes {
       skip?: number | null; // Int
       take?: number | null; // Int
       where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
+    }
+  }
+  Subscription: {
+    greWordCreated: { // args
+      userId: string; // String!
     }
   }
 }

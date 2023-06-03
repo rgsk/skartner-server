@@ -1,6 +1,7 @@
 import { GptPrompt, GreWordStatus, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
+import { withFilter } from 'graphql-subscriptions';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
 import {
   addDateFieldsDefinitions,
@@ -15,6 +16,7 @@ import {
   nonNull,
   objectType,
   stringArg,
+  subscriptionType,
 } from 'nexus';
 import { getEnumFilter } from './Types';
 
@@ -34,19 +36,42 @@ function createGptPromptsLoader(ctx: Context) {
     { cache: false }
   );
 }
-export const Subscription = objectType({
-  name: 'Subscription',
+
+export const GreWordSubscriptions = subscriptionType({
   definition(t) {
-    // Define your subscription fields here
     t.field('greWordCreated', {
       type: 'GreWord',
-      subscribe: () => {
-        return context.pubsub.asyncIterator('GRE_WORD_CREATED');
+      args: {
+        userId: nonNull(stringArg()),
       },
-      resolve: (payload: any) => payload,
+      subscribe: withFilter(
+        () => {
+          return context.pubsub.asyncIterator('GRE_WORD_CREATED');
+        },
+        (payload, variables) => {
+          return payload.userId === variables.userId;
+        }
+      ),
+      resolve(eventData: any) {
+        return eventData;
+      },
+    });
+    t.boolean('truths', {
+      subscribe() {
+        return (async function* () {
+          while (true) {
+            await new Promise((res) => setTimeout(res, 1000));
+            yield Math.random() > 0.5;
+          }
+        })();
+      },
+      resolve(eventData) {
+        return eventData;
+      },
     });
   },
 });
+
 const grePromptsLoader = createGptPromptsLoader(context);
 
 export const GreWordStatusEnum = enumType({
