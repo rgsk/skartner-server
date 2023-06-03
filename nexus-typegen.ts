@@ -125,6 +125,7 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   Query: {};
+  Subscription: {};
   User: { // root type
     email: string; // String!
     id: string; // String!
@@ -234,6 +235,9 @@ export interface NexusGenFieldTypes {
     sendSinglePrompt: string | null; // String
     users: NexusGenRootTypes['User'][]; // [User!]!
   }
+  Subscription: { // field return type
+    greWordCreated: NexusGenRootTypes['GreWord'] | null; // GreWord
+  }
   User: { // field return type
     createdAt: string; // String!
     email: string; // String!
@@ -339,6 +343,9 @@ export interface NexusGenFieldTypeNames {
     posts: 'Post'
     sendSinglePrompt: 'String'
     users: 'User'
+  }
+  Subscription: { // field return type name
+    greWordCreated: 'GreWord'
   }
   User: { // field return type name
     createdAt: 'String'

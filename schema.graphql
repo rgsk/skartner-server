@@ -159,6 +159,10 @@ input StringFilter {
   startsWith: String
 }
 
+type Subscription {
+  greWordCreated: GreWord
+}
+
 type User {
   createdAt: String!
   email: String!

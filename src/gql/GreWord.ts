@@ -34,7 +34,19 @@ function createGptPromptsLoader(ctx: Context) {
     { cache: false }
   );
 }
-
+export const Subscription = objectType({
+  name: 'Subscription',
+  definition(t) {
+    // Define your subscription fields here
+    t.field('greWordCreated', {
+      type: 'GreWord',
+      subscribe: () => {
+        return context.pubsub.asyncIterator('GRE_WORD_CREATED');
+      },
+      resolve: (payload: any) => payload,
+    });
+  },
+});
 const grePromptsLoader = createGptPromptsLoader(context);
 
 export const GreWordStatusEnum = enumType({
@@ -211,6 +223,7 @@ export const GreWordMutation = extendType({
             updatedAt: new Date(),
           },
         });
+        context.pubsub.publish('GRE_WORD_CREATED', greWord);
         return greWord;
       },
     });
