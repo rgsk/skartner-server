@@ -149,6 +149,7 @@ type Query {
   posts: [Post]
   sendSinglePrompt(input: String!): String
   users(skip: Int, take: Int, where: UserWhereInput): [User!]!
+  usersCount(where: UserWhereInput): Int!
 }
 
 input StringFilter {

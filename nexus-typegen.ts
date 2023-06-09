@@ -243,6 +243,7 @@ export interface NexusGenFieldTypes {
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
     users: NexusGenRootTypes['User'][]; // [User!]!
+    usersCount: number; // Int!
   }
   Subscription: { // field return type
     greWordCreated: NexusGenRootTypes['GreWord'] | null; // GreWord
@@ -359,6 +360,7 @@ export interface NexusGenFieldTypeNames {
     posts: 'Post'
     sendSinglePrompt: 'String'
     users: 'User'
+    usersCount: 'Int'
   }
   Subscription: { // field return type name
     greWordCreated: 'GreWord'
@@ -481,6 +483,9 @@ export interface NexusGenArgTypes {
     users: { // args
       skip?: number | null; // Int
       take?: number | null; // Int
+      where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
+    }
+    usersCount: { // args
       where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     }
   }

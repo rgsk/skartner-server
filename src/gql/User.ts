@@ -98,6 +98,16 @@ export const UserQuery = extendType({
         return users;
       },
     });
+    t.nonNull.int('usersCount', {
+      args: {
+        where: UserWhereInput,
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.UserCountArgs = parseGraphQLQuery(info, args);
+        const usersCount = await ctx.db.user.count(prismaArgs);
+        return usersCount;
+      },
+    });
   },
 });
 
