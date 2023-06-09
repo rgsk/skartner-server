@@ -130,6 +130,9 @@ export const GreWordWhereInput = inputObjectType({
     t.field('status', {
       type: 'EnumGreWordStatusFilter',
     });
+    t.field('user', {
+      type: 'UserWhereInput',
+    });
   },
 });
 

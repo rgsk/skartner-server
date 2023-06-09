@@ -98,6 +98,7 @@ input GreWordWhereInput {
   id: StringFilter
   spelling: StringFilter
   status: EnumGreWordStatusFilter
+  user: UserWhereInput
   userId: StringFilter
 }
 
