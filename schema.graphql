@@ -101,6 +101,10 @@ input GreWordWhereInput {
   userId: StringFilter
 }
 
+input GreWordWhereUniqueInput {
+  id: String
+}
+
 """The `Json` scalar type represents JSON objects."""
 scalar Json
 
@@ -141,6 +145,7 @@ type Query {
   drafts: [Post]
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
+  greWord(where: GreWordWhereUniqueInput): GreWord
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
   greWordTags(skip: Int, take: Int, where: GreWordTagWhereInput): [GreWordTag!]!
   greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!

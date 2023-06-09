@@ -112,7 +112,7 @@ export const GreWordObject = objectType({
 
 export const EnumGreWordStatusFilter = getEnumFilter('GreWordStatus');
 
-const GreWordWhereInput = inputObjectType({
+export const GreWordWhereInput = inputObjectType({
   name: 'GreWordWhereInput',
   definition(t) {
     t.field('id', {
@@ -130,6 +130,13 @@ const GreWordWhereInput = inputObjectType({
     t.field('status', {
       type: 'EnumGreWordStatusFilter',
     });
+  },
+});
+
+export const GreWordWhereUniqueInput = inputObjectType({
+  name: 'GreWordWhereUniqueInput',
+  definition(t) {
+    t.string('id');
   },
 });
 
@@ -155,7 +162,7 @@ export const GreWordQuery = extendType({
       type: nonNull('GreWord'),
       args: {
         ...findManyGraphqlArgs,
-        where: GreWordWhereInput,
+        where: 'GreWordWhereInput',
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(
@@ -171,9 +178,23 @@ export const GreWordQuery = extendType({
         return greWords;
       },
     });
+    t.field('greWord', {
+      type: 'GreWord',
+      args: {
+        where: 'GreWordWhereUniqueInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.GreWordFindUniqueArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const greWord = await ctx.db.greWord.findUnique(prismaArgs);
+        return greWord;
+      },
+    });
     t.nonNull.int('greWordsCount', {
       args: {
-        where: GreWordWhereInput,
+        where: 'GreWordWhereInput',
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordCountArgs = parseGraphQLQuery(

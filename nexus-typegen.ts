@@ -46,6 +46,9 @@ export interface NexusGenInputs {
     status?: NexusGenInputs['EnumGreWordStatusFilter'] | null; // EnumGreWordStatusFilter
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  GreWordWhereUniqueInput: { // input type
+    id?: string | null; // String
+  }
   StringFilter: { // input type
     contains?: string | null; // String
     endsWith?: string | null; // String
@@ -235,6 +238,7 @@ export interface NexusGenFieldTypes {
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
     greConfiguration: NexusGenRootTypes['GreConfiguration']; // GreConfiguration!
+    greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     greWordSearchPromptInputs: NexusGenRootTypes['GreWordSearchPromptInput'][]; // [GreWordSearchPromptInput!]!
     greWordTags: NexusGenRootTypes['GreWordTag'][]; // [GreWordTag!]!
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
@@ -352,6 +356,7 @@ export interface NexusGenFieldTypeNames {
     drafts: 'Post'
     gptPrompts: 'GptPrompt'
     greConfiguration: 'GreConfiguration'
+    greWord: 'GreWord'
     greWordSearchPromptInputs: 'GreWordSearchPromptInput'
     greWordTags: 'GreWordTag'
     greWords: 'GreWord'
@@ -458,6 +463,9 @@ export interface NexusGenArgTypes {
     gptPrompts: { // args
       skip?: number | null; // Int
       take?: number | null; // Int
+    }
+    greWord: { // args
+      where?: NexusGenInputs['GreWordWhereUniqueInput'] | null; // GreWordWhereUniqueInput
     }
     greWordSearchPromptInputs: { // args
       skip?: number | null; // Int
