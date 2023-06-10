@@ -2,6 +2,12 @@ import { context } from 'context';
 import { withFilter } from 'graphql-subscriptions';
 import { Subscriptions } from 'lib/Subscriptions';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
+import pubsub from 'pubsub';
+
+type Notification = {
+  userId: string;
+  message: string;
+};
 
 export const NotificationObject = objectType({
   name: 'Notification',
@@ -47,13 +53,17 @@ export const NotificationMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { userId, message } = args;
-        const notification = {
+        const notification: Notification = {
           userId,
           message,
         };
-        ctx.pubsub.publish(Subscriptions.notificationReceived, notification);
+        notifyUser(notification);
         return notification;
       },
     });
   },
 });
+
+export const notifyUser = (notification: Notification) => {
+  pubsub.publish(Subscriptions.notificationReceived, notification);
+};

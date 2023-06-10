@@ -1,4 +1,8 @@
-import { PubSub } from 'graphql-subscriptions';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import environmentVars from 'lib/environmentVars';
 
-const pubsub = new PubSub();
+const redisUrl = environmentVars.REDIS_URL!;
+
+const pubsub = new RedisPubSub({ connection: redisUrl });
+
 export default pubsub;

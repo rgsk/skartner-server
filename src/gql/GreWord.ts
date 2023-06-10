@@ -17,6 +17,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import { notifyUser } from './Notification';
 import { getEnumFilter } from './Types';
 
 function createGptPromptsLoader(ctx: Context) {
@@ -273,6 +274,10 @@ export const GreWordMutation = extendType({
           },
         });
         context.pubsub.publish('GRE_WORD_CREATED', greWord);
+        notifyUser({
+          userId: userId,
+          message: `${spelling} added`,
+        });
         return greWord;
       },
     });
