@@ -185,7 +185,7 @@ export const GreWordQuery = extendType({
       args: {
         ...findManyGraphqlArgs,
         where: 'GreWordWhereInput',
-        orderBy: 'GreWordOrderByWithRelationInput',
+        orderBy: list('GreWordOrderByWithRelationInput'),
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(

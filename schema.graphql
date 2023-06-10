@@ -156,12 +156,12 @@ type Query {
   greWord(where: GreWordWhereUniqueInput): GreWord
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
   greWordTags(skip: Int, take: Int, where: GreWordTagWhereInput): [GreWordTag!]!
-  greWords(orderBy: GreWordOrderByWithRelationInput, skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
+  greWords(orderBy: [GreWordOrderByWithRelationInput], skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: helloWorld!
   posts: [Post]
   sendSinglePrompt(input: String!): String
-  users(orderBy: UserOrderByWithRelationInput, skip: Int, take: Int, where: UserWhereInput): [User!]!
+  users(orderBy: [UserOrderByWithRelationInput], skip: Int, take: Int, where: UserWhereInput): [User!]!
   usersCount(where: UserWhereInput): Int!
 }
 

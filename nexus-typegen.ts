@@ -492,7 +492,7 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['GreWordTagWhereInput'] | null; // GreWordTagWhereInput
     }
     greWords: { // args
-      orderBy?: NexusGenInputs['GreWordOrderByWithRelationInput'] | null; // GreWordOrderByWithRelationInput
+      orderBy?: Array<NexusGenInputs['GreWordOrderByWithRelationInput'] | null> | null; // [GreWordOrderByWithRelationInput]
       skip?: number | null; // Int
       take?: number | null; // Int
       where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
@@ -504,7 +504,7 @@ export interface NexusGenArgTypes {
       input: string; // String!
     }
     users: { // args
-      orderBy?: NexusGenInputs['UserOrderByWithRelationInput'] | null; // UserOrderByWithRelationInput
+      orderBy?: Array<NexusGenInputs['UserOrderByWithRelationInput'] | null> | null; // [UserOrderByWithRelationInput]
       skip?: number | null; // Int
       take?: number | null; // Int
       where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput

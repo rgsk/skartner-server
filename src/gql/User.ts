@@ -7,6 +7,7 @@ import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   extendType,
   inputObjectType,
+  list,
   nonNull,
   objectType,
   stringArg,
@@ -106,7 +107,7 @@ export const UserQuery = extendType({
       args: {
         ...findManyGraphqlArgs,
         where: 'UserWhereInput',
-        orderBy: 'UserOrderByWithRelationInput',
+        orderBy: list('UserOrderByWithRelationInput'),
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.UserFindManyArgs = parseGraphQLQuery(
