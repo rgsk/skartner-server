@@ -1,12 +1,12 @@
 import { GptPrompt, GreWordStatus, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
-import { withFilter } from 'graphql-subscriptions';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
 import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
+
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   enumType,
@@ -17,7 +17,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
-import { notifyUser } from './Notification';
+import { z } from 'zod';
 import { getEnumFilter } from './Types';
 
 function createGptPromptsLoader(ctx: Context) {
@@ -36,42 +36,6 @@ function createGptPromptsLoader(ctx: Context) {
     { cache: false }
   );
 }
-
-export const GreWordSubscription = extendType({
-  type: 'Subscription',
-  definition(t) {
-    t.field('greWordCreated', {
-      type: 'GreWord',
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      subscribe: withFilter(
-        () => {
-          return context.pubsub.asyncIterator('GRE_WORD_CREATED');
-        },
-        (payload, variables) => {
-          return payload.userId === variables.userId;
-        }
-      ),
-      resolve(eventData: any) {
-        return eventData;
-      },
-    });
-    t.boolean('truths', {
-      subscribe() {
-        return (async function* () {
-          while (true) {
-            await new Promise((res) => setTimeout(res, 1000));
-            yield Math.random() > 0.5;
-          }
-        })();
-      },
-      resolve(eventData) {
-        return eventData;
-      },
-    });
-  },
-});
 
 const grePromptsLoader = createGptPromptsLoader(context);
 
@@ -141,6 +105,15 @@ export const GreWordWhereUniqueInput = inputObjectType({
   name: 'GreWordWhereUniqueInput',
   definition(t) {
     t.string('id');
+    t.field('spelling_userId', {
+      type: inputObjectType({
+        name: 'GreWordSpellingUserIdCompoundUniqueInput',
+        definition(t) {
+          t.nonNull.string('spelling');
+          t.nonNull.string('userId');
+        },
+      }),
+    });
   },
 });
 
@@ -234,6 +207,12 @@ export const GreWordTagWhereUniqueInput = inputObjectType({
     t.string('name');
   },
 });
+
+const ZGreWordTagWhereUniqueInput = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+});
+
 export const GreWordMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -244,6 +223,7 @@ export const GreWordMutation = extendType({
         promptInput: nonNull(stringArg()),
         promptResponse: nonNull(stringArg()),
         userId: nonNull(stringArg()),
+        status: 'GreWordStatus',
         greWordTags: list('GreWordTagWhereUniqueInput'),
       },
       async resolve(root, args, ctx, info) {
@@ -252,15 +232,28 @@ export const GreWordMutation = extendType({
           promptInput,
           promptResponse,
           userId,
-          greWordTags,
+          greWordTags: _greWordTags,
+          status,
           ...restArgs
         } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
-        const greWord = await ctx.db.greWord.upsert({
+        const prismaArgs = parseGraphQLQuery<Prisma.GreWordCreateArgs>(
+          info,
+          restArgs
+        );
+        const validator = z.object({
+          greWordTags: z.array(ZGreWordTagWhereUniqueInput).optional(),
+        });
+
+        const { greWordTags } = validator.parse({
+          greWordTags: _greWordTags,
+        });
+
+        const greWord = await ctx.db.greWord.create({
           ...prismaArgs,
-          create: {
+          data: {
             spelling: spelling,
             userId: userId,
+            status: status ?? undefined,
             gptPrompts: {
               create: {
                 input: promptInput,
@@ -272,27 +265,6 @@ export const GreWordMutation = extendType({
               connect: greWordTags,
             },
           },
-          where: {
-            spelling_userId: {
-              spelling: spelling,
-              userId: userId,
-            },
-          },
-          update: {
-            gptPrompts: {
-              create: {
-                input: promptInput,
-                response: promptResponse,
-                userId: userId,
-              },
-            },
-            updatedAt: new Date(),
-          },
-        });
-        context.pubsub.publish('GRE_WORD_CREATED', greWord);
-        notifyUser({
-          userId: userId,
-          message: `${spelling} added`,
         });
         return greWord;
       },
@@ -301,12 +273,24 @@ export const GreWordMutation = extendType({
       type: 'GreWord',
       args: {
         id: nonNull(stringArg()),
-        status: stringArg(),
+        status: 'GreWordStatus',
         greWordTags: list('GreWordTagWhereUniqueInput'),
       },
       async resolve(root, args, ctx, info) {
-        const { id, status, greWordTags, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const { id, status, greWordTags: _greWordTags, ...restArgs } = args;
+
+        const validator = z.object({
+          greWordTags: z.array(ZGreWordTagWhereUniqueInput).optional(),
+        });
+
+        const { greWordTags } = validator.parse({
+          greWordTags: _greWordTags,
+        });
+
+        const prismaArgs = parseGraphQLQuery<Prisma.GreWordUpdateArgs>(
+          info,
+          restArgs
+        );
         const greWord = await ctx.db.greWord.update({
           ...prismaArgs,
           where: {
@@ -322,6 +306,7 @@ export const GreWordMutation = extendType({
         return greWord;
       },
     });
+
     t.field('deleteGreWord', {
       type: 'GreWord',
       args: {
@@ -329,7 +314,10 @@ export const GreWordMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { id, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs = parseGraphQLQuery<Prisma.GreWordDeleteArgs>(
+          info,
+          restArgs
+        );
         const greWord = await ctx.db.greWord.delete({
           ...prismaArgs,
           where: {

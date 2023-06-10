@@ -87,7 +87,10 @@ export const GreWordTagMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { name, userId, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs = parseGraphQLQuery<Prisma.GreWordTagCreateArgs>(
+          info,
+          restArgs
+        );
         const greWordTag = await ctx.db.greWordTag.create({
           ...prismaArgs,
           data: {
@@ -105,7 +108,10 @@ export const GreWordTagMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { name, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs: Prisma.GreWordTagDeleteArgs = parseGraphQLQuery(
+          info,
+          restArgs
+        );
         const greWordTag = await ctx.db.greWordTag.delete({
           ...prismaArgs,
           where: {

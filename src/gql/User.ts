@@ -142,12 +142,15 @@ export const UserMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { email, meta, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs = parseGraphQLQuery<Prisma.UserCreateArgs>(
+          info,
+          restArgs
+        );
         const user = await ctx.db.user.create({
           ...prismaArgs,
           data: {
             email: email,
-            meta: meta,
+            meta: meta ?? undefined,
           },
         });
         return user;
@@ -162,15 +165,18 @@ export const UserMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { id, email, meta, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs = parseGraphQLQuery<Prisma.UserUpdateArgs>(
+          info,
+          restArgs
+        );
         const user = await ctx.db.user.update({
           ...prismaArgs,
           data: {
-            meta: meta,
+            meta: meta ?? undefined,
           },
           where: {
-            id,
-            email,
+            id: id ?? undefined,
+            email: email ?? undefined,
           },
         });
         return user;

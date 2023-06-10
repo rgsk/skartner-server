@@ -78,7 +78,11 @@ export const GreWordSearchPromptInputMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { text, userId, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.GreWordSearchPromptInputCreateArgs>(
+            info,
+            restArgs
+          );
         const greWordSearchPromptInput =
           await ctx.db.greWordSearchPromptInput.create({
             ...prismaArgs,
@@ -98,7 +102,11 @@ export const GreWordSearchPromptInputMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { text, id, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.GreWordSearchPromptInputArgs>(
+            info,
+            restArgs
+          );
         const greWordSearchPromptInput =
           await ctx.db.greWordSearchPromptInput.update({
             ...prismaArgs,
@@ -119,7 +127,8 @@ export const GreWordSearchPromptInputMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { id, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs: Prisma.GreWordSearchPromptInputDeleteArgs =
+          parseGraphQLQuery(info, restArgs);
         const greWordSearchPromptInput =
           await ctx.db.greWordSearchPromptInput.delete({
             ...prismaArgs,

@@ -63,6 +63,11 @@ input GreWordSearchPromptInputWhereInput {
   userId: StringFilter
 }
 
+input GreWordSpellingUserIdCompoundUniqueInput {
+  spelling: String!
+  userId: String!
+}
+
 enum GreWordStatus {
   ALMOST_LEARNT
   FINISHED_LEARNING
@@ -111,6 +116,7 @@ input GreWordWhereInput {
 
 input GreWordWhereUniqueInput {
   id: String
+  spelling_userId: GreWordSpellingUserIdCompoundUniqueInput
 }
 
 """The `Json` scalar type represents JSON objects."""
@@ -118,7 +124,8 @@ scalar Json
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  createGreWord(greWordTags: [GreWordTagWhereUniqueInput], promptInput: String!, promptResponse: String!, spelling: String!, userId: String!): GreWord!
+  createGptPrompt(greWordId: String!, input: String!, response: String!): GptPrompt!
+  createGreWord(greWordTags: [GreWordTagWhereUniqueInput], promptInput: String!, promptResponse: String!, spelling: String!, status: GreWordStatus, userId: String!): GreWord!
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
@@ -129,7 +136,7 @@ type Mutation {
   deleteGreWordTag(name: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
-  updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: String): GreWord
+  updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
@@ -185,7 +192,6 @@ input StringFilter {
 }
 
 type Subscription {
-  greWordCreated(userId: String!): GreWord
   notificationReceived(userId: String!): Notification
   truths: Boolean
 }

@@ -101,12 +101,44 @@ export const GptPromptMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { id, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs: Prisma.GptPromptDeleteArgs = parseGraphQLQuery(
+          info,
+          restArgs
+        );
         const gptPrompt = await ctx.db.gptPrompt.delete({
           ...prismaArgs,
           where: {
             id: id,
           },
+        });
+        return gptPrompt;
+      },
+    });
+    t.field('createGptPrompt', {
+      type: nonNull('GptPrompt'),
+      args: {
+        input: nonNull(stringArg()),
+        response: nonNull(stringArg()),
+        greWordId: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { input, response, greWordId, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery<Prisma.GptPromptCreateArgs>(
+          info,
+          restArgs
+        );
+        const gptPrompt = await ctx.db.gptPrompt.create({
+          ...prismaArgs,
+          data: {
+            input: input,
+            response: response,
+            greWordId: greWordId,
+          },
+        });
+        // creation of gptPrompt updates the greWord updatedAt
+        await ctx.db.greWord.update({
+          where: { id: greWordId },
+          data: { updatedAt: new Date() },
         });
         return gptPrompt;
       },
@@ -119,7 +151,10 @@ export const GptPromptMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { id, editedResponse, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const prismaArgs = parseGraphQLQuery<Prisma.GptPromptUpdateArgs>(
+          info,
+          restArgs
+        );
         const gptPrompt = await ctx.db.gptPrompt.update({
           ...prismaArgs,
           where: {

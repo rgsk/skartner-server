@@ -32,9 +32,9 @@ function parseFieldNode(fieldNode: any, fragments: any) {
   }
 }
 
-function parseGraphQLQuery(info: any, args?: any) {
+function parseGraphQLQuery<T>(info: any, args?: any) {
   const parseRes = parseFieldNode(info.fieldNodes[0], info.fragments);
   const data: any = { ...args, ...parseRes };
-  return data;
+  return data as T;
 }
 export default parseGraphQLQuery;
