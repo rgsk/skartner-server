@@ -20,6 +20,12 @@ export interface NexusGenInputs {
     not?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
     notIn?: NexusGenEnums['GreWordStatus'][] | null; // [GreWordStatus!]
   }
+  GreWordOrderByWithRelationInput: { // input type
+    createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    spelling?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
   GreWordSearchPromptInputWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     text?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -67,6 +73,12 @@ export interface NexusGenInputs {
     defaultGreWordSearchPromptInput?: string | null; // String
     showDefaultGreWordSearchPromptInputs?: boolean | null; // Boolean
   }
+  UserOrderByWithRelationInput: { // input type
+    createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    email?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
   UserWhereInput: { // input type
     email?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -75,6 +87,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   GreWordStatus: "ALMOST_LEARNT" | "FINISHED_LEARNING" | "MASTERED" | "MEMORY_MODE" | "STARTED_LEARNING" | "STILL_LEARNING"
+  SortOrder: "asc" | "desc"
 }
 
 export interface NexusGenScalars {
@@ -479,6 +492,7 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['GreWordTagWhereInput'] | null; // GreWordTagWhereInput
     }
     greWords: { // args
+      orderBy?: NexusGenInputs['GreWordOrderByWithRelationInput'] | null; // GreWordOrderByWithRelationInput
       skip?: number | null; // Int
       take?: number | null; // Int
       where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
@@ -490,6 +504,7 @@ export interface NexusGenArgTypes {
       input: string; // String!
     }
     users: { // args
+      orderBy?: NexusGenInputs['UserOrderByWithRelationInput'] | null; // UserOrderByWithRelationInput
       skip?: number | null; // Int
       take?: number | null; // Int
       where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput

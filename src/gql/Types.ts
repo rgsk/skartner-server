@@ -1,5 +1,6 @@
+import { Prisma } from '@prisma/client';
 import { Kind } from 'graphql';
-import { inputObjectType, scalarType } from 'nexus';
+import { enumType, inputObjectType, scalarType } from 'nexus';
 import { NexusGenEnums } from '../../nexus-typegen';
 
 /*
@@ -69,3 +70,8 @@ export const getEnumFilter = (type: keyof NexusGenEnums) => {
     },
   });
 };
+
+export const SortOrderEnum = enumType({
+  name: 'SortOrder',
+  members: [Prisma.SortOrder.asc, Prisma.SortOrder.desc],
+});

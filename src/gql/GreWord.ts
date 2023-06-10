@@ -159,6 +159,24 @@ export const GreWordTagListRelationFilter = inputObjectType({
   },
 });
 
+export const GreWordOrderByWithRelationInput = inputObjectType({
+  name: 'GreWordOrderByWithRelationInput',
+  definition(t) {
+    t.field('id', {
+      type: 'SortOrder',
+    });
+    t.field('spelling', {
+      type: 'SortOrder',
+    });
+    t.field('createdAt', {
+      type: 'SortOrder',
+    });
+    t.field('updatedAt', {
+      type: 'SortOrder',
+    });
+  },
+});
+
 export const GreWordQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -167,6 +185,7 @@ export const GreWordQuery = extendType({
       args: {
         ...findManyGraphqlArgs,
         where: 'GreWordWhereInput',
+        orderBy: 'GreWordOrderByWithRelationInput',
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordFindManyArgs = parseGraphQLQuery(
@@ -175,9 +194,6 @@ export const GreWordQuery = extendType({
         );
         const greWords = await ctx.db.greWord.findMany({
           ...prismaArgs,
-          orderBy: {
-            updatedAt: 'desc',
-          },
         });
         return greWords;
       },

@@ -68,7 +68,7 @@ export const UserObject = objectType({
   },
 });
 
-const UserWhereInput = inputObjectType({
+export const UserWhereInput = inputObjectType({
   name: 'UserWhereInput',
   definition(t) {
     t.field('id', {
@@ -80,6 +80,24 @@ const UserWhereInput = inputObjectType({
   },
 });
 
+export const UserOrderByWithRelationInput = inputObjectType({
+  name: 'UserOrderByWithRelationInput',
+  definition(t) {
+    t.field('id', {
+      type: 'SortOrder',
+    });
+    t.field('email', {
+      type: 'SortOrder',
+    });
+    t.field('createdAt', {
+      type: 'SortOrder',
+    });
+    t.field('updatedAt', {
+      type: 'SortOrder',
+    });
+  },
+});
+
 export const UserQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -87,7 +105,8 @@ export const UserQuery = extendType({
       type: nonNull('User'),
       args: {
         ...findManyGraphqlArgs,
-        where: UserWhereInput,
+        where: 'UserWhereInput',
+        orderBy: 'UserOrderByWithRelationInput',
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.UserFindManyArgs = parseGraphQLQuery(

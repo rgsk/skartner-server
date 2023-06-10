@@ -40,6 +40,13 @@ type GreWord {
   userId: String
 }
 
+input GreWordOrderByWithRelationInput {
+  createdAt: SortOrder
+  id: SortOrder
+  spelling: SortOrder
+  updatedAt: SortOrder
+}
+
 type GreWordSearchPromptInput {
   createdAt: String!
   id: String!
@@ -149,13 +156,18 @@ type Query {
   greWord(where: GreWordWhereUniqueInput): GreWord
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
   greWordTags(skip: Int, take: Int, where: GreWordTagWhereInput): [GreWordTag!]!
-  greWords(skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
+  greWords(orderBy: GreWordOrderByWithRelationInput, skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: helloWorld!
   posts: [Post]
   sendSinglePrompt(input: String!): String
-  users(skip: Int, take: Int, where: UserWhereInput): [User!]!
+  users(orderBy: UserOrderByWithRelationInput, skip: Int, take: Int, where: UserWhereInput): [User!]!
   usersCount(where: UserWhereInput): Int!
+}
+
+enum SortOrder {
+  asc
+  desc
 }
 
 input StringFilter {
@@ -198,6 +210,13 @@ type UserMetaParsedJsonValue {
 input UserMetaParsedJsonValueInput {
   defaultGreWordSearchPromptInput: String
   showDefaultGreWordSearchPromptInputs: Boolean
+}
+
+input UserOrderByWithRelationInput {
+  createdAt: SortOrder
+  email: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
 }
 
 input UserWhereInput {
