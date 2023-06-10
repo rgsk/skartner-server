@@ -1,13 +1,13 @@
-import environmentVars, { TAppEnvironment } from './environmentVars';
+import environmentVars, { AppEnvironment } from './environmentVars';
 
 export const evaluateCustomEnvironmentModifier = ({
   NODE_ENV,
   disableModifier,
   envNameForCustomBehaviour,
 }: {
-  NODE_ENV: TAppEnvironment;
+  NODE_ENV: AppEnvironment;
   disableModifier: boolean;
-  envNameForCustomBehaviour: TAppEnvironment;
+  envNameForCustomBehaviour: AppEnvironment;
 }) => {
   return {
     onInProduction: {
