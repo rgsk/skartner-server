@@ -26,16 +26,16 @@ export const NotificationSubscription = extendType({
         userId: nonNull(stringArg()),
       },
       subscribe: withFilter(
-        (...args) => {
+        (root, args, ctx, info) => {
           return context.pubsub.asyncIterator(
             Subscriptions.notificationReceived
           );
         },
-        (payload, variables) => {
-          return payload.userId === variables.userId;
+        (root, args, ctx, info) => {
+          return root.userId === args.userId;
         }
       ),
-      resolve(eventData: any) {
+      resolve(eventData) {
         return eventData;
       },
     });

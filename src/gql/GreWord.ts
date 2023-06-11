@@ -18,6 +18,7 @@ import {
   stringArg,
 } from 'nexus';
 import { z } from 'zod';
+import { notifyUser } from './Notification';
 import { getEnumFilter } from './Types';
 
 function createGptPromptsLoader(ctx: Context) {
@@ -266,6 +267,7 @@ export const GreWordMutation = extendType({
             },
           },
         });
+        notifyUser({ userId: userId, message: `${spelling} word added` });
         return greWord;
       },
     });
