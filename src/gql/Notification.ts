@@ -55,7 +55,7 @@ export const NotificationSubscription = extendType({
           return root.userId === args.userId;
         }
       ),
-      resolve(eventData: any) {
+      resolve(eventData: Notification) {
         return eventData;
       },
     });
