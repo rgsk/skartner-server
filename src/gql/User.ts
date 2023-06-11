@@ -99,6 +99,14 @@ export const UserOrderByWithRelationInput = inputObjectType({
   },
 });
 
+export const UserWhereUniqueInput = inputObjectType({
+  name: 'UserWhereUniqueInput',
+  definition(t) {
+    t.string('id');
+    t.string('email');
+  },
+});
+
 export const UserQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -116,6 +124,20 @@ export const UserQuery = extendType({
         );
         const users = await ctx.db.user.findMany(prismaArgs);
         return users;
+      },
+    });
+    t.field('user', {
+      type: 'User',
+      args: {
+        where: nonNull('UserWhereUniqueInput'),
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.UserFindUniqueArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const user = await ctx.db.user.findUnique(prismaArgs);
+        return user;
       },
     });
     t.nonNull.int('usersCount', {

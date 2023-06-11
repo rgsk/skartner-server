@@ -88,6 +88,10 @@ export interface NexusGenInputs {
     email?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  UserWhereUniqueInput: { // input type
+    email?: string | null; // String
+    id?: string | null; // String
+  }
 }
 
 export interface NexusGenEnums {
@@ -266,6 +270,7 @@ export interface NexusGenFieldTypes {
     hello: NexusGenRootTypes['helloWorld']; // helloWorld!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
+    user: NexusGenRootTypes['User'] | null; // User
     users: NexusGenRootTypes['User'][]; // [User!]!
     usersCount: number; // Int!
   }
@@ -384,6 +389,7 @@ export interface NexusGenFieldTypeNames {
     hello: 'helloWorld'
     posts: 'Post'
     sendSinglePrompt: 'String'
+    user: 'User'
     users: 'User'
     usersCount: 'Int'
   }
@@ -513,6 +519,9 @@ export interface NexusGenArgTypes {
     }
     sendSinglePrompt: { // args
       input: string; // String!
+    }
+    user: { // args
+      where: NexusGenInputs['UserWhereUniqueInput']; // UserWhereUniqueInput!
     }
     users: { // args
       orderBy?: Array<NexusGenInputs['UserOrderByWithRelationInput'] | null> | null; // [UserOrderByWithRelationInput]
