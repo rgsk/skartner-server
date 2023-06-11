@@ -92,9 +92,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  greWords    GreWord[]
-  gptPrompts  GptPrompt[]
-  greWordTags GreWordTag[]
+  greWords     GreWord[]
+  gptPrompts   GptPrompt[]
+  greWordTags  GreWordTag[]
+  userSessions UserSession[]
 
   @@map("Users")
 }
@@ -111,4 +112,15 @@ model GreWordSearchPromptInput {
   updatedAt DateTime @updatedAt
 
   @@map("GreWordSearchPromptInputs")
+}
+
+model UserSession {
+  id        String    @id @default(uuid())
+  userId    String
+  User      User      @relation(fields: [userId], references: [id])
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  duration  Int?
+
+  @@map("UserSessions")
 }

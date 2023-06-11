@@ -1,7 +1,7 @@
 import { context } from 'context';
-import { withFilter } from 'graphql-subscriptions';
 import { Subscriptions } from 'lib/Subscriptions';
 import { withCancel } from 'lib/graphqlUtils';
+import { withFilter } from 'lib/withFilter';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 import pubsub from 'pubsub';
 
@@ -27,22 +27,35 @@ export const NotificationSubscription = extendType({
         userId: nonNull(stringArg()),
       },
       subscribe: withFilter(
-        (root, args, ctx, info) => {
-          console.log(args);
-          console.log('connection established');
+        async (root, args, ctx, info) => {
+          const userSession = await context.db.userSession.create({
+            data: {
+              userId: args.userId,
+              startedAt: new Date(),
+            },
+          });
           const asyncIterator = context.pubsub.asyncIterator(
             Subscriptions.notificationReceived
           );
-          return withCancel(asyncIterator, () => {
-            console.log(args);
-            console.log('connection closed');
+          return withCancel(asyncIterator, async () => {
+            const currentTime = new Date();
+            const updatedUserSession = await context.db.userSession.update({
+              where: {
+                id: userSession.id,
+              },
+              data: {
+                endedAt: currentTime,
+                duration:
+                  currentTime.getTime() - userSession.startedAt.getTime(),
+              },
+            });
           });
         },
         (root, args, ctx, info) => {
           return root.userId === args.userId;
         }
       ),
-      resolve(eventData) {
+      resolve(eventData: any) {
         return eventData;
       },
     });
