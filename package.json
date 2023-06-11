@@ -35,8 +35,10 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/server": "^4.7.1",
+    "@bull-monitor/express": "^5.1.0",
     "@graphql-tools/schema": "^10.0.0",
     "@prisma/client": "^4.1.0",
+    "bull": "^4.10.4",
     "cors": "^2.8.5",
     "dataloader": "^2.2.2",
     "date-fns": "^2.30.0",

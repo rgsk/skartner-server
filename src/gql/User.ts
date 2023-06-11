@@ -1,4 +1,5 @@
 import { Prisma, User } from '@prisma/client';
+import { millisecondsInMinute } from 'date-fns';
 import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
@@ -12,6 +13,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import { sendCommunicationOnSignupQueue } from 'queues';
 
 export const UserMetaParsedJsonValue = objectType({
   name: 'UserMetaParsedJsonValue',
@@ -175,6 +177,10 @@ export const UserMutation = extendType({
             meta: meta ?? undefined,
           },
         });
+        sendCommunicationOnSignupQueue.add(
+          { user },
+          { delay: millisecondsInMinute }
+        );
         return user;
       },
     });
