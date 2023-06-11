@@ -1,6 +1,7 @@
 import { context } from 'context';
 import { withFilter } from 'graphql-subscriptions';
 import { Subscriptions } from 'lib/Subscriptions';
+import { withCancel } from 'lib/graphqlUtils';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 import pubsub from 'pubsub';
 
@@ -27,9 +28,15 @@ export const NotificationSubscription = extendType({
       },
       subscribe: withFilter(
         (root, args, ctx, info) => {
-          return context.pubsub.asyncIterator(
+          console.log(args);
+          console.log('connection established');
+          const asyncIterator = context.pubsub.asyncIterator(
             Subscriptions.notificationReceived
           );
+          return withCancel(asyncIterator, () => {
+            console.log(args);
+            console.log('connection closed');
+          });
         },
         (root, args, ctx, info) => {
           return root.userId === args.userId;
