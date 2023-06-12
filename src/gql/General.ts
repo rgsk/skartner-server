@@ -1,5 +1,5 @@
 import environmentVars from 'lib/environmentVars';
-import { extendType, objectType } from 'nexus';
+import { enumType, extendType, objectType } from 'nexus';
 
 export const GeneralQuery = extendType({
   type: 'Query',
@@ -34,4 +34,9 @@ export const GeneralQuery = extendType({
       },
     });
   },
+});
+
+export const CacheControlScope = enumType({
+  name: 'CacheControlScope',
+  members: ['PUBLIC', 'PRIVATE'],
 });
