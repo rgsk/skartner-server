@@ -117,10 +117,11 @@ model GreWordSearchPromptInput {
 model UserSession {
   id        String    @id @default(uuid())
   userId    String
-  User      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
   startedAt DateTime  @default(now())
   endedAt   DateTime?
   duration  Int?
+  meta      Json      @default("{}")
 
   @@map("UserSessions")
 }

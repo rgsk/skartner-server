@@ -169,6 +169,9 @@ type Query {
   posts: [Post]
   sendSinglePrompt(input: String!): String
   user(where: UserWhereUniqueInput!): User
+  userSession(where: UserSessionWhereUniqueInput!): UserSession
+  userSessions(orderBy: [UserSessionOrderByWithRelationInput], skip: Int, take: Int, where: UserSessionWhereInput): [UserSession!]!
+  userSessionsCount(where: UserSessionWhereInput): Int!
   users(orderBy: [UserOrderByWithRelationInput], skip: Int, take: Int, where: UserWhereInput): [User!]!
   usersCount(where: UserWhereInput): Int!
 }
@@ -224,6 +227,43 @@ input UserOrderByWithRelationInput {
   email: SortOrder
   id: SortOrder
   updatedAt: SortOrder
+}
+
+type UserSession {
+  duration: Int
+  endedAt: String
+  id: String!
+  meta: UserSessionMetaParsedJsonValue!
+  startedAt: String!
+  user: User!
+  userId: String!
+}
+
+type UserSessionMetaParsedJsonValue {
+  none: String
+}
+
+input UserSessionMetaParsedJsonValueInput {
+  none: String
+}
+
+input UserSessionOrderByWithRelationInput {
+  duration: SortOrder
+  endedAt: SortOrder
+  id: SortOrder
+  startedAt: SortOrder
+  user: UserOrderByWithRelationInput
+  userId: SortOrder
+}
+
+input UserSessionWhereInput {
+  id: StringFilter
+  user: UserWhereInput
+  userId: StringFilter
+}
+
+input UserSessionWhereUniqueInput {
+  id: String
 }
 
 input UserWhereInput {

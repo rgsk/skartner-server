@@ -8,3 +8,4 @@ export * from './Notification';
 export * from './Post';
 export * from './Types';
 export * from './User';
+export * from './UserSession';

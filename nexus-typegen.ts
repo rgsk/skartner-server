@@ -84,6 +84,25 @@ export interface NexusGenInputs {
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
     updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
+  UserSessionMetaParsedJsonValueInput: { // input type
+    none?: string | null; // String
+  }
+  UserSessionOrderByWithRelationInput: { // input type
+    duration?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    endedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    startedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    user?: NexusGenInputs['UserOrderByWithRelationInput'] | null; // UserOrderByWithRelationInput
+    userId?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
+  UserSessionWhereInput: { // input type
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    user?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
+    userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
+  UserSessionWhereUniqueInput: { // input type
+    id?: string | null; // String
+  }
   UserWhereInput: { // input type
     email?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -163,6 +182,14 @@ export interface NexusGenObjects {
   UserMetaParsedJsonValue: { // root type
     defaultGreWordSearchPromptInput?: string | null; // String
     showDefaultGreWordSearchPromptInputs?: boolean | null; // Boolean
+  }
+  UserSession: { // root type
+    duration?: number | null; // Int
+    id: string; // String!
+    userId: string; // String!
+  }
+  UserSessionMetaParsedJsonValue: { // root type
+    none?: string | null; // String
   }
   helloWorld: { // root type
     message: string; // String!
@@ -271,6 +298,9 @@ export interface NexusGenFieldTypes {
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
+    userSession: NexusGenRootTypes['UserSession'] | null; // UserSession
+    userSessions: NexusGenRootTypes['UserSession'][]; // [UserSession!]!
+    userSessionsCount: number; // Int!
     users: NexusGenRootTypes['User'][]; // [User!]!
     usersCount: number; // Int!
   }
@@ -292,6 +322,18 @@ export interface NexusGenFieldTypes {
   UserMetaParsedJsonValue: { // field return type
     defaultGreWordSearchPromptInput: string | null; // String
     showDefaultGreWordSearchPromptInputs: boolean | null; // Boolean
+  }
+  UserSession: { // field return type
+    duration: number | null; // Int
+    endedAt: string | null; // String
+    id: string; // String!
+    meta: NexusGenRootTypes['UserSessionMetaParsedJsonValue']; // UserSessionMetaParsedJsonValue!
+    startedAt: string; // String!
+    user: NexusGenRootTypes['User']; // User!
+    userId: string; // String!
+  }
+  UserSessionMetaParsedJsonValue: { // field return type
+    none: string | null; // String
   }
   helloWorld: { // field return type
     message: string; // String!
@@ -390,6 +432,9 @@ export interface NexusGenFieldTypeNames {
     posts: 'Post'
     sendSinglePrompt: 'String'
     user: 'User'
+    userSession: 'UserSession'
+    userSessions: 'UserSession'
+    userSessionsCount: 'Int'
     users: 'User'
     usersCount: 'Int'
   }
@@ -411,6 +456,18 @@ export interface NexusGenFieldTypeNames {
   UserMetaParsedJsonValue: { // field return type name
     defaultGreWordSearchPromptInput: 'String'
     showDefaultGreWordSearchPromptInputs: 'Boolean'
+  }
+  UserSession: { // field return type name
+    duration: 'Int'
+    endedAt: 'String'
+    id: 'String'
+    meta: 'UserSessionMetaParsedJsonValue'
+    startedAt: 'String'
+    user: 'User'
+    userId: 'String'
+  }
+  UserSessionMetaParsedJsonValue: { // field return type name
+    none: 'String'
   }
   helloWorld: { // field return type name
     message: 'String'
@@ -522,6 +579,18 @@ export interface NexusGenArgTypes {
     }
     user: { // args
       where: NexusGenInputs['UserWhereUniqueInput']; // UserWhereUniqueInput!
+    }
+    userSession: { // args
+      where: NexusGenInputs['UserSessionWhereUniqueInput']; // UserSessionWhereUniqueInput!
+    }
+    userSessions: { // args
+      orderBy?: Array<NexusGenInputs['UserSessionOrderByWithRelationInput'] | null> | null; // [UserSessionOrderByWithRelationInput]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['UserSessionWhereInput'] | null; // UserSessionWhereInput
+    }
+    userSessionsCount: { // args
+      where?: NexusGenInputs['UserSessionWhereInput'] | null; // UserSessionWhereInput
     }
     users: { // args
       orderBy?: Array<NexusGenInputs['UserOrderByWithRelationInput'] | null> | null; // [UserOrderByWithRelationInput]
