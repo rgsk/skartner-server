@@ -114,7 +114,6 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  CacheControlScope: "PRIVATE" | "PUBLIC"
   GreWordStatus: "ALMOST_LEARNT" | "FINISHED_LEARNING" | "MASTERED" | "MEMORY_MODE" | "STARTED_LEARNING" | "STILL_LEARNING"
   SortOrder: "asc" | "desc"
 }
