@@ -125,3 +125,12 @@ model UserSession {
 
   @@map("UserSessions")
 }
+
+model Cache {
+  id                  String    @id @default(uuid())
+  key                 Json      @unique
+  value               Json
+  expirationTimestamp DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}

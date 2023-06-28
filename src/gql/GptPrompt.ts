@@ -1,6 +1,7 @@
 import { GreWord, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
+import dbCache from 'lib/dbCache';
 import { deriveEntityMapFromArray } from 'lib/generalUtils';
 import {
   addDateFieldsDefinitions,
@@ -82,10 +83,20 @@ export const GptPromptQuery = extendType({
         input: nonNull(stringArg()),
       },
       async resolve(root, args, ctx) {
+        const cacheKey = {
+          query: 'sendSinglePrompt',
+          args,
+        };
+        const cachedValue = await dbCache.get(cacheKey);
+        if (cachedValue) {
+          return (cachedValue as any).result as string;
+        }
         const message = await sendPrompt([
           { role: 'user', content: args.input },
         ]);
-        return message?.content ?? null;
+        const result = message?.content ?? null;
+        const cache = await dbCache.set(cacheKey, { result });
+        return result;
       },
     });
   },
