@@ -6,7 +6,6 @@ const getKey = (key: any) => {
 };
 const inMemoryCache: CacheHandler = {
   get: async (key: any) => {
-    console.log(cacheMap);
     const modifiedKey = getKey(key);
     const cachedValue = cacheMap.get(modifiedKey);
     return cachedValue !== undefined ? cachedValue : null;
