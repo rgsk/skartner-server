@@ -1,7 +1,7 @@
 import { GreWord, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
-import dbCache from 'lib/dbCache';
+import cacheValue from 'lib/cache/cacheValue';
 import { deriveEntityMapFromArray } from 'lib/generalUtils';
 import {
   addDateFieldsDefinitions,
@@ -83,19 +83,23 @@ export const GptPromptQuery = extendType({
         input: nonNull(stringArg()),
       },
       async resolve(root, args, ctx) {
-        const cacheKey = {
-          query: 'sendSinglePrompt',
-          args,
-        };
-        const cachedValue = await dbCache.get(cacheKey);
-        if (cachedValue) {
-          return (cachedValue as any).result as string;
-        }
-        const message = await sendPrompt([
-          { role: 'user', content: args.input },
-        ]);
-        const result = message?.content ?? null;
-        const cache = await dbCache.set(cacheKey, { result });
+        const result = await cacheValue(
+          'db',
+          {
+            query: 'sendSinglePrompt',
+            args,
+          },
+          async () => {
+            const message = await sendPrompt([
+              { role: 'user', content: args.input },
+            ]);
+            const result = message?.content ?? null;
+            return result;
+          }
+        )(
+          (value) => value.result,
+          (value) => ({ result: value })
+        );
         return result;
       },
     });
@@ -182,15 +186,9 @@ export const GptPromptMutation = extendType({
 });
 
 export const sendPrompt = async (messages: ChatCompletionRequestMessage[]) => {
-  return openAIApi
-    .createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: messages,
-    })
-    .then((res) => {
-      return res.data.choices[0].message;
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  const result = await openAIApi.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: messages,
+  });
+  return result.data.choices[0].message;
 };

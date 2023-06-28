@@ -1,5 +1,6 @@
-import { Cache, Prisma } from '@prisma/client';
+import { Cache } from '@prisma/client';
 import { db } from 'db';
+import { CacheHandler } from './cacheValue';
 
 const cacheNotExpired = (cache: Cache) => {
   if (!cache.expirationTimestamp) {
@@ -11,18 +12,19 @@ const cacheNotExpired = (cache: Cache) => {
   return false;
 };
 
-const get = async (key: Prisma.InputJsonValue) => {
+const get = async (key: any) => {
   const cache = await db.cache.findUnique({ where: { key: key } });
   if (cache) {
     if (cacheNotExpired(cache)) {
-      return cache.value;
+      return cache.value as any;
     }
   }
+  return null;
 };
 
 const set = async (
-  key: Prisma.InputJsonValue,
-  value: Prisma.InputJsonValue | typeof Prisma.JsonNull,
+  key: any,
+  value: any,
   expirationTimestamp: Date | null = null
 ) => {
   const props = {
@@ -41,9 +43,8 @@ const set = async (
       key,
     },
   });
-  return cache;
 };
-const dbCache = {
+const dbCache: CacheHandler = {
   get,
   set,
 };
