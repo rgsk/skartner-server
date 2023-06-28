@@ -1,9 +1,62 @@
+import Prisma from '@prisma/client';
 import { context } from 'context';
+import { endOfDay, startOfDay, subDays } from 'date-fns';
+import { db } from 'db';
 import { Subscriptions } from 'lib/Subscriptions';
 import { withCancel } from 'lib/graphqlUtils';
 import { withFilter } from 'lib/withFilter';
 import { extendType, nonNull, objectType, stringArg } from 'nexus';
 import pubsub from 'pubsub';
+
+// for testing substitute below methods
+// subDays -> subMinutes
+// startOfDay -> startOfMinute
+// endOfDay -> endOfMinute
+
+const calculateStreak = async (userSession: Prisma.UserSession) => {
+  let date = userSession.startedAt;
+  let streak = 1;
+  while (true) {
+    date = subDays(date, 1);
+    const previousDateSessionCount = await db.userSession.count({
+      where: {
+        userId: userSession.userId,
+        startedAt: {
+          gte: startOfDay(date),
+          lte: endOfDay(date),
+        },
+      },
+    });
+    if (previousDateSessionCount > 0) {
+      streak++;
+    } else {
+      return streak;
+    }
+  }
+};
+
+const notifyForStreak = async (userSession: Prisma.UserSession) => {
+  const todaysSessionCount = await db.userSession.count({
+    where: {
+      userId: userSession.userId,
+      startedAt: {
+        gte: startOfDay(userSession.startedAt),
+        lte: endOfDay(userSession.startedAt),
+      },
+    },
+  });
+  const isFirstSession = todaysSessionCount === 1;
+  if (isFirstSession) {
+    // if this is the first session
+    const streak = await calculateStreak(userSession);
+    if (streak > 1) {
+      notifyUser({
+        userId: userSession.userId,
+        message: `You are on continuous ${streak} days streak`,
+      });
+    }
+  }
+};
 
 type Notification = {
   userId: string;
@@ -34,6 +87,7 @@ export const NotificationSubscription = extendType({
               startedAt: new Date(),
             },
           });
+          notifyForStreak(userSession);
           const asyncIterator = context.pubsub.asyncIterator(
             Subscriptions.notificationReceived
           );
