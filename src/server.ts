@@ -79,14 +79,14 @@ export const server = new ApolloServer({
 const method = async () => {
   const users = await db.user.findMany({
     include: {
-      roleToUser_User: { include: { role: true } },
+      relationRoleToUserAsAssigner: { include: { role: true } },
     },
   });
   fileLogger.logToJsFile({ users });
 
   const roles = await db.role.findMany({
     include: {
-      roleToUser: { include: { assigner: true } },
+      relationRoleToUserAsRole: { include: { assigner: true } },
     },
   });
   fileLogger.logToJsFile({ roles });

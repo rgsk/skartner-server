@@ -97,8 +97,8 @@ model User {
   greWordTags  GreWordTag[]
   userSessions UserSession[]
 
-  roleToUser_User     RoleToUser[] @relation("User")
-  roleToUser_Assigner RoleToUser[] @relation("Assigner")
+  relationRoleToUserAsUser     RelationRoleToUser[] @relation("User")
+  relationRoleToUserAsAssigner RelationRoleToUser[] @relation("Assigner")
 
   @@map("Users")
 }
@@ -139,17 +139,17 @@ model Cache {
 }
 
 model Role {
-  id         String       @id @default(uuid())
-  name       String       @unique
-  meta       Json         @default("{}")
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  roleToUser RoleToUser[]
+  id                       String               @id @default(uuid())
+  name                     String               @unique
+  meta                     Json                 @default("{}")
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
+  relationRoleToUserAsRole RelationRoleToUser[]
 
   @@map("Roles")
 }
 
-model RoleToUser {
+model RelationRoleToUser {
   roleId     String
   role       Role     @relation(fields: [roleId], references: [id])
   userId     String
