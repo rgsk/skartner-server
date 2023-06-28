@@ -101,6 +101,7 @@ model User {
   relationRoleToUserAsAssigner      RelationRoleToUser[]       @relation("Assigner")
   relationPermissionToUserAsUser    RelationPermissionToUser[] @relation("User")
   relationPermissionToUserAsGranter RelationPermissionToUser[] @relation("Granter")
+  relationPermissionToRoleAsGranter RelationPermissionToRole[]
 
   @@map("Users")
 }
@@ -141,12 +142,13 @@ model Cache {
 }
 
 model Role {
-  id                       String               @id @default(uuid())
-  name                     String               @unique
-  meta                     Json                 @default("{}")
-  createdAt                DateTime             @default(now())
-  updatedAt                DateTime             @updatedAt
-  relationRoleToUserAsRole RelationRoleToUser[]
+  id                             String                     @id @default(uuid())
+  name                           String                     @unique
+  meta                           Json                       @default("{}")
+  createdAt                      DateTime                   @default(now())
+  updatedAt                      DateTime                   @updatedAt
+  relationRoleToUserAsRole       RelationRoleToUser[]
+  relationPermissionToRoleAsRole RelationPermissionToRole[]
 
   @@map("Roles")
 }
@@ -170,6 +172,7 @@ model Permission {
   createdAt                            DateTime                   @default(now())
   updatedAt                            DateTime                   @updatedAt
   relationPermissionToUserAsPermission RelationPermissionToUser[]
+  relationPermissionToRoleAsPermission RelationPermissionToRole[]
 
   @@map("Permissions")
 }
@@ -181,8 +184,21 @@ model RelationPermissionToUser {
   user         User       @relation(name: "User", fields: [userId], references: [id])
   granterId    String
   granter      User       @relation(name: "Granter", fields: [granterId], references: [id])
+  isAllowed    Boolean?
 
   @@id([permissionId, userId])
+}
+
+model RelationPermissionToRole {
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  granterId    String
+  granter      User       @relation(fields: [granterId], references: [id])
+  isAllowed    Boolean?
+
+  @@id([permissionId, roleId])
 }
 
 // model PermissionHierarchy {
