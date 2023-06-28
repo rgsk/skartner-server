@@ -23,6 +23,15 @@ const cacheValue =
     expirationTimestamp: Date | null = null
   ) =>
   async (getFromCache?: (value: any) => T, setInCache?: (value: T) => any) => {
+    if (getFromCache || setInCache) {
+      // if either of them are provided in args
+      // both should be provided
+      if (!getFromCache || !setInCache) {
+        throw new Error(
+          'Both "getFromCache" and "setInCache" should be provided if either of them is provided'
+        );
+      }
+    }
     const cachedValue = await handlers[handler].get(key);
     if (cachedValue) {
       return getFromCache ? getFromCache(cachedValue) : (cachedValue as T);
