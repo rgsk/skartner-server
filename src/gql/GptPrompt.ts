@@ -83,23 +83,21 @@ export const GptPromptQuery = extendType({
         input: nonNull(stringArg()),
       },
       async resolve(root, args, ctx) {
-        const result = await cacheValue(
-          'db',
-          {
+        const result = await cacheValue('db', {
+          key: {
             query: 'sendSinglePrompt',
             args,
           },
-          async () => {
+          getValue: async () => {
             const message = await sendPrompt([
               { role: 'user', content: args.input },
             ]);
             const result = message?.content ?? null;
             return result;
-          }
-        )(
-          (value) => value.result,
-          (value) => ({ result: value })
-        );
+          },
+          getFromCache: (value) => value.result,
+          setInCache: (value) => ({ result: value }),
+        });
         return result;
       },
     });
