@@ -97,6 +97,9 @@ model User {
   greWordTags  GreWordTag[]
   userSessions UserSession[]
 
+  roleToUser_User     RoleToUser[] @relation("User")
+  roleToUser_Assigner RoleToUser[] @relation("Assigner")
+
   @@map("Users")
 }
 
@@ -134,3 +137,60 @@ model Cache {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 }
+
+model Role {
+  id         String       @id @default(uuid())
+  name       String       @unique
+  meta       Json         @default("{}")
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  roleToUser RoleToUser[]
+
+  @@map("Roles")
+}
+
+model RoleToUser {
+  roleId     String
+  role       Role     @relation(fields: [roleId], references: [id])
+  userId     String
+  user       User     @relation(name: "User", fields: [userId], references: [id])
+  assignedAt DateTime @default(now())
+  assignerId String
+  assigner   User     @relation(name: "Assigner", fields: [assignerId], references: [id])
+
+  @@id([roleId, userId])
+}
+
+// model Permission {
+//   id                        String                @id @default(uuid())
+//   name                      String                @unique
+//   meta                      Json                  @default("{}")
+//   createdAt                 DateTime              @default(now())
+//   updatedAt                 DateTime              @updatedAt
+//   parentPermissionHierarchy PermissionHierarchy[] @relation("ChildPermission")
+//   childPermissionHierarchy  PermissionHierarchy[] @relation("ParentPermission")
+//   PermissionToUser          PermissionToUser[]
+
+//   @@map("Permissions")
+// }
+
+// model PermissionToUser {
+//   permissionId String
+//   permission   Permission @relation(fields: [permissionId], references: [id])
+//   userId       String
+//   user         User       @relation(fields: [userId], references: [id])
+
+//   @@id([permissionId, userId])
+// }
+
+// model PermissionHierarchy {
+//   parentPermissionId String
+//   parentPermission   Permission @relation("ParentPermission", fields: [parentPermissionId], references: [id])
+//   childPermissionId  String
+//   childPermission    Permission @relation("ChildPermission", fields: [childPermissionId], references: [id])
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@id([parentPermissionId, childPermissionId])
+// }
