@@ -173,6 +173,8 @@ model Permission {
   updatedAt                            DateTime                   @updatedAt
   relationPermissionToUserAsPermission RelationPermissionToUser[]
   relationPermissionToRoleAsPermission RelationPermissionToRole[]
+  permissionHierarchyAsChild           PermissionHierarchy[]      @relation("Child")
+  permissionHierarchyAsParent          PermissionHierarchy[]      @relation("Parent")
 
   @@map("Permissions")
 }
@@ -201,14 +203,11 @@ model RelationPermissionToRole {
   @@id([permissionId, roleId])
 }
 
-// model PermissionHierarchy {
-//   parentPermissionId String
-//   parentPermission   Permission @relation("ParentPermission", fields: [parentPermissionId], references: [id])
-//   childPermissionId  String
-//   childPermission    Permission @relation("ChildPermission", fields: [childPermissionId], references: [id])
+model PermissionHierarchy {
+  parentPermissionId String
+  parentPermission   Permission @relation("Parent", fields: [parentPermissionId], references: [id])
+  childPermissionId  String
+  childPermission    Permission @relation("Child", fields: [childPermissionId], references: [id])
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@id([parentPermissionId, childPermissionId])
-// }
+  @@id([parentPermissionId, childPermissionId])
+}
