@@ -97,8 +97,10 @@ model User {
   greWordTags  GreWordTag[]
   userSessions UserSession[]
 
-  relationRoleToUserAsUser     RelationRoleToUser[] @relation("User")
-  relationRoleToUserAsAssigner RelationRoleToUser[] @relation("Assigner")
+  relationRoleToUserAsUser          RelationRoleToUser[]       @relation("User")
+  relationRoleToUserAsAssigner      RelationRoleToUser[]       @relation("Assigner")
+  relationPermissionToUserAsUser    RelationPermissionToUser[] @relation("User")
+  relationPermissionToUserAsGranter RelationPermissionToUser[] @relation("Granter")
 
   @@map("Users")
 }
@@ -161,27 +163,27 @@ model RelationRoleToUser {
   @@id([roleId, userId])
 }
 
-// model Permission {
-//   id                        String                @id @default(uuid())
-//   name                      String                @unique
-//   meta                      Json                  @default("{}")
-//   createdAt                 DateTime              @default(now())
-//   updatedAt                 DateTime              @updatedAt
-//   parentPermissionHierarchy PermissionHierarchy[] @relation("ChildPermission")
-//   childPermissionHierarchy  PermissionHierarchy[] @relation("ParentPermission")
-//   PermissionToUser          PermissionToUser[]
+model Permission {
+  id                                   String                     @id @default(uuid())
+  name                                 String                     @unique
+  meta                                 Json                       @default("{}")
+  createdAt                            DateTime                   @default(now())
+  updatedAt                            DateTime                   @updatedAt
+  relationPermissionToUserAsPermission RelationPermissionToUser[]
 
-//   @@map("Permissions")
-// }
+  @@map("Permissions")
+}
 
-// model PermissionToUser {
-//   permissionId String
-//   permission   Permission @relation(fields: [permissionId], references: [id])
-//   userId       String
-//   user         User       @relation(fields: [userId], references: [id])
+model RelationPermissionToUser {
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  userId       String
+  user         User       @relation(name: "User", fields: [userId], references: [id])
+  granterId    String
+  granter      User       @relation(name: "Granter", fields: [granterId], references: [id])
 
-//   @@id([permissionId, userId])
-// }
+  @@id([permissionId, userId])
+}
 
 // model PermissionHierarchy {
 //   parentPermissionId String
