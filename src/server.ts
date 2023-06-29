@@ -7,13 +7,11 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 import { context } from 'context';
 import cors from 'cors';
-import { db } from 'db';
 import express from 'express';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
 import Keyv from 'keyv';
 import environmentVars from 'lib/environmentVars';
-import fileLogger from 'lib/fileLogger';
 import rootRouter from 'rootRouter';
 import { schema } from 'schema';
 import { WebSocketServer } from 'ws';
@@ -75,21 +73,3 @@ export const server = new ApolloServer({
     console.log(`Server is now running on http://localhost:${PORT}/graphql`);
   });
 })();
-
-const method = async () => {
-  const users = await db.user.findMany({
-    include: {
-      relationRoleToUserAsAssigner: { include: { role: true } },
-    },
-  });
-  fileLogger.logToJsFile({ users });
-
-  const roles = await db.role.findMany({
-    include: {
-      relationRoleToUserAsRole: { include: { assigner: true } },
-    },
-  });
-  fileLogger.logToJsFile({ roles });
-};
-method();
-//
