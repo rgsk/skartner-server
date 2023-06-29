@@ -14,43 +14,88 @@ const authorize =
             relationPermissionToUserAsPermission: {
               none: { userId: user.id, isAllowed: false },
             },
+            relationPermissionToRoleAsPermission: {
+              none: {
+                role: {
+                  relationRoleToUserAsRole: { every: { userId: user.id } },
+                },
+                isAllowed: false,
+              },
+            },
             permissionHierarchyAsChild: {
               every: {
                 parentPermission: {
                   relationPermissionToUserAsPermission: {
                     none: { userId: user.id, isAllowed: false },
                   },
+                  relationPermissionToRoleAsPermission: {
+                    none: {
+                      role: {
+                        relationRoleToUserAsRole: {
+                          every: { userId: user.id },
+                        },
+                      },
+                      isAllowed: false,
+                    },
+                  },
                 },
               },
             },
           },
         });
+        console.log({ noEntryIsFalse });
         if (!noEntryIsFalse) {
           throw new Error('Un-Authorized');
         }
         const someEntryIsTrue = await db.permission.count({
           where: {
             name: permissionName,
-            permissionHierarchyAsChild: {
-              some: {
-                OR: [
-                  {
-                    parentPermission: {
-                      relationPermissionToUserAsPermission: {
-                        some: { userId: user.id, isAllowed: true },
-                      },
-                    },
-                  },
-                  {
-                    childPermission: {
-                      relationPermissionToUserAsPermission: {
-                        some: { userId: user.id, isAllowed: true },
-                      },
-                    },
-                  },
-                ],
+            OR: [
+              {
+                relationPermissionToUserAsPermission: {
+                  some: { userId: user.id, isAllowed: true },
+                },
               },
-            },
+              {
+                relationPermissionToRoleAsPermission: {
+                  some: {
+                    role: {
+                      relationRoleToUserAsRole: {
+                        every: { userId: user.id },
+                      },
+                    },
+                    isAllowed: true,
+                  },
+                },
+              },
+              {
+                permissionHierarchyAsChild: {
+                  some: {
+                    parentPermission: {
+                      OR: [
+                        {
+                          relationPermissionToUserAsPermission: {
+                            some: { userId: user.id, isAllowed: true },
+                          },
+                        },
+                        {
+                          relationPermissionToRoleAsPermission: {
+                            some: {
+                              role: {
+                                relationRoleToUserAsRole: {
+                                  every: { userId: user.id },
+                                },
+                              },
+                              isAllowed: true,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
           },
         });
         console.log({ someEntryIsTrue });
