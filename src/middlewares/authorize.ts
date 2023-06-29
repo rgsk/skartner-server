@@ -6,7 +6,7 @@ const authorize =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // get the user via token
-      const user = await db.user.findUnique({ where: { email: 'serious' } });
+      const user = await db.user.findUnique({ where: { email: 'rahul' } });
       if (user) {
         const noEntryIsFalse = await db.permission.count({
           where: {
@@ -17,7 +17,7 @@ const authorize =
             relationPermissionToRoleAsPermission: {
               none: {
                 role: {
-                  relationRoleToUserAsRole: { every: { userId: user.id } },
+                  relationRoleToUserAsRole: { some: { userId: user.id } },
                 },
                 isAllowed: false,
               },
@@ -32,7 +32,7 @@ const authorize =
                     none: {
                       role: {
                         relationRoleToUserAsRole: {
-                          every: { userId: user.id },
+                          some: { userId: user.id },
                         },
                       },
                       isAllowed: false,
@@ -61,7 +61,7 @@ const authorize =
                   some: {
                     role: {
                       relationRoleToUserAsRole: {
-                        every: { userId: user.id },
+                        some: { userId: user.id },
                       },
                     },
                     isAllowed: true,
@@ -83,7 +83,7 @@ const authorize =
                             some: {
                               role: {
                                 relationRoleToUserAsRole: {
-                                  every: { userId: user.id },
+                                  some: { userId: user.id },
                                 },
                               },
                               isAllowed: true,
