@@ -2,15 +2,24 @@ import { GreWord, Prisma } from '@prisma/client';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import cacheValue from 'lib/cache/cacheValue';
-import { deriveEntityMapFromArray } from 'lib/generalUtils';
+import { deriveEntityMapFromArray, randomBetween } from 'lib/generalUtils';
 import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
 import openAIApi from 'lib/openAIApi';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, nonNull, objectType, stringArg } from 'nexus';
+import {
+  booleanArg,
+  extendType,
+  intArg,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 import { ChatCompletionRequestMessage } from 'openai';
+import { NexusGenObjects } from '../../nexus-typegen';
 
 function createGreWordsLoader(ctx: Context) {
   return new DataLoader<string, GreWord>(
@@ -63,11 +72,19 @@ export const GptPromptObject = objectType({
   },
 });
 
+export const SendSinglePromptResponseObject = objectType({
+  name: 'SendSinglePromptResponse',
+  definition(t) {
+    t.nonNull.string('result');
+    t.nonNull.int('resultIndex');
+  },
+});
+
 export const GptPromptQuery = extendType({
   type: 'Query',
   definition(t) {
     t.list.field('gptPrompts', {
-      type: GptPromptObject,
+      type: 'GptPrompt',
       args: findManyGraphqlArgs,
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GptPromptFindManyArgs = parseGraphQLQuery(
@@ -78,26 +95,84 @@ export const GptPromptQuery = extendType({
         return gptPrompts;
       },
     });
-    t.string('sendSinglePrompt', {
+    t.nonNull.field('sendSinglePrompt', {
+      type: 'SendSinglePromptResponse',
       args: {
         input: nonNull(stringArg()),
+        skipCache: booleanArg(),
+        indexesReturned: list(nonNull(intArg())),
       },
       async resolve(root, args, ctx) {
-        const result = await cacheValue('db', {
-          key: {
-            query: 'sendSinglePrompt',
-            args,
+        const { input, skipCache } = args;
+        const result = await cacheValue<
+          NexusGenObjects['SendSinglePromptResponse']
+        >(
+          'db',
+          {
+            key: {
+              query: 'sendSinglePrompt',
+              args: {
+                input,
+              },
+            },
+            getValue: async (previousCachedValue) => {
+              const message = await sendPrompt([
+                { role: 'user', content: args.input },
+              ]);
+              const result = message?.content ?? null;
+              const idx =
+                previousCachedValue && previousCachedValue.results
+                  ? previousCachedValue.results.length
+                  : 0;
+              return {
+                result: result ?? '',
+                resultIndex: idx,
+              };
+            },
+            getFromCache: (cachedValue) => {
+              if (cachedValue.results) {
+                const len = cachedValue.results.length;
+                const idx = randomBetween(
+                  0,
+                  len - 1,
+                  args.indexesReturned ?? undefined
+                );
+                if (idx === null) {
+                  return {
+                    result: 'no more results in cache',
+                    resultIndex: -1,
+                  };
+                } else {
+                  return { result: cachedValue.results[idx], resultIndex: idx };
+                }
+              } else {
+                return {
+                  result: cachedValue.result,
+                  resultIndex: 0,
+                };
+              }
+            },
+            setInCache: (value, previousCachedValue) => {
+              if (previousCachedValue) {
+                if (previousCachedValue.results) {
+                  return {
+                    results: [...previousCachedValue.results, value.result],
+                  };
+                } else {
+                  return {
+                    results: [previousCachedValue.result, value.result],
+                  };
+                }
+              } else {
+                return { result: value.result };
+              }
+            },
           },
-          getValue: async () => {
-            const message = await sendPrompt([
-              { role: 'user', content: args.input },
-            ]);
-            const result = message?.content ?? null;
-            return result;
-          },
-          getFromCache: (value) => value.result,
-          setInCache: (value) => ({ result: value }),
-        });
+          {
+            disabled: !!skipCache,
+            updateCacheWhileDisabled: true,
+          }
+        );
         return result;
       },
     });

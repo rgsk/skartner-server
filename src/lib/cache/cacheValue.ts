@@ -25,10 +25,10 @@ const cacheValue = async <T>(
     setInCache,
   }: {
     key: any;
-    getValue: () => T;
+    getValue: (previousCachedValue: any) => Promise<T>;
     expirationTimestamp?: Date | null;
-    getFromCache?: (value: any) => T;
-    setInCache?: (value: T) => any;
+    getFromCache?: (cachedValue: any) => T;
+    setInCache?: (value: T, previousCachedValue: any) => any;
   },
   options?: {
     disabled?: boolean;
@@ -45,17 +45,17 @@ const cacheValue = async <T>(
     }
   }
   const { disabled = false, updateCacheWhileDisabled = false } = options ?? {};
+  const cachedValue = await handlers[handler].get(key);
   if (!disabled) {
-    const cachedValue = await handlers[handler].get(key);
     if (cachedValue) {
       return getFromCache ? getFromCache(cachedValue) : (cachedValue as T);
     }
   }
-  const value = await getValue();
+  const value = await getValue(cachedValue);
   if (!disabled || updateCacheWhileDisabled) {
     await handlers[handler].set(
       key,
-      setInCache ? setInCache(value) : value,
+      setInCache ? setInCache(value, cachedValue) : value,
       expirationTimestamp
     );
   }

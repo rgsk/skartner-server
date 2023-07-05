@@ -174,6 +174,10 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   Query: {};
+  SendSinglePromptResponse: { // root type
+    result: string; // String!
+    resultIndex: number; // Int!
+  }
   Subscription: {};
   User: { // root type
     email: string; // String!
@@ -296,13 +300,17 @@ export interface NexusGenFieldTypes {
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['helloWorld']; // helloWorld!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
-    sendSinglePrompt: string | null; // String
+    sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
     userSession: NexusGenRootTypes['UserSession'] | null; // UserSession
     userSessions: NexusGenRootTypes['UserSession'][]; // [UserSession!]!
     userSessionsCount: number; // Int!
     users: NexusGenRootTypes['User'][]; // [User!]!
     usersCount: number; // Int!
+  }
+  SendSinglePromptResponse: { // field return type
+    result: string; // String!
+    resultIndex: number; // Int!
   }
   Subscription: { // field return type
     notificationReceived: NexusGenRootTypes['Notification'] | null; // Notification
@@ -430,13 +438,17 @@ export interface NexusGenFieldTypeNames {
     greWordsCount: 'Int'
     hello: 'helloWorld'
     posts: 'Post'
-    sendSinglePrompt: 'String'
+    sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'
     userSession: 'UserSession'
     userSessions: 'UserSession'
     userSessionsCount: 'Int'
     users: 'User'
     usersCount: 'Int'
+  }
+  SendSinglePromptResponse: { // field return type name
+    result: 'String'
+    resultIndex: 'Int'
   }
   Subscription: { // field return type name
     notificationReceived: 'Notification'
@@ -575,7 +587,9 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
     }
     sendSinglePrompt: { // args
+      indexesReturned?: number[] | null; // [Int!]
       input: string; // String!
+      skipCache?: boolean | null; // Boolean
     }
     user: { // args
       where: NexusGenInputs['UserWhereUniqueInput']; // UserWhereUniqueInput!

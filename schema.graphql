@@ -167,13 +167,18 @@ type Query {
   greWordsCount(where: GreWordWhereInput): Int!
   hello: helloWorld!
   posts: [Post]
-  sendSinglePrompt(input: String!): String
+  sendSinglePrompt(indexesReturned: [Int!], input: String!, skipCache: Boolean): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User
   userSession(where: UserSessionWhereUniqueInput!): UserSession
   userSessions(orderBy: [UserSessionOrderByWithRelationInput], skip: Int, take: Int, where: UserSessionWhereInput): [UserSession!]!
   userSessionsCount(where: UserSessionWhereInput): Int!
   users(orderBy: [UserOrderByWithRelationInput], skip: Int, take: Int, where: UserWhereInput): [User!]!
   usersCount(where: UserWhereInput): Int!
+}
+
+type SendSinglePromptResponse {
+  result: String!
+  resultIndex: Int!
 }
 
 enum SortOrder {
