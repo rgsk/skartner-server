@@ -175,8 +175,10 @@ export interface NexusGenObjects {
   }
   Query: {};
   SendSinglePromptResponse: { // root type
-    result: string; // String!
-    resultIndex: number; // Int!
+    error?: string | null; // String
+    result?: string | null; // String
+    resultIndex?: number | null; // Int
+    totalResultsInCache: number; // Int!
   }
   Subscription: {};
   User: { // root type
@@ -309,8 +311,10 @@ export interface NexusGenFieldTypes {
     usersCount: number; // Int!
   }
   SendSinglePromptResponse: { // field return type
-    result: string; // String!
-    resultIndex: number; // Int!
+    error: string | null; // String
+    result: string | null; // String
+    resultIndex: number | null; // Int
+    totalResultsInCache: number; // Int!
   }
   Subscription: { // field return type
     notificationReceived: NexusGenRootTypes['Notification'] | null; // Notification
@@ -447,8 +451,10 @@ export interface NexusGenFieldTypeNames {
     usersCount: 'Int'
   }
   SendSinglePromptResponse: { // field return type name
+    error: 'String'
     result: 'String'
     resultIndex: 'Int'
+    totalResultsInCache: 'Int'
   }
   Subscription: { // field return type name
     notificationReceived: 'Notification'
@@ -589,6 +595,7 @@ export interface NexusGenArgTypes {
     sendSinglePrompt: { // args
       indexesReturned?: number[] | null; // [Int!]
       input: string; // String!
+      resultIndexFromCache?: number | null; // Int
       skipCache?: boolean | null; // Boolean
     }
     user: { // args

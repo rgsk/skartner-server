@@ -75,8 +75,10 @@ export const GptPromptObject = objectType({
 export const SendSinglePromptResponseObject = objectType({
   name: 'SendSinglePromptResponse',
   definition(t) {
-    t.nonNull.string('result');
-    t.nonNull.int('resultIndex');
+    t.string('result');
+    t.int('resultIndex');
+    t.string('error');
+    t.nonNull.int('totalResultsInCache');
   },
 });
 
@@ -101,9 +103,11 @@ export const GptPromptQuery = extendType({
         input: nonNull(stringArg()),
         skipCache: booleanArg(),
         indexesReturned: list(nonNull(intArg())),
+        resultIndexFromCache: intArg(),
       },
       async resolve(root, args, ctx) {
-        const { input, skipCache } = args;
+        const { input, skipCache, indexesReturned, resultIndexFromCache } =
+          args;
         const result = await cacheValue<
           NexusGenObjects['SendSinglePromptResponse']
         >(
@@ -117,7 +121,7 @@ export const GptPromptQuery = extendType({
             },
             getValue: async (previousCachedValue) => {
               const message = await sendPrompt([
-                { role: 'user', content: args.input },
+                { role: 'user', content: input },
               ]);
               const result = message?.content ?? null;
               const idx =
@@ -127,28 +131,50 @@ export const GptPromptQuery = extendType({
               return {
                 result: result ?? '',
                 resultIndex: idx,
+                totalResultsInCache: previousCachedValue.results.length + 1,
               };
             },
             getFromCache: (cachedValue) => {
               if (cachedValue.results) {
                 const len = cachedValue.results.length;
+                if (typeof resultIndexFromCache === 'number') {
+                  if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
+                    return {
+                      result: cachedValue.results[resultIndexFromCache],
+                      resultIndex: resultIndexFromCache,
+                      totalResultsInCache: len,
+                    };
+                  } else {
+                    return {
+                      error: `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
+                        len - 1
+                      }`,
+                      totalResultsInCache: len,
+                    };
+                  }
+                }
                 const idx = randomBetween(
                   0,
                   len - 1,
-                  args.indexesReturned ?? undefined
+                  indexesReturned ?? undefined
                 );
                 if (idx === null) {
                   return {
-                    result: 'no more results in cache',
-                    resultIndex: -1,
+                    error: 'no more results in cache',
+                    totalResultsInCache: len,
                   };
                 } else {
-                  return { result: cachedValue.results[idx], resultIndex: idx };
+                  return {
+                    result: cachedValue.results[idx],
+                    resultIndex: idx,
+                    totalResultsInCache: len,
+                  };
                 }
               } else {
                 return {
                   result: cachedValue.result,
                   resultIndex: 0,
+                  totalResultsInCache: 1,
                 };
               }
             },
