@@ -129,9 +129,9 @@ export const GptPromptQuery = extendType({
                   ? previousCachedValue.results.length
                   : 0;
               return {
-                result: result ?? '',
+                result: result,
                 resultIndex: idx,
-                totalResultsInCache: previousCachedValue.results.length + 1,
+                totalResultsInCache: idx + 1,
               };
             },
             getFromCache: (cachedValue) => {
