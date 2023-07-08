@@ -3,7 +3,10 @@ import { Router } from 'express';
 import fileLogger from 'lib/fileLogger';
 import authorize from 'middlewares/authorize';
 import { bullMonitorExpress } from 'queues';
+import sampleRouter from 'routers/sampleRouter';
 const rootRouter = Router();
+
+rootRouter.use('/sample', sampleRouter);
 
 rootRouter.get('/', authorize('MANAGE_QUEUES'), async (req, res, next) => {
   res.json({ message: 'skartner-server is working' });
@@ -11,7 +14,6 @@ rootRouter.get('/', authorize('MANAGE_QUEUES'), async (req, res, next) => {
 rootRouter.post('/', async (req, res, next) => {
   res.json(req.body);
 });
-
 rootRouter.post('/log', async (req, res, next) => {
   fileLogger.logToJsFile(req.body);
   res.json({ message: 'logged', data: req.body });

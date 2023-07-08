@@ -7,17 +7,13 @@ const getKey = (key: any) => {
   return 'cache: ' + stringifiedKey;
 };
 const redisCache: CacheHandler = {
-  get: async (key: any) => {
+  get: async (key) => {
     const modifiedKey = getKey(key);
     const cachedValue = await redis.get(modifiedKey);
     return cachedValue ? JSON.parse(cachedValue) : null;
   },
 
-  set: async (
-    key: any,
-    value: any,
-    expirationTimestamp: Date | null = null
-  ) => {
+  set: async (key, value, expirationTimestamp) => {
     const modifiedKey = getKey(key);
     await redis.set(modifiedKey, JSON.stringify(value));
     if (expirationTimestamp) {
@@ -25,6 +21,14 @@ const redisCache: CacheHandler = {
       const expirationTime = expirationTimestamp.getTime() - now;
       await redis.pexpire(modifiedKey, expirationTime);
     }
+  },
+
+  delete: async (key) => {
+    const modifiedKey = getKey(key);
+    const deletionSuccessful = await redis.del(modifiedKey);
+    // deletionSuccessful is 0 or 1
+    // 1 -> when key exists
+    // 0 -> when key doesn't exists
   },
 };
 

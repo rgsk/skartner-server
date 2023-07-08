@@ -9,11 +9,24 @@ export type CacheHandler = {
     value: any,
     expirationTimestamp?: Date | null
   ) => Promise<void>;
+  delete: (key: any) => Promise<void>;
 };
-const handlers = {
+export const handlers = {
   db: dbCache,
   redis: redisCache,
   inMemory: inMemoryCache,
+};
+
+export type CacheValueProps<T> = {
+  key: any;
+  getValue: (previousCachedValue: any) => Promise<T>;
+  expirationTimestamp?: Date | null;
+  getFromCache?: (cachedValue: any) => T;
+  setInCache?: (value: T, previousCachedValue: any) => any;
+};
+export type CacheOptions = {
+  disabled?: boolean;
+  updateCacheWhileDisabled?: boolean;
 };
 const cacheValue = async <T>(
   handler: keyof typeof handlers,
@@ -23,17 +36,8 @@ const cacheValue = async <T>(
     expirationTimestamp = null,
     getFromCache,
     setInCache,
-  }: {
-    key: any;
-    getValue: (previousCachedValue: any) => Promise<T>;
-    expirationTimestamp?: Date | null;
-    getFromCache?: (cachedValue: any) => T;
-    setInCache?: (value: T, previousCachedValue: any) => any;
-  },
-  options?: {
-    disabled?: boolean;
-    updateCacheWhileDisabled?: boolean;
-  }
+  }: CacheValueProps<T>,
+  options?: CacheOptions
 ) => {
   if (getFromCache || setInCache) {
     // if either of them are provided in args
@@ -61,4 +65,5 @@ const cacheValue = async <T>(
   }
   return value;
 };
+
 export default cacheValue;

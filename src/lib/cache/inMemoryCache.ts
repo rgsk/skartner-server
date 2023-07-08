@@ -5,17 +5,13 @@ const getKey = (key: any) => {
   return JSON.stringify(key);
 };
 const inMemoryCache: CacheHandler = {
-  get: async (key: any) => {
+  get: async (key) => {
     const modifiedKey = getKey(key);
     const cachedValue = cacheMap.get(modifiedKey);
     return cachedValue !== undefined ? cachedValue : null;
   },
 
-  set: async (
-    key: any,
-    value: any,
-    expirationTimestamp: Date | null = null
-  ) => {
+  set: async (key, value, expirationTimestamp) => {
     const modifiedKey = getKey(key);
     cacheMap.set(modifiedKey, value);
     if (expirationTimestamp) {
@@ -25,6 +21,10 @@ const inMemoryCache: CacheHandler = {
         cacheMap.delete(modifiedKey);
       }, expirationTime);
     }
+  },
+  delete: async (key) => {
+    const modifiedKey = getKey(key);
+    cacheMap.delete(modifiedKey);
   },
 };
 
