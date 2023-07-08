@@ -6,7 +6,7 @@ dir="$(dirname "$0")"
 # Run the second script using its relative path from the current script's directory
 sh "$dir/remove-postgres.sh"
 
-docker volume create skartner-server-postgres-pgdata
+docker volume create skartner-server-postgres-pgdata-new
 
 docker run \
 	--rm \
@@ -15,5 +15,5 @@ docker run \
 	-e POSTGRES_PASSWORD=postgres \
 	-e POSTGRES_USER=postgres \
 	-e POSTGRES_DB=postgres \
-	-v skartner-server-postgres-pgdata:/var/lib/postgresql/data \
+	-v skartner-server-postgres-pgdata-new:/var/lib/postgresql/data \
 	-d postgres:14

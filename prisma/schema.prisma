@@ -97,6 +97,12 @@ model User {
   greWordTags  GreWordTag[]
   userSessions UserSession[]
 
+  relationRoleToUserAsUser          RelationRoleToUser[]       @relation("User")
+  relationRoleToUserAsAssigner      RelationRoleToUser[]       @relation("Assigner")
+  relationPermissionToUserAsUser    RelationPermissionToUser[] @relation("User")
+  relationPermissionToUserAsGranter RelationPermissionToUser[] @relation("Granter")
+  relationPermissionToRoleAsGranter RelationPermissionToRole[]
+
   @@map("Users")
 }
 
@@ -133,4 +139,75 @@ model Cache {
   expirationTimestamp DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+}
+
+model Role {
+  id                             String                     @id @default(uuid())
+  name                           String                     @unique
+  meta                           Json                       @default("{}")
+  createdAt                      DateTime                   @default(now())
+  updatedAt                      DateTime                   @updatedAt
+  relationRoleToUserAsRole       RelationRoleToUser[]
+  relationPermissionToRoleAsRole RelationPermissionToRole[]
+
+  @@map("Roles")
+}
+
+model RelationRoleToUser {
+  roleId     String
+  role       Role     @relation(fields: [roleId], references: [id])
+  userId     String
+  user       User     @relation(name: "User", fields: [userId], references: [id])
+  assignedAt DateTime @default(now())
+  assignerId String
+  assigner   User     @relation(name: "Assigner", fields: [assignerId], references: [id])
+
+  @@id([roleId, userId])
+}
+
+model Permission {
+  id                                   String                     @id @default(uuid())
+  name                                 String                     @unique
+  meta                                 Json                       @default("{}")
+  createdAt                            DateTime                   @default(now())
+  updatedAt                            DateTime                   @updatedAt
+  relationPermissionToUserAsPermission RelationPermissionToUser[]
+  relationPermissionToRoleAsPermission RelationPermissionToRole[]
+  permissionHierarchyAsChild           PermissionHierarchy[]      @relation("Child")
+  permissionHierarchyAsParent          PermissionHierarchy[]      @relation("Parent")
+
+  @@map("Permissions")
+}
+
+model RelationPermissionToUser {
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  userId       String
+  user         User       @relation(name: "User", fields: [userId], references: [id])
+  granterId    String
+  granter      User       @relation(name: "Granter", fields: [granterId], references: [id])
+  isAllowed    Boolean?
+
+  @@id([permissionId, userId])
+}
+
+model RelationPermissionToRole {
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  granterId    String
+  granter      User       @relation(fields: [granterId], references: [id])
+  isAllowed    Boolean?
+
+  @@id([permissionId, roleId])
+}
+
+model PermissionHierarchy {
+  parentPermissionId String
+  parentPermission   Permission @relation("Parent", fields: [parentPermissionId], references: [id])
+  childPermissionId  String
+  childPermission    Permission @relation("Child", fields: [childPermissionId], references: [id])
+
+  @@id([parentPermissionId, childPermissionId])
 }
