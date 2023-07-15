@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { db } from 'db';
 import { Router } from 'express';
 import fileLogger from 'lib/fileLogger';
 import authorize from 'middlewares/authorize';
@@ -80,5 +81,10 @@ rootRouter.get('/pincode/:pincode', async (req, res, next) => {
   await bullMonitorExpress.init();
   rootRouter.use('/queues', bullMonitorExpress.router);
 })();
+
+rootRouter.get('/cricket-players', async (req, res, next) => {
+  const cricketPlayers = await db.cricketPlayer.findMany();
+  res.json(cricketPlayers);
+});
 
 export default rootRouter;

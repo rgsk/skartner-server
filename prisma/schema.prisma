@@ -211,3 +211,9 @@ model PermissionHierarchy {
 
   @@id([parentPermissionId, childPermissionId])
 }
+
+model CricketPlayer {
+  id     String @id @default(uuid())
+  dataId Int    @unique()
+  name   String
+}
