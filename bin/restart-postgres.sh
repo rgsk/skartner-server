@@ -9,7 +9,6 @@ sh "$dir/remove-postgres.sh"
 docker volume create skartner-server-postgres-pgdata
 
 docker run \
-	--rm \
 	-p 5433:5432 \
 	--name skartner-server-local \
 	-e POSTGRES_PASSWORD=postgres \
