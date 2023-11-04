@@ -110,9 +110,8 @@ model User {
 model GreWordSearchPromptInput {
   id String @id @default(uuid())
 
-  text   String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  text  String
+  users User[]
 
   meta      Json     @default("{}")
   createdAt DateTime @default(now())

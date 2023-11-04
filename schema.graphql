@@ -53,14 +53,12 @@ type GreWordSearchPromptInput {
   meta: Json!
   text: String!
   updatedAt: String!
-  user: User!
-  userId: String!
 }
 
 input GreWordSearchPromptInputWhereInput {
   id: StringFilter
   text: StringFilter
-  userId: StringFilter
+  users: UserListRelationFilter
 }
 
 input GreWordSpellingUserIdCompoundUniqueInput {
@@ -137,12 +135,11 @@ type Mutation {
   createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
-  deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
-  updateGreWordSearchPromptInput(id: String!, text: String!): GreWordSearchPromptInput
+  updateGreWordSearchPromptInput(connectedUserId: String, disconnectedUserId: String, id: String!, text: String): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
 
@@ -222,6 +219,12 @@ type User {
   id: String!
   meta: UserMetaParsedJsonValue!
   updatedAt: String!
+}
+
+input UserListRelationFilter {
+  every: UserWhereInput
+  none: UserWhereInput
+  some: UserWhereInput
 }
 
 type UserMetaParsedJsonValue {

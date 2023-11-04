@@ -17,22 +17,14 @@ export const GreWordSearchPromptInputObject = objectType({
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('text');
-    t.nonNull.string('userId');
-    t.nonNull.field('user', {
-      type: nonNull('User'),
-      resolve(greWordSearchPromptInput: any) {
-        // no resolver need as prisma is handling that
-        return greWordSearchPromptInput.user;
-      },
-    }),
-      addDateFieldsDefinitions(t);
+    addDateFieldsDefinitions(t);
     t.nonNull.field('meta', {
       type: 'Json',
     });
   },
 });
 
-const GreWordSearchPromptInputWhereInput = inputObjectType({
+export const GreWordSearchPromptInputWhereInput = inputObjectType({
   name: 'GreWordSearchPromptInputWhereInput',
   definition(t) {
     t.field('id', {
@@ -41,8 +33,8 @@ const GreWordSearchPromptInputWhereInput = inputObjectType({
     t.field('text', {
       type: 'StringFilter',
     });
-    t.field('userId', {
-      type: 'StringFilter',
+    t.field('users', {
+      type: 'UserListRelationFilter',
     });
   },
 });
@@ -54,11 +46,12 @@ export const GreWordSearchPromptInputQuery = extendType({
       type: nonNull('GreWordSearchPromptInput'),
       args: {
         ...findManyGraphqlArgs,
-        where: GreWordSearchPromptInputWhereInput,
+        where: 'GreWordSearchPromptInputWhereInput',
       },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.GreWordSearchPromptInputFindManyArgs =
           parseGraphQLQuery(info, args);
+
         const greWordSearchPromptInputs =
           await ctx.db.greWordSearchPromptInput.findMany(prismaArgs);
         return greWordSearchPromptInputs as any;
@@ -88,7 +81,7 @@ export const GreWordSearchPromptInputMutation = extendType({
             ...prismaArgs,
             data: {
               text: text,
-              userId: userId,
+              users: { connect: { id: userId } },
             },
           });
         return greWordSearchPromptInput;
@@ -97,11 +90,14 @@ export const GreWordSearchPromptInputMutation = extendType({
     t.field('updateGreWordSearchPromptInput', {
       type: 'GreWordSearchPromptInput',
       args: {
-        text: nonNull(stringArg()),
+        text: stringArg(),
+        connectedUserId: stringArg(),
+        disconnectedUserId: stringArg(),
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { text, id, ...restArgs } = args;
+        const { text, id, connectedUserId, disconnectedUserId, ...restArgs } =
+          args;
         const prismaArgs =
           parseGraphQLQuery<Prisma.GreWordSearchPromptInputArgs>(
             info,
@@ -111,27 +107,19 @@ export const GreWordSearchPromptInputMutation = extendType({
           await ctx.db.greWordSearchPromptInput.update({
             ...prismaArgs,
             data: {
-              text: text,
+              text: text ?? undefined,
+              users:
+                connectedUserId || disconnectedUserId
+                  ? {
+                      connect: connectedUserId
+                        ? { id: connectedUserId }
+                        : undefined,
+                      disconnect: disconnectedUserId
+                        ? { id: disconnectedUserId }
+                        : undefined,
+                    }
+                  : undefined,
             },
-            where: {
-              id: id,
-            },
-          });
-        return greWordSearchPromptInput;
-      },
-    });
-    t.field('deleteGreWordSearchPromptInput', {
-      type: 'GreWordSearchPromptInput',
-      args: {
-        id: nonNull(stringArg()),
-      },
-      async resolve(root, args, ctx, info) {
-        const { id, ...restArgs } = args;
-        const prismaArgs: Prisma.GreWordSearchPromptInputDeleteArgs =
-          parseGraphQLQuery(info, restArgs);
-        const greWordSearchPromptInput =
-          await ctx.db.greWordSearchPromptInput.delete({
-            ...prismaArgs,
             where: {
               id: id,
             },

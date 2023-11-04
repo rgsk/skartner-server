@@ -83,6 +83,21 @@ export const UserWhereInput = inputObjectType({
   },
 });
 
+export const UserListRelationFilter = inputObjectType({
+  name: 'UserListRelationFilter',
+  definition(t) {
+    t.field('every', {
+      type: 'UserWhereInput',
+    });
+    t.field('some', {
+      type: 'UserWhereInput',
+    });
+    t.field('none', {
+      type: 'UserWhereInput',
+    });
+  },
+});
+
 export const UserOrderByWithRelationInput = inputObjectType({
   name: 'UserOrderByWithRelationInput',
   definition(t) {
