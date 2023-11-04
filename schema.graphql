@@ -129,7 +129,7 @@ type Mutation {
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
-  createUser(email: String!, meta: UserMetaParsedJsonValueInput): User
+  createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput

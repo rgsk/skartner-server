@@ -159,7 +159,7 @@ export const UserMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createUser', {
-      type: 'User',
+      type: nonNull('User'),
       args: {
         email: nonNull(stringArg()),
         meta: 'UserMetaParsedJsonValueInput',
