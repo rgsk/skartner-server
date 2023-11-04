@@ -94,6 +94,11 @@ input GreWordTagListRelationFilter {
   some: GreWordTagWhereInput
 }
 
+input GreWordTagNameUserIdCompoundUniqueInput {
+  name: String!
+  userId: String!
+}
+
 input GreWordTagWhereInput {
   id: StringFilter
   name: StringFilter
@@ -102,7 +107,7 @@ input GreWordTagWhereInput {
 
 input GreWordTagWhereUniqueInput {
   id: String
-  name: String
+  name_userId: GreWordTagNameUserIdCompoundUniqueInput
 }
 
 input GreWordWhereInput {
@@ -133,7 +138,7 @@ type Mutation {
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
-  deleteGreWordTag(name: String!): GreWordTag!
+  deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord

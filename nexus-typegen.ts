@@ -40,6 +40,10 @@ export interface NexusGenInputs {
     none?: NexusGenInputs['GreWordTagWhereInput'] | null; // GreWordTagWhereInput
     some?: NexusGenInputs['GreWordTagWhereInput'] | null; // GreWordTagWhereInput
   }
+  GreWordTagNameUserIdCompoundUniqueInput: { // input type
+    name: string; // String!
+    userId: string; // String!
+  }
   GreWordTagWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     name?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -47,7 +51,7 @@ export interface NexusGenInputs {
   }
   GreWordTagWhereUniqueInput: { // input type
     id?: string | null; // String
-    name?: string | null; // String
+    name_userId?: NexusGenInputs['GreWordTagNameUserIdCompoundUniqueInput'] | null; // GreWordTagNameUserIdCompoundUniqueInput
   }
   GreWordWhereInput: { // input type
     greWordTags?: NexusGenInputs['GreWordTagListRelationFilter'] | null; // GreWordTagListRelationFilter
@@ -538,6 +542,7 @@ export interface NexusGenArgTypes {
     }
     deleteGreWordTag: { // args
       name: string; // String!
+      userId: string; // String!
     }
     publish: { // args
       draftId: string; // String!

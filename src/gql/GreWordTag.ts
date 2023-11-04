@@ -11,6 +11,35 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import { z } from 'zod';
+
+export const GreWordTagNameUserIdCompoundUniqueInput = inputObjectType({
+  name: 'GreWordTagNameUserIdCompoundUniqueInput',
+  definition(t) {
+    t.nonNull.string('name');
+    t.nonNull.string('userId');
+  },
+});
+
+export const GreWordTagWhereUniqueInput = inputObjectType({
+  name: 'GreWordTagWhereUniqueInput',
+  definition(t) {
+    t.string('id');
+    t.field('name_userId', {
+      type: 'GreWordTagNameUserIdCompoundUniqueInput',
+    });
+  },
+});
+
+export const ZGreWordTagWhereUniqueInput = z.object({
+  id: z.string().optional(),
+  name_userId: z
+    .object({
+      name: z.string(),
+      userId: z.string(),
+    })
+    .optional(),
+});
 
 export const GreWordTagObject = objectType({
   name: 'GreWordTag',
@@ -105,9 +134,10 @@ export const GreWordTagMutation = extendType({
       type: nonNull('GreWordTag'),
       args: {
         name: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { name, ...restArgs } = args;
+        const { name, userId, ...restArgs } = args;
         const prismaArgs: Prisma.GreWordTagDeleteArgs = parseGraphQLQuery(
           info,
           restArgs
@@ -115,7 +145,10 @@ export const GreWordTagMutation = extendType({
         const greWordTag = await ctx.db.greWordTag.delete({
           ...prismaArgs,
           where: {
-            name: name,
+            name_userId: {
+              name: name,
+              userId: userId,
+            },
           },
         });
         return greWordTag;

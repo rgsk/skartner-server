@@ -18,6 +18,7 @@ import {
   stringArg,
 } from 'nexus';
 import { z } from 'zod';
+import { ZGreWordTagWhereUniqueInput } from './GreWordTag';
 import { notifyUser } from './Notification';
 import { getEnumFilter } from './Types';
 
@@ -200,18 +201,6 @@ export const GreWordQuery = extendType({
       },
     });
   },
-});
-export const GreWordTagWhereUniqueInput = inputObjectType({
-  name: 'GreWordTagWhereUniqueInput',
-  definition(t) {
-    t.string('id');
-    t.string('name');
-  },
-});
-
-const ZGreWordTagWhereUniqueInput = z.object({
-  id: z.string().optional(),
-  name: z.string().optional(),
 });
 
 export const GreWordMutation = extendType({

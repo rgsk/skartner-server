@@ -7,4 +7,6 @@ sh "$dir/restart-redis.sh"
 
 yarn watch:schema &
 
+yarn studio &
+
 yarn serve
