@@ -176,6 +176,7 @@ type Query {
   userSessionsCount(where: UserSessionWhereInput): Int!
   users(orderBy: [UserOrderByWithRelationInput], skip: Int, take: Int, where: UserWhereInput): [User!]!
   usersCount(where: UserWhereInput): Int!
+  wordsAndResponsesForPrompt(prompt: String!): [WordAndResponses!]!
 }
 
 type SendSinglePromptResponse {
@@ -289,6 +290,11 @@ input UserWhereInput {
 input UserWhereUniqueInput {
   email: String
   id: String
+}
+
+type WordAndResponses {
+  responses: [String]!
+  word: String!
 }
 
 type helloWorld {

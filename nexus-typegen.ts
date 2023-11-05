@@ -205,6 +205,10 @@ export interface NexusGenObjects {
   UserSessionMetaParsedJsonValue: { // root type
     none?: string | null; // String
   }
+  WordAndResponses: { // root type
+    responses: Array<string | null>; // [String]!
+    word: string; // String!
+  }
   helloWorld: { // root type
     message: string; // String!
   }
@@ -314,6 +318,7 @@ export interface NexusGenFieldTypes {
     userSessionsCount: number; // Int!
     users: NexusGenRootTypes['User'][]; // [User!]!
     usersCount: number; // Int!
+    wordsAndResponsesForPrompt: NexusGenRootTypes['WordAndResponses'][]; // [WordAndResponses!]!
   }
   SendSinglePromptResponse: { // field return type
     error: string | null; // String
@@ -351,6 +356,10 @@ export interface NexusGenFieldTypes {
   }
   UserSessionMetaParsedJsonValue: { // field return type
     none: string | null; // String
+  }
+  WordAndResponses: { // field return type
+    responses: Array<string | null>; // [String]!
+    word: string; // String!
   }
   helloWorld: { // field return type
     message: string; // String!
@@ -451,6 +460,7 @@ export interface NexusGenFieldTypeNames {
     userSessionsCount: 'Int'
     users: 'User'
     usersCount: 'Int'
+    wordsAndResponsesForPrompt: 'WordAndResponses'
   }
   SendSinglePromptResponse: { // field return type name
     error: 'String'
@@ -488,6 +498,10 @@ export interface NexusGenFieldTypeNames {
   }
   UserSessionMetaParsedJsonValue: { // field return type name
     none: 'String'
+  }
+  WordAndResponses: { // field return type name
+    responses: 'String'
+    word: 'String'
   }
   helloWorld: { // field return type name
     message: 'String'
@@ -623,6 +637,9 @@ export interface NexusGenArgTypes {
     }
     usersCount: { // args
       where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
+    }
+    wordsAndResponsesForPrompt: { // args
+      prompt: string; // String!
     }
   }
   Subscription: {

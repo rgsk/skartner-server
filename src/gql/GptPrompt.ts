@@ -1,4 +1,5 @@
-import { GreWord, Prisma } from '@prisma/client';
+import { Cache, GreWord, Prisma } from '@prisma/client';
+import { sqltag } from '@prisma/client/runtime';
 import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import cacheValue from 'lib/cache/cacheValue';
@@ -20,6 +21,7 @@ import {
 } from 'nexus';
 import { ChatCompletionRequestMessage } from 'openai';
 import { NexusGenObjects } from '../../nexus-typegen';
+import { extractWord } from './GptPromptUtils';
 
 function createGreWordsLoader(ctx: Context) {
   return new DataLoader<string, GreWord>(
@@ -82,6 +84,14 @@ export const SendSinglePromptResponseObject = objectType({
   },
 });
 
+export const WordAndResponsesObject = objectType({
+  name: 'WordAndResponses',
+  definition(t) {
+    t.nonNull.string('word');
+    t.nonNull.list.string('responses');
+  },
+});
+
 export const GptPromptQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -135,62 +145,50 @@ export const GptPromptQuery = extendType({
               };
             },
             getFromCache: (cachedValue) => {
-              if (cachedValue.results) {
-                const len = cachedValue.results.length;
-                if (typeof resultIndexFromCache === 'number') {
-                  if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
-                    return {
-                      result: cachedValue.results[resultIndexFromCache],
-                      resultIndex: resultIndexFromCache,
-                      totalResultsInCache: len,
-                    };
-                  } else {
-                    return {
-                      error: `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
-                        len - 1
-                      }`,
-                      totalResultsInCache: len,
-                    };
-                  }
-                }
-                const idx = randomBetween(
-                  0,
-                  len - 1,
-                  indexesReturned ?? undefined
-                );
-                if (idx === null) {
+              const len = cachedValue.results.length;
+              if (typeof resultIndexFromCache === 'number') {
+                if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
                   return {
-                    error: 'no more results in cache',
+                    result: cachedValue.results[resultIndexFromCache],
+                    resultIndex: resultIndexFromCache,
                     totalResultsInCache: len,
                   };
                 } else {
                   return {
-                    result: cachedValue.results[idx],
-                    resultIndex: idx,
+                    error: `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
+                      len - 1
+                    }`,
                     totalResultsInCache: len,
                   };
                 }
+              }
+              const idx = randomBetween(
+                0,
+                len - 1,
+                indexesReturned ?? undefined
+              );
+              if (idx === null) {
+                return {
+                  error: 'no more results in cache',
+                  totalResultsInCache: len,
+                };
               } else {
                 return {
-                  result: cachedValue.result,
-                  resultIndex: 0,
-                  totalResultsInCache: 1,
+                  result: cachedValue.results[idx],
+                  resultIndex: idx,
+                  totalResultsInCache: len,
                 };
               }
             },
             setInCache: (value, previousCachedValue) => {
               if (previousCachedValue) {
-                if (previousCachedValue.results) {
-                  return {
-                    results: [...previousCachedValue.results, value.result],
-                  };
-                } else {
-                  return {
-                    results: [previousCachedValue.result, value.result],
-                  };
-                }
+                return {
+                  results: [...previousCachedValue.results, value.result],
+                };
               } else {
-                return { result: value.result };
+                return {
+                  results: [value.result],
+                };
               }
             },
           },
@@ -200,6 +198,32 @@ export const GptPromptQuery = extendType({
           }
         );
         return result;
+      },
+    });
+    t.nonNull.list.field('wordsAndResponsesForPrompt', {
+      type: nonNull('WordAndResponses'),
+      args: {
+        prompt: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { prompt } = args;
+
+        const promptLike = prompt.replaceAll('{word}', '%');
+        const caches = await ctx.db.$queryRaw<Cache[]>(sqltag`
+              SELECT * FROM "Cache"
+              WHERE 
+              key->>'query' = 'sendSinglePrompt'
+              AND
+              key->'args'->>'input' LIKE ${promptLike}
+        `);
+        return caches.map((cache) => {
+          const word = extractWord(prompt, (cache.key as any).args.input);
+          const responses = (cache.value as any).results;
+          return {
+            word: word,
+            responses: responses,
+          };
+        });
       },
     });
   },

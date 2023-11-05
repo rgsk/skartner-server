@@ -17,7 +17,7 @@ sampleRouter.get('/user', authenticate, async (req, res, next) => {
     Middlewares.Keys.authenticate
   );
 
-  res.json({ user });
+  res.json(user);
 });
 
 sampleRouter.post('/', async (req, res, next) => {
