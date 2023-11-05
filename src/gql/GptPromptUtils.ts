@@ -1,3 +1,5 @@
+// TODO:  skipped test cases for this function should be implemented
+
 export function extractWord(
   placeholderPrompt: string,
   wordPrompt: string

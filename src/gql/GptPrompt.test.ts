@@ -10,6 +10,8 @@ describe('extractWord', () => {
     expect(result).toBe('good');
   });
 
+  // TODO: these skipped test cases should be implemented
+
   it.skip('should return undefined when placeholders do not match', () => {
     const placeholderPrompt =
       'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
