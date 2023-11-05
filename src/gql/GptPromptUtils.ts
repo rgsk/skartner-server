@@ -6,5 +6,5 @@ export function extractWord(
 ): string {
   const wordIndex = placeholderPrompt.indexOf('{word}');
   const start = wordPrompt.slice(wordIndex);
-  return start.slice(0, start.match(/[^a-zA-Z]+/)?.index ?? 0);
+  return start.slice(0, start.match(/[^a-zA-Z]+/)?.index ?? start.length);
 }

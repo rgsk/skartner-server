@@ -9,6 +9,14 @@ describe('extractWord', () => {
     const result = extractWord(placeholderPrompt, wordPrompt);
     expect(result).toBe('good');
   });
+  it('should return the extracted word when placeholders match, and string is ending', () => {
+    const placeholderPrompt =
+      'list meaning and 3 easy example sentences for word - {word}';
+    const wordPrompt =
+      'list meaning and 3 easy example sentences for word - good';
+    const result = extractWord(placeholderPrompt, wordPrompt);
+    expect(result).toBe('good');
+  });
 
   // TODO: these skipped test cases should be implemented
 
