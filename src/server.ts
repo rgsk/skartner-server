@@ -12,6 +12,7 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
 import Keyv from 'keyv';
 import environmentVars from 'lib/environmentVars';
+import errorHandler from 'middlewares/errorHandler';
 import rootRouter from 'rootRouter';
 import { schema } from 'schema';
 import { WebSocketServer } from 'ws';
@@ -25,6 +26,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use('/', rootRouter);
+
+app.use(errorHandler);
 
 const httpServer = createServer(app);
 
