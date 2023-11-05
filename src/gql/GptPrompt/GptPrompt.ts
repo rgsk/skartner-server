@@ -20,7 +20,7 @@ import {
   stringArg,
 } from 'nexus';
 import { ChatCompletionRequestMessage } from 'openai';
-import { NexusGenObjects } from '../../nexus-typegen';
+import { NexusGenObjects } from '../../../nexus-typegen';
 import { extractWord } from './GptPromptUtils';
 
 function createGreWordsLoader(ctx: Context) {
