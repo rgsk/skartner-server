@@ -1,19 +1,36 @@
 import environmentVars from 'lib/environmentVars';
-import { extendType, objectType } from 'nexus';
+import { extendType, nonNull, objectType } from 'nexus';
 
 export const GeneralQuery = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.field('hello', {
-      type: objectType({
-        name: 'helloWorld',
-        definition(t) {
-          t.nonNull.string('message');
-        },
-      }),
+      type: nonNull(
+        objectType({
+          name: 'HelloWorld',
+          definition(t) {
+            t.nonNull.string('message');
+          },
+        })
+      ),
       async resolve(root, args, ctx, info) {
         return {
           message: `Server is running on PORT: ${environmentVars.PORT}`,
+        };
+      },
+    });
+    t.nonNull.field('authenticate', {
+      type: nonNull(
+        objectType({
+          name: 'AuthenticateResponse',
+          definition(t) {
+            t.nonNull.string('message');
+          },
+        })
+      ),
+      async resolve(root, args, ctx, info) {
+        return {
+          message: `email: ${ctx.user?.email}`,
         };
       },
     });

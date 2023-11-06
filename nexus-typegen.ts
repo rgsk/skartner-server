@@ -137,6 +137,9 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  AuthenticateResponse: { // root type
+    message: string; // String!
+  }
   GptPrompt: { // root type
     editedResponse?: string | null; // String
     greWordId?: string | null; // String
@@ -169,6 +172,9 @@ export interface NexusGenObjects {
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
     userId: string; // String!
+  }
+  HelloWorld: { // root type
+    message: string; // String!
   }
   Mutation: {};
   Notification: { // root type
@@ -209,9 +215,6 @@ export interface NexusGenObjects {
     responses: Array<string | null>; // [String]!
     word: string; // String!
   }
-  helloWorld: { // root type
-    message: string; // String!
-  }
 }
 
 export interface NexusGenInterfaces {
@@ -225,6 +228,9 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  AuthenticateResponse: { // field return type
+    message: string; // String!
+  }
   GptPrompt: { // field return type
     createdAt: string; // String!
     editedResponse: string | null; // String
@@ -270,6 +276,9 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User']; // User!
     userId: string; // String!
   }
+  HelloWorld: { // field return type
+    message: string; // String!
+  }
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
     createGptPrompt: NexusGenRootTypes['GptPrompt']; // GptPrompt!
@@ -301,6 +310,7 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    authenticate: NexusGenRootTypes['AuthenticateResponse']; // AuthenticateResponse!
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
     greConfiguration: NexusGenRootTypes['GreConfiguration']; // GreConfiguration!
@@ -309,7 +319,7 @@ export interface NexusGenFieldTypes {
     greWordTags: NexusGenRootTypes['GreWordTag'][]; // [GreWordTag!]!
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
-    hello: NexusGenRootTypes['helloWorld']; // helloWorld!
+    hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
@@ -361,12 +371,12 @@ export interface NexusGenFieldTypes {
     responses: Array<string | null>; // [String]!
     word: string; // String!
   }
-  helloWorld: { // field return type
-    message: string; // String!
-  }
 }
 
 export interface NexusGenFieldTypeNames {
+  AuthenticateResponse: { // field return type name
+    message: 'String'
+  }
   GptPrompt: { // field return type name
     createdAt: 'String'
     editedResponse: 'String'
@@ -412,6 +422,9 @@ export interface NexusGenFieldTypeNames {
     user: 'User'
     userId: 'String'
   }
+  HelloWorld: { // field return type name
+    message: 'String'
+  }
   Mutation: { // field return type name
     createDraft: 'Post'
     createGptPrompt: 'GptPrompt'
@@ -443,6 +456,7 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     allPosts: 'Post'
+    authenticate: 'AuthenticateResponse'
     drafts: 'Post'
     gptPrompts: 'GptPrompt'
     greConfiguration: 'GreConfiguration'
@@ -451,7 +465,7 @@ export interface NexusGenFieldTypeNames {
     greWordTags: 'GreWordTag'
     greWords: 'GreWord'
     greWordsCount: 'Int'
-    hello: 'helloWorld'
+    hello: 'HelloWorld'
     posts: 'Post'
     sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'
@@ -502,9 +516,6 @@ export interface NexusGenFieldTypeNames {
   WordAndResponses: { // field return type name
     responses: 'String'
     word: 'String'
-  }
-  helloWorld: { // field return type name
-    message: 'String'
   }
 }
 

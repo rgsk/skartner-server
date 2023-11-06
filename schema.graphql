@@ -2,6 +2,10 @@
 ### Do not make changes to this file directly
 
 
+type AuthenticateResponse {
+  message: String!
+}
+
 input EnumGreWordStatusFilter {
   equals: GreWordStatus
   in: [GreWordStatus!]
@@ -122,6 +126,10 @@ input GreWordWhereUniqueInput {
   spelling_userId: GreWordSpellingUserIdCompoundUniqueInput
 }
 
+type HelloWorld {
+  message: String!
+}
+
 """The `Json` scalar type represents JSON objects."""
 scalar Json
 
@@ -159,6 +167,7 @@ type Post {
 
 type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
+  authenticate: AuthenticateResponse!
   drafts: [Post]
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
@@ -167,7 +176,7 @@ type Query {
   greWordTags(skip: Int, take: Int, where: GreWordTagWhereInput): [GreWordTag!]!
   greWords(orderBy: [GreWordOrderByWithRelationInput], skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
-  hello: helloWorld!
+  hello: HelloWorld!
   posts: [Post]
   sendSinglePrompt(indexesReturned: [Int!], input: String!, resultIndexFromCache: Int, skipCache: Boolean): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User
@@ -295,8 +304,4 @@ input UserWhereUniqueInput {
 type WordAndResponses {
   responses: [String]!
   word: String!
-}
-
-type helloWorld {
-  message: String!
 }
