@@ -17,6 +17,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import { rules } from 'rules';
 import { z } from 'zod';
 import { ZGreWordTagWhereUniqueInput } from './GreWordTag';
 import { notifyUser } from './Notification';
@@ -301,7 +302,7 @@ export const GreWordMutation = extendType({
     t.field('deleteGreWord', {
       type: 'GreWord',
       args: {
-        id: nonNull(stringArg()),
+        ...rules.isGreWordOwner.args,
       },
       async resolve(root, args, ctx, info) {
         const { id, ...restArgs } = args;

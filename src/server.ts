@@ -8,12 +8,14 @@ import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 import { createContext } from 'context';
 import cors from 'cors';
 import express from 'express';
+import { applyMiddleware } from 'graphql-middleware';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
 import Keyv from 'keyv';
 import environmentVars from 'lib/environmentVars';
 import errorHandler from 'middlewares/errorHandler';
 import rootRouter from 'rootRouter';
+import { permissions } from 'rules';
 import { schema } from 'schema';
 import { WebSocketServer } from 'ws';
 
@@ -41,7 +43,7 @@ const serverCleanup = useServer({ schema: schema }, wsServer);
 
 // Set up ApolloServer.
 export const server = new ApolloServer({
-  schema,
+  schema: applyMiddleware(schema, permissions),
   cache: new KeyvAdapter(new Keyv(environmentVars.REDIS_URL)),
 
   plugins: [
