@@ -11,38 +11,35 @@ export const verifyToken = async (token: string) => {
   return { decodedIdToken, user };
 };
 
-export const createContext = async (
-  baseContext: ExpressContextFunctionArgument
-) => {
+export const getContext = async (token?: string) => {
   try {
-    const authorizationHeader = baseContext.req.get('Authorization');
-    if (!authorizationHeader) {
-      throw new Error('Authorization header not present');
-    }
-    const idToken = authorizationHeader.replace('Bearer ', '');
-    if (idToken) {
-      const { decodedIdToken, user } = await verifyToken(idToken);
+    if (token) {
+      const { decodedIdToken, user } = await verifyToken(token);
       // console.log(`authenticated: ${user!.email}`);
       return {
-        ...baseContext,
         db,
         pubsub,
         decodedIdToken,
         user,
       };
-    } else {
-      throw new Error('token not present');
     }
   } catch (err) {
-    // console.log(`Graphql_Create_Context_Error: ${err}`);
+    // console.log(`Graphql_Get_Context_Error: ${err}`);
   }
   return {
-    ...baseContext,
     db,
     pubsub,
-    user: null,
     decodedIdToken: null,
+    user: null,
   };
+};
+
+export const createContext = async (
+  baseContext: ExpressContextFunctionArgument
+) => {
+  const authorizationHeader = baseContext.req.get('Authorization');
+  const idToken = authorizationHeader?.replace('Bearer ', '');
+  return { ...baseContext, ...(await getContext(idToken)) };
 };
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
