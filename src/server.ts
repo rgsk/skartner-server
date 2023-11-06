@@ -43,9 +43,11 @@ const serverCleanup = useServer(
   {
     schema: schema,
     onConnect: async (ctx) => {
-      const token = ctx.connectionParams?.token as string;
-      if (token) {
-        const { decodedIdToken, user } = await verifyToken(token);
+      // ctx.connectionParams will contain the headers
+      const authorizationHeader = ctx.connectionParams?.Authorization as string;
+      if (authorizationHeader) {
+        const idToken = authorizationHeader.replace('Bearer ', '');
+        const { decodedIdToken, user } = await verifyToken(idToken);
         return { decodedIdToken, user };
       }
       return false;
