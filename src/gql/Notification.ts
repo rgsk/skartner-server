@@ -1,5 +1,4 @@
 import Prisma from '@prisma/client';
-import { Context } from 'context';
 import { endOfDay, startOfDay, subDays } from 'date-fns';
 import { db } from 'db';
 import { Subscriptions } from 'lib/Subscriptions';
@@ -80,7 +79,7 @@ export const NotificationSubscription = extendType({
         token: nonNull(stringArg()),
       },
       subscribe: withFilter(
-        async (root, args: { token: string }, ctx: Context, info) => {
+        async (root, args, ctx, info) => {
           // this runs when user subscribes
           if (!ctx.user) {
             throw new Error('invalid token');
@@ -110,10 +109,9 @@ export const NotificationSubscription = extendType({
             });
           });
         },
-        async (root: Notification, args: { token: string }, ctx, info) => {
+        async (root: Notification, args, ctx, info) => {
           //  this runs when notifyUser function is called for any user
           //  pubsub.publish(Subscriptions.notificationReceived, notification);
-
           // here we filter so that user is notified only if it's him who has subscribed to the notification
           return root.userId === ctx.user?.id;
         }

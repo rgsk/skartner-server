@@ -1,17 +1,16 @@
-// @ts-nocheck
-
 import { getContext } from 'context';
+import { DropFirst } from './typescrptMagic';
 
-export function withFilter(
-  asyncIteratorFn: (rootValue: any, args: any, context: any, info: any) => any,
-  filterFn: (
+export function withFilter<T extends (...args: any) => any>(
+  asyncIteratorFn: T,
+  filterFn: (root: any, ...args: DropFirst<Parameters<T>>) => Promise<boolean>
+) {
+  const fn: any = async (
     rootValue: any,
     args: any,
     context: any,
     info: any
-  ) => Promise<boolean>
-) {
-  return async (rootValue, args, context, info) => {
+  ) => {
     const ctx = await getContext(args.token);
     const asyncIterator = await asyncIteratorFn(rootValue, args, ctx, info);
 
@@ -20,12 +19,12 @@ export function withFilter(
         const inner = () => {
           asyncIterator
             .next()
-            .then((payload) => {
+            .then((payload: any) => {
               if (payload.done === true) {
                 resolve(payload);
                 return;
               }
-              Promise.resolve(filterFn(payload.value, args, ctx, info))
+              Promise.resolve((filterFn as any)(payload.value, args, ctx, info))
                 .catch(() => false) // We ignore errors from filter function
                 .then((filterResult) => {
                   if (filterResult === true) {
@@ -37,7 +36,7 @@ export function withFilter(
                   return;
                 });
             })
-            .catch((err) => {
+            .catch((err: any) => {
               reject(err);
               return;
             });
@@ -54,7 +53,7 @@ export function withFilter(
       return() {
         return asyncIterator.return();
       },
-      throw(error) {
+      throw(error: any) {
         return asyncIterator.throw(error);
       },
       [Symbol.asyncIterator]() {
@@ -64,4 +63,6 @@ export function withFilter(
 
     return asyncIterator2;
   };
+
+  return fn as T;
 }
