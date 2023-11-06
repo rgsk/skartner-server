@@ -48,7 +48,10 @@ const fn = async () => {
       data: {
         greWordTags: {
           set: {
-            name: 'Advanced Level 3',
+            name_userId: {
+              name: 'Advanced Level 3',
+              userId: 'd710d741-afa1-4ab5-9a3f-8132bb2e63c5',
+            },
           },
         },
       },

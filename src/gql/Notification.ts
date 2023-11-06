@@ -1,5 +1,4 @@
 import Prisma from '@prisma/client';
-import { context } from 'context';
 import { endOfDay, startOfDay, subDays } from 'date-fns';
 import { db } from 'db';
 import { Subscriptions } from 'lib/Subscriptions';
@@ -81,19 +80,19 @@ export const NotificationSubscription = extendType({
       },
       subscribe: withFilter(
         async (root, args, ctx, info) => {
-          const userSession = await context.db.userSession.create({
+          const userSession = await db.userSession.create({
             data: {
               userId: args.userId,
               startedAt: new Date(),
             },
           });
           notifyForStreak(userSession);
-          const asyncIterator = context.pubsub.asyncIterator(
+          const asyncIterator = pubsub.asyncIterator(
             Subscriptions.notificationReceived
           );
           return withCancel(asyncIterator, async () => {
             const currentTime = new Date();
-            const updatedUserSession = await context.db.userSession.update({
+            const updatedUserSession = await db.userSession.update({
               where: {
                 id: userSession.id,
               },
