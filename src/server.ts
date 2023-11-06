@@ -42,6 +42,8 @@ const wsServer = new WebSocketServer({
 const serverCleanup = useServer(
   {
     schema: schema,
+
+    // we can prevent connection to websocket if certain conditions are not met like below
     onConnect: async (ctx) => {
       // ctx.connectionParams will contain the headers
       const authorizationHeader = ctx.connectionParams?.Authorization as string;
