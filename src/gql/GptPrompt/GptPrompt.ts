@@ -217,7 +217,7 @@ export const GptPromptQuery = extendType({
               key->'args'->>'input' LIKE ${promptLike}
         `);
         return caches.map((cache) => {
-          const word = extractWord(prompt, (cache.key as any).args.input);
+          const word = extractWord(prompt, (cache.key as any).args.input)!;
           const responses = (cache.value as any).results;
           return {
             word: word,

@@ -18,9 +18,7 @@ describe('extractWord', () => {
     expect(result).toBe('good');
   });
 
-  // TODO: these skipped test cases should be implemented
-
-  it.skip('should return undefined when placeholders do not match', () => {
+  it('should return undefined when placeholders do not match', () => {
     const placeholderPrompt =
       'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
     const wordPrompt =
@@ -29,7 +27,7 @@ describe('extractWord', () => {
     expect(result).toBe(undefined);
   });
 
-  it.skip('should work with hiphens', () => {
+  it('should work with hiphens', () => {
     const placeholderPrompt =
       'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
     const wordPrompt =
@@ -37,7 +35,7 @@ describe('extractWord', () => {
     const result = extractWord(placeholderPrompt, wordPrompt);
     expect(result).toBe('mother-in-law');
   });
-  it.skip('should work with spaces', () => {
+  it('should work with spaces', () => {
     const placeholderPrompt =
       'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
     const wordPrompt =
@@ -46,7 +44,7 @@ describe('extractWord', () => {
     expect(result).toBe('sugar daddy');
   });
 
-  it.skip('should work with apostrophe', () => {
+  it('should work with apostrophe', () => {
     const placeholderPrompt =
       'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
     const wordPrompt =
