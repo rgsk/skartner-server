@@ -3,6 +3,14 @@ import firebaseAdmin from 'lib/firebaseAdmin';
 import pubsub from 'pubsub';
 import { db } from './db';
 
+export const verifyToken = async (token: string) => {
+  const decodedIdToken = await firebaseAdmin.auth().verifyIdToken(token);
+  const user = await db.user.findUnique({
+    where: { email: decodedIdToken.email },
+  });
+  return { decodedIdToken, user };
+};
+
 export const createContext = async (
   baseContext: ExpressContextFunctionArgument
 ) => {
@@ -13,10 +21,7 @@ export const createContext = async (
     }
     const idToken = authorizationHeader.replace('Bearer ', '');
     if (idToken) {
-      const decodedIdToken = await firebaseAdmin.auth().verifyIdToken(idToken);
-      const user = await db.user.findUnique({
-        where: { email: decodedIdToken.email },
-      });
+      const { decodedIdToken, user } = await verifyToken(idToken);
       // console.log(`authenticated: ${user!.email}`);
       return {
         ...baseContext,

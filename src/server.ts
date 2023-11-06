@@ -5,7 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
-import { createContext } from 'context';
+import { createContext, verifyToken } from 'context';
 import cors from 'cors';
 import express from 'express';
 import { applyMiddleware } from 'graphql-middleware';
@@ -39,13 +39,25 @@ const wsServer = new WebSocketServer({
   path: '/graphql',
 });
 // Save the returned server's info so we can shutdown this server later
-const serverCleanup = useServer({ schema: schema }, wsServer);
+const serverCleanup = useServer(
+  {
+    schema: schema,
+    onConnect: async (ctx) => {
+      const token = ctx.connectionParams?.token as string;
+      if (token) {
+        const { decodedIdToken, user } = await verifyToken(token);
+        return { decodedIdToken, user };
+      }
+      return false;
+    },
+  },
+  wsServer
+);
 
 // Set up ApolloServer.
 export const server = new ApolloServer({
   schema: applyMiddleware(schema, permissions),
   cache: new KeyvAdapter(new Keyv(environmentVars.REDIS_URL)),
-
   plugins: [
     // Proper shutdown for the HTTP server.
     ApolloServerPluginDrainHttpServer({ httpServer }),
