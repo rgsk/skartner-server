@@ -1,4 +1,40 @@
-import { extractWord } from './GptPromptUtils';
+import { extractWord, findMatches } from './GptPromptUtils';
+
+describe('findMatches', () => {
+  it('normal', () => {
+    const placeholderPrompt =
+      'list meaning and 3 easy example sentences for word - {word}, also list synonyms for {word}, and antonyms';
+    const wordPrompt =
+      'list meaning and 3 easy example sentences for word - good, also list synonyms for good, and antonyms';
+    const result = findMatches(placeholderPrompt, wordPrompt);
+    expect(result).toEqual(['good', 'good']);
+  });
+
+  it('two words', () => {
+    const placeholderPrompt =
+      'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
+    const wordPrompt =
+      'meaning of word good, and slang meaning of word fr, also give synonyms';
+    const result = findMatches(placeholderPrompt, wordPrompt);
+    expect(result).toEqual(['good', 'fr']);
+  });
+  it('string is ending', () => {
+    const placeholderPrompt =
+      'list meaning and 3 easy example sentences for word - {word}';
+    const wordPrompt =
+      'list meaning and 3 easy example sentences for word - good';
+    const result = findMatches(placeholderPrompt, wordPrompt);
+    expect(result).toEqual(['good']);
+  });
+
+  it('two words ending', () => {
+    const placeholderPrompt =
+      'meaning of word {word}, and slang meaning of word {word}';
+    const wordPrompt = 'meaning of word good, and slang meaning of word fr';
+    const result = findMatches(placeholderPrompt, wordPrompt);
+    expect(result).toEqual(['good', 'fr']);
+  });
+});
 
 describe('extractWord', () => {
   it('should return the extracted word when placeholders match', () => {

@@ -1,4 +1,7 @@
-function findMatches(placeholderPrompt: string, wordPrompt: string): string[] {
+export function findMatches(
+  placeholderPrompt: string,
+  wordPrompt: string
+): string[] {
   const wordPlaceholderMatches = placeholderPrompt.matchAll(/\{word\}/g);
   const wordPlaceholderLength = '{word}'.length;
 
