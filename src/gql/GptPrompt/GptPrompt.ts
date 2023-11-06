@@ -1,7 +1,7 @@
 import { Cache, GreWord, Prisma } from '@prisma/client';
 import { sqltag } from '@prisma/client/runtime';
-import { Context, context } from 'context';
 import DataLoader from 'dataloader';
+import { db } from 'db';
 import cacheValue from 'lib/cache/cacheValue';
 import { deriveEntityMapFromArray, randomBetween } from 'lib/generalUtils';
 import {
@@ -23,10 +23,10 @@ import { ChatCompletionRequestMessage } from 'openai';
 import { NexusGenObjects } from '../../../nexus-typegen';
 import { extractWord } from './GptPromptUtils';
 
-function createGreWordsLoader(ctx: Context) {
+function createGreWordsLoader() {
   return new DataLoader<string, GreWord>(
     async (ids) => {
-      const greWords = await ctx.db.greWord.findMany({
+      const greWords = await db.greWord.findMany({
         where: { id: { in: [...ids] } },
       });
       const idToGreWordMap = deriveEntityMapFromArray(
@@ -40,7 +40,7 @@ function createGreWordsLoader(ctx: Context) {
   );
 }
 
-const greWordsLoader = createGreWordsLoader(context);
+const greWordsLoader = createGreWordsLoader();
 
 export const GptPromptObject = objectType({
   name: 'GptPrompt',

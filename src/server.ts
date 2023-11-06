@@ -5,7 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
-import { context } from 'context';
+import { createContext } from 'context';
 import cors from 'cors';
 import express from 'express';
 import { useServer } from 'graphql-ws/lib/use/ws';
@@ -43,6 +43,7 @@ const serverCleanup = useServer({ schema: schema }, wsServer);
 export const server = new ApolloServer({
   schema,
   cache: new KeyvAdapter(new Keyv(environmentVars.REDIS_URL)),
+
   plugins: [
     // Proper shutdown for the HTTP server.
     ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -64,9 +65,8 @@ export const server = new ApolloServer({
   await server.start();
   app.use(
     '/graphql',
-    // @ts-ignore
     expressMiddleware(server, {
-      context: () => context,
+      context: createContext,
     })
   );
 

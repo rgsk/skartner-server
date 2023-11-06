@@ -1,5 +1,4 @@
 import { GptPrompt, GreWordStatus, Prisma } from '@prisma/client';
-import { Context, context } from 'context';
 import DataLoader from 'dataloader';
 import { deriveEntityArrayMapFromArray } from 'lib/generalUtils';
 import {
@@ -7,6 +6,7 @@ import {
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
 
+import { db } from 'db';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   enumType,
@@ -22,10 +22,10 @@ import { ZGreWordTagWhereUniqueInput } from './GreWordTag';
 import { notifyUser } from './Notification';
 import { getEnumFilter } from './Types';
 
-function createGptPromptsLoader(ctx: Context) {
+function createGptPromptsLoader() {
   return new DataLoader<string, GptPrompt[]>(
     async (ids) => {
-      const gptPrompts = await ctx.db.gptPrompt.findMany({
+      const gptPrompts = await db.gptPrompt.findMany({
         where: { greWordId: { in: [...ids] } },
       });
       const idToGrePromptsMap = deriveEntityArrayMapFromArray(
@@ -39,7 +39,7 @@ function createGptPromptsLoader(ctx: Context) {
   );
 }
 
-const grePromptsLoader = createGptPromptsLoader(context);
+const grePromptsLoader = createGptPromptsLoader();
 
 export const GreWordStatusEnum = enumType({
   name: 'GreWordStatus',
