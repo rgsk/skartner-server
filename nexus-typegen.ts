@@ -655,7 +655,7 @@ export interface NexusGenArgTypes {
   }
   Subscription: {
     notificationReceived: { // args
-      userId: string; // String!
+      token: string; // String!
     }
   }
 }

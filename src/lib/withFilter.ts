@@ -1,10 +1,19 @@
 // @ts-nocheck
+
+import { getContext } from 'context';
+
 export function withFilter(
   asyncIteratorFn: (rootValue: any, args: any, context: any, info: any) => any,
-  filterFn: (rootValue: any, args: any, context: any, info: any) => boolean
+  filterFn: (
+    rootValue: any,
+    args: any,
+    context: any,
+    info: any
+  ) => Promise<boolean>
 ) {
   return async (rootValue, args, context, info) => {
-    const asyncIterator = await asyncIteratorFn(rootValue, args, context, info);
+    const ctx = await getContext(args.token);
+    const asyncIterator = await asyncIteratorFn(rootValue, args, ctx, info);
 
     const getNextPromise = () => {
       return new Promise((resolve, reject) => {
@@ -16,7 +25,7 @@ export function withFilter(
                 resolve(payload);
                 return;
               }
-              Promise.resolve(filterFn(payload.value, args, context, info))
+              Promise.resolve(filterFn(payload.value, args, ctx, info))
                 .catch(() => false) // We ignore errors from filter function
                 .then((filterResult) => {
                   if (filterResult === true) {

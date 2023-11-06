@@ -1,4 +1,5 @@
 import Prisma from '@prisma/client';
+import { Context } from 'context';
 import { endOfDay, startOfDay, subDays } from 'date-fns';
 import { db } from 'db';
 import { Subscriptions } from 'lib/Subscriptions';
@@ -76,23 +77,28 @@ export const NotificationSubscription = extendType({
     t.field(Subscriptions.notificationReceived, {
       type: 'Notification',
       args: {
-        userId: nonNull(stringArg()),
+        token: nonNull(stringArg()),
       },
       subscribe: withFilter(
-        async (root, args, ctx, info) => {
-          const userSession = await db.userSession.create({
+        async (root, args: { token: string }, ctx: Context, info) => {
+          // this runs when user subscribes
+          if (!ctx.user) {
+            throw new Error('invalid token');
+          }
+          const userSession = await ctx.db.userSession.create({
             data: {
-              userId: args.userId,
+              userId: ctx.user.id,
               startedAt: new Date(),
             },
           });
           notifyForStreak(userSession);
-          const asyncIterator = pubsub.asyncIterator(
+          const asyncIterator = ctx.pubsub.asyncIterator(
             Subscriptions.notificationReceived
           );
           return withCancel(asyncIterator, async () => {
+            // this runs when user unsubscribes
             const currentTime = new Date();
-            const updatedUserSession = await db.userSession.update({
+            const updatedUserSession = await ctx.db.userSession.update({
               where: {
                 id: userSession.id,
               },
@@ -104,12 +110,17 @@ export const NotificationSubscription = extendType({
             });
           });
         },
-        (root, args, ctx, info) => {
-          return root.userId === args.userId;
+        async (root: Notification, args: { token: string }, ctx, info) => {
+          //  this runs when notifyUser function is called for any user
+          //  pubsub.publish(Subscriptions.notificationReceived, notification);
+
+          // here we filter so that user is notified only if it's him who has subscribed to the notification
+          return root.userId === ctx.user?.id;
         }
       ),
-      resolve(eventData: Notification) {
-        return eventData;
+      resolve(root: Notification, args, ctx, info) {
+        // ctx somehow is received as undefined here
+        return root;
       },
     });
     t.boolean('truths', {

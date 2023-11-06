@@ -215,7 +215,7 @@ input StringFilter {
 }
 
 type Subscription {
-  notificationReceived(userId: String!): Notification
+  notificationReceived(token: String!): Notification
   truths: Boolean
 }
 
