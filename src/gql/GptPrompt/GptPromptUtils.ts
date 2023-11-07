@@ -1,4 +1,23 @@
+/** 
+first we find the matching strings from placeholderPrompt by removing the placeholder ie. {word},
+then we extract the word from wordPrompt leaving out the matchingParts
+*/
+
 /*
+ * Example input/output:
+ * const placeholderPrompt = 'meaning of word {word}, and slang meaning of word {word}, also give synonyms';
+ * const wordPrompt = 'meaning of word good, and slang meaning of word fr, also give synonyms';
+ * console.log(findMatches(placeholderPrompt, wordPrompt)); // Output: [ 'good', 'fr' ]
+ */
+
+/*
+ * Intermediate variables:
+ * - wordPlaceholderIndexes: Array of start and end indexes of placeholders in placeholderPrompt.
+ * - matchingParts: Array of string parts between placeholders.
+ * - matchesInWordPrompt: Array of matching words extracted from wordPrompt.
+ */
+
+/*  
 {
   wordPlaceholderIndexes: [ { start: 16, end: 22 }, { start: 50, end: 56 } ]
 }
@@ -12,11 +31,6 @@
 { matchesInWordPrompt: [ 'good', 'fr' ] }
 */
 
-/*
-first we find the matching strings from placeholderPrompt by removing the placeholder ie. {word}
-
-then we extract the word from wordPrompt leaving out the matchingParts
-*/
 export function findMatches(
   placeholderPrompt: string,
   wordPrompt: string
@@ -73,6 +87,11 @@ export function findMatches(
   return matchesInWordPrompt;
 }
 
+/**
+if more than 1 word then return undefined, as that is not allowed.
+if just 1 word occurs one or more times, return it
+
+*/
 export function extractWord(
   placeholderPrompt: string,
   wordPrompt: string
