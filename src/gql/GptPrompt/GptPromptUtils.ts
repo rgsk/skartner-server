@@ -1,3 +1,22 @@
+/*
+{
+  wordPlaceholderIndexes: [ { start: 16, end: 22 }, { start: 50, end: 56 } ]
+}
+{
+  matchingParts: [
+    'meaning of word ',
+    ', and slang meaning of word ',
+    ', also give synonyms'
+  ]
+}
+{ matchesInWordPrompt: [ 'good', 'fr' ] }
+*/
+
+/*
+first we find the matching strings from placeholderPrompt by removing the placeholder ie. {word}
+
+then we extract the word from wordPrompt leaving out the matchingParts
+*/
 export function findMatches(
   placeholderPrompt: string,
   wordPrompt: string
