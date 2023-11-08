@@ -1,3 +1,5 @@
+import { Permissions } from 'constants/Permissions';
+import { Roles } from 'constants/Roles';
 import { db } from 'db';
 
 const rootUserEmail = 'rahulguptasde@gmail.com';
@@ -26,22 +28,22 @@ export const createAdminUser = async () => {
   // create 'ACCESS_ADMIN' permission if not exists
   const accessAdminPermission = await db.permission.upsert({
     where: {
-      name: 'ACCESS_ADMIN',
+      name: Permissions.ACCESS_ADMIN,
     },
     update: {},
     create: {
-      name: 'ACCESS_ADMIN',
+      name: Permissions.ACCESS_ADMIN,
       meta: { description: 'access admin dashboard' },
     },
   });
   // create 'ADMIN' role if not exists
   const adminRole = await db.role.upsert({
     where: {
-      name: 'ADMIN',
+      name: Roles.ADMIN,
     },
     update: {},
     create: {
-      name: 'ADMIN',
+      name: Roles.ADMIN,
 
       meta: {
         description:
