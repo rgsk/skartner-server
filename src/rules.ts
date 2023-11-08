@@ -4,47 +4,46 @@ import { nonNull, stringArg } from 'nexus';
 
 export const rules = {
   isAuthenticatedUser: {
-    rule: rule({ cache: 'contextual' })((async (
-      root: any,
-      args: any,
-      ctx: Context,
-      info: any
-    ) => {
+    rule: rule()(async (root: any, args: any, ctx: Context, info: any) => {
       return !!ctx.user;
-    }) as any),
+    }),
   },
   isGreWordOwner: {
     args: {
       id: nonNull(stringArg()),
     },
-    rule: rule({ cache: 'contextual' })((async (
-      root: any,
-      args: {
-        id: string;
-      },
-      ctx: Context,
-      info: any
-    ) => {
-      if (!ctx.user) {
-        return false;
-      }
-      const id = args.id;
-      const greWord = await ctx.db.greWord.findUnique({
-        where: {
-          id: id,
+    rule: rule()(
+      async (
+        root: any,
+        args: {
+          id: string;
         },
-      });
-      if (!greWord) {
-        return true;
+        ctx: Context,
+        info: any
+      ) => {
+        if (!ctx.user) {
+          return false;
+        }
+        const id = args.id;
+        const greWord = await ctx.db.greWord.findUnique({
+          where: {
+            id: id,
+          },
+        });
+        if (!greWord) {
+          return true;
+        }
+        return ctx.user.id === greWord.userId;
       }
-      return ctx.user.id === greWord.userId;
-    }) as any),
+    ),
   },
 };
 
 export const permissions = shield(
   {
-    Query: {},
+    Query: {
+      users: rules.isAuthenticatedUser.rule,
+    },
     Mutation: {
       deleteGreWord: rules.isGreWordOwner.rule,
     },
