@@ -92,6 +92,14 @@ export const WordAndResponsesObject = objectType({
   },
 });
 
+export const WordsCountForGptPromptsObject = objectType({
+  name: 'WordsCountForGptPrompts',
+  definition(t) {
+    t.nonNull.string('prompt');
+    t.nonNull.int('count');
+  },
+});
+
 export const GptPromptQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -224,6 +232,28 @@ export const GptPromptQuery = extendType({
             responses: responses,
           };
         });
+      },
+    });
+    t.nonNull.list.field('wordsCountForGptPrompts', {
+      type: nonNull('WordsCountForGptPrompts'),
+      args: {
+        prompts: nonNull(list(nonNull(stringArg()))),
+      },
+      async resolve(root, args, ctx, info) {
+        const { prompts } = args;
+        const result: { count: number; prompt: string }[] = [];
+        for (const prompt of prompts) {
+          const promptLike = prompt.replaceAll('{word}', '%');
+          const caches = await ctx.db.$queryRaw<Cache[]>(sqltag`
+                SELECT * FROM "Cache"
+                WHERE  
+                key->>'query' = 'sendSinglePrompt'
+                AND
+                key->'args'->>'input' LIKE ${promptLike} 
+          `);
+          result.push({ count: caches.length, prompt });
+        }
+        return result;
       },
     });
   },

@@ -186,6 +186,7 @@ type Query {
   users(orderBy: [UserOrderByWithRelationInput], skip: Int, take: Int, where: UserWhereInput): [User!]!
   usersCount(where: UserWhereInput): Int!
   wordsAndResponsesForPrompt(prompt: String!): [WordAndResponses!]!
+  wordsCountForGptPrompts(prompts: [String!]!): [WordsCountForGptPrompts!]!
 }
 
 type SendSinglePromptResponse {
@@ -304,4 +305,9 @@ input UserWhereUniqueInput {
 type WordAndResponses {
   responses: [String]!
   word: String!
+}
+
+type WordsCountForGptPrompts {
+  count: Int!
+  prompt: String!
 }

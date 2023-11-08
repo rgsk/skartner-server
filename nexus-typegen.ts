@@ -215,6 +215,10 @@ export interface NexusGenObjects {
     responses: Array<string | null>; // [String]!
     word: string; // String!
   }
+  WordsCountForGptPrompts: { // root type
+    count: number; // Int!
+    prompt: string; // String!
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -329,6 +333,7 @@ export interface NexusGenFieldTypes {
     users: NexusGenRootTypes['User'][]; // [User!]!
     usersCount: number; // Int!
     wordsAndResponsesForPrompt: NexusGenRootTypes['WordAndResponses'][]; // [WordAndResponses!]!
+    wordsCountForGptPrompts: NexusGenRootTypes['WordsCountForGptPrompts'][]; // [WordsCountForGptPrompts!]!
   }
   SendSinglePromptResponse: { // field return type
     error: string | null; // String
@@ -370,6 +375,10 @@ export interface NexusGenFieldTypes {
   WordAndResponses: { // field return type
     responses: Array<string | null>; // [String]!
     word: string; // String!
+  }
+  WordsCountForGptPrompts: { // field return type
+    count: number; // Int!
+    prompt: string; // String!
   }
 }
 
@@ -475,6 +484,7 @@ export interface NexusGenFieldTypeNames {
     users: 'User'
     usersCount: 'Int'
     wordsAndResponsesForPrompt: 'WordAndResponses'
+    wordsCountForGptPrompts: 'WordsCountForGptPrompts'
   }
   SendSinglePromptResponse: { // field return type name
     error: 'String'
@@ -516,6 +526,10 @@ export interface NexusGenFieldTypeNames {
   WordAndResponses: { // field return type name
     responses: 'String'
     word: 'String'
+  }
+  WordsCountForGptPrompts: { // field return type name
+    count: 'Int'
+    prompt: 'String'
   }
 }
 
@@ -651,6 +665,9 @@ export interface NexusGenArgTypes {
     }
     wordsAndResponsesForPrompt: { // args
       prompt: string; // String!
+    }
+    wordsCountForGptPrompts: { // args
+      prompts: string[]; // [String!]!
     }
   }
   Subscription: {
