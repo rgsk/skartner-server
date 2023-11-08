@@ -244,6 +244,7 @@ export const GptPromptQuery = extendType({
         const whereFilter = prompts
           .map((prompt) => `input like '${prompt.replaceAll('{word}', '%')}'`)
           .join(' or ');
+        // whereFilter
         /*
           input like 'meaning of word %, and slang meaning of word %, also give synonyms'
           or 
@@ -258,7 +259,26 @@ export const GptPromptQuery = extendType({
             ${whereFilter}
           )
     `);
-
+        // queryResult
+        /*
+        [
+          {
+            input: 'meaning of word good, and slang meaning of word good, also give synonyms'
+          },
+          {
+            input: 'meaning of word joker, and slang meaning of word joker, also give synonyms'
+          },
+          { input: 'one for sde joker' },
+          {
+            input: 'meaning of word ok, and slang meaning of word ok, also give synonyms'
+          },
+          { input: 'one for sde ok' },
+          { input: 'one for sde low' },
+          {
+            input: 'meaning of word deployment, and slang meaning of word deployment, also give synonyms'
+          }
+        ]
+        */
         const promptToCountMap: Record<string, number> = {};
         for (const prompt of prompts) {
           const regexPattern = prompt.replaceAll('{word}', '.*');
@@ -271,9 +291,28 @@ export const GptPromptQuery = extendType({
           }
           promptToCountMap[prompt] = count;
         }
+        /*
+        {
+          promptToCountMap: {
+            'meaning of word {word}, and slang meaning of word {word}, also give synonyms': 4,
+            'one for sde {word}': 3
+          }
+        }
+        */
         const result = Object.entries(promptToCountMap).map(
           ([prompt, count]) => ({ prompt, count })
         );
+        /*
+         {
+            result: [
+              {
+                prompt: 'meaning of word {word}, and slang meaning of word {word}, also give synonyms',
+                count: 4
+              },
+              { prompt: 'one for sde {word}', count: 3 }
+            ]
+          }
+         */
         return result;
       },
     });
