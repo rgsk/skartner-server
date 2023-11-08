@@ -241,18 +241,39 @@ export const GptPromptQuery = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { prompts } = args;
-        const result: { count: number; prompt: string }[] = [];
+        const whereFilter = prompts
+          .map((prompt) => `input like '${prompt.replaceAll('{word}', '%')}'`)
+          .join(' or ');
+        /*
+          input like 'meaning of word %, and slang meaning of word %, also give synonyms'
+          or 
+          input like 'one for sde %'
+        */
+        const queryResult = await ctx.db.$queryRawUnsafe<{ input: string }[]>(`
+          select input from 
+          (select key->'args'->>'input' as input from "Cache" 
+          WHERE key->>'query' = 'sendSinglePrompt') as subquery
+          where 
+          (
+            ${whereFilter}
+          )
+    `);
+
+        const promptToCountMap: Record<string, number> = {};
         for (const prompt of prompts) {
-          const promptLike = prompt.replaceAll('{word}', '%');
-          const caches = await ctx.db.$queryRaw<Cache[]>(sqltag`
-                SELECT * FROM "Cache"
-                WHERE  
-                key->>'query' = 'sendSinglePrompt'
-                AND
-                key->'args'->>'input' LIKE ${promptLike} 
-          `);
-          result.push({ count: caches.length, prompt });
+          const regexPattern = prompt.replaceAll('{word}', '.*');
+          const regex = new RegExp(`^${regexPattern}$`);
+          let count = 0;
+          for (const { input } of queryResult) {
+            if (regex.test(input)) {
+              count += 1;
+            }
+          }
+          promptToCountMap[prompt] = count;
         }
+        const result = Object.entries(promptToCountMap).map(
+          ([prompt, count]) => ({ prompt, count })
+        );
         return result;
       },
     });
