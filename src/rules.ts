@@ -1,11 +1,24 @@
 import { Context } from 'context';
-import { rule, shield } from 'graphql-shield';
+import { chain, rule, shield } from 'graphql-shield';
+import { checkUserAuthorizedForPermission } from 'middlewares/authorize';
 import { nonNull, stringArg } from 'nexus';
 
 export const rules = {
   isAuthenticatedUser: {
     rule: rule()(async (root: any, args: any, ctx: Context, info: any) => {
       return !!ctx.user;
+    }),
+  },
+  canAccessAdmin: {
+    rule: rule()(async (root: any, args: any, ctx: Context, info: any) => {
+      if (!ctx.user) {
+        return false;
+      }
+      const result = await checkUserAuthorizedForPermission({
+        permissionName: 'ACCESS_ADMIN',
+        userId: ctx.user.id,
+      });
+      return result;
     }),
   },
   isGreWordOwner: {
@@ -42,7 +55,9 @@ export const rules = {
 export const permissions = shield(
   {
     Query: {
-      users: rules.isAuthenticatedUser.rule,
+      // chain executes the rules one by one
+      // and executes the rules in parellel
+      users: chain(rules.isAuthenticatedUser.rule, rules.canAccessAdmin.rule),
     },
     Mutation: {
       deleteGreWord: rules.isGreWordOwner.rule,
@@ -58,3 +73,4 @@ export const permissions = shield(
     // and every error was "Not Authorised!"
   }
 );
+//
