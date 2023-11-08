@@ -1,14 +1,13 @@
 import axios from 'axios';
 import { Router } from 'express';
 import fileLogger from 'lib/fileLogger';
-import authorize from 'middlewares/authorize';
 import { bullMonitorExpress } from 'queues';
 import sampleRouter from 'routers/sampleRouter';
 const rootRouter = Router();
 
 rootRouter.use('/sample', sampleRouter);
 
-rootRouter.get('/', authorize('MANAGE_QUEUES'), async (req, res, next) => {
+rootRouter.get('/', async (req, res, next) => {
   res.json({ message: 'skartner-server is working' });
 });
 rootRouter.post('/', async (req, res, next) => {

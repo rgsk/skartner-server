@@ -1,3 +1,5 @@
+import { Permissions } from 'constants/Permissions';
+import { db } from 'db';
 import { Router } from 'express';
 import cacheValue from 'lib/cache/cacheValue';
 import invalidateCache from 'lib/cache/invalidateCache';
@@ -5,12 +7,14 @@ import useCache from 'lib/cache/useCache';
 import { getProps } from 'middlewareProps';
 import { Middlewares } from 'middlewares';
 import authenticate from 'middlewares/authenticate';
+import authorize from 'middlewares/authorize';
 
 const sampleRouter = Router();
 sampleRouter.get('/', async (req, res, next) => {
   res.json({ message: 'sample route get' });
 });
 
+// authentication example
 sampleRouter.get('/user', authenticate, async (req, res, next) => {
   const { user } = getProps<Middlewares.Authenticate>(
     req,
@@ -19,6 +23,17 @@ sampleRouter.get('/user', authenticate, async (req, res, next) => {
 
   res.json(user);
 });
+
+// authorization example
+sampleRouter.get(
+  '/users',
+  authenticate,
+  authorize(Permissions.ACCESS_ADMIN),
+  async (req, res, next) => {
+    const users = await db.user.findMany();
+    res.json(users);
+  }
+);
 
 sampleRouter.post('/', async (req, res, next) => {
   res.json({ message: 'sample route post' });

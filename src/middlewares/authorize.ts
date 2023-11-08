@@ -1,5 +1,8 @@
+import { Permissions } from 'constants/Permissions';
 import { db } from 'db';
 import { NextFunction, Request, Response } from 'express';
+import { getProps } from 'middlewareProps';
+import { Middlewares } from 'middlewares';
 
 export const checkUserAuthorizedForPermission = async ({
   permissionName,
@@ -106,11 +109,14 @@ export const checkUserAuthorizedForPermission = async ({
 };
 
 const authorize =
-  (permissionName: string) =>
+  (permissionName: Permissions) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user } = getProps<Middlewares.Authenticate>(
+        req,
+        Middlewares.Keys.authenticate
+      );
       // get the user via token
-      const user = await db.user.findUnique({ where: { email: 'rahul' } });
       if (user) {
         const isAuthorized = await checkUserAuthorizedForPermission({
           userId: user.id,
