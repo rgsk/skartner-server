@@ -55,8 +55,8 @@ export const rules = {
 export const permissions = shield(
   {
     Query: {
-      // chain executes the rules one by one
-      // and executes the rules in parellel
+      // "chain" method executes the rules one by one
+      // "and" method executes the rules in parellel
       users: chain(rules.isAuthenticatedUser.rule, rules.canAccessAdmin.rule),
     },
     Mutation: {
