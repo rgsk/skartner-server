@@ -6,10 +6,13 @@ import { chain, rule, shield } from 'graphql-shield';
 import { checkUserAuthorizedForPermission } from 'middlewares/authorize';
 import { nonNull, stringArg } from 'nexus';
 
+// CAUTION: Never return false
+// in that case throw a descriptive error message
+
 const getRuleForPermission = (permissionName: string) =>
   rule()(async (root: any, args: any, ctx: Context, info: any) => {
     if (!ctx.user) {
-      return false;
+      throw new GraphQLError('Authentication Error');
     }
     const result = await checkUserAuthorizedForPermission({
       permissionName: permissionName,
@@ -68,7 +71,7 @@ export const rules = {
         info: any
       ) => {
         if (!ctx.user) {
-          return false;
+          throw new GraphQLError('Authentication Error');
         }
         const id = args.id;
         const greWord = await ctx.db.greWord.findUnique({
@@ -79,7 +82,10 @@ export const rules = {
         if (!greWord) {
           return true;
         }
-        return ctx.user.id === greWord.userId;
+        if (ctx.user.id === greWord.userId) {
+          return true;
+        }
+        throw new GraphQLError("Authorization Error: Can't access this entity");
       }
     ),
   },
@@ -93,10 +99,6 @@ export const graphqlPermissions = shield(
       users: chain(
         rules.isAuthenticatedUser.rule,
         rules.canAccessUsersTable.rule
-      ),
-      greWords: chain(
-        rules.isAuthenticatedUser.rule,
-        rules.canAccessGreWordsTable.rule
       ),
       userSessions: rules.canAccessAdminDashboard.rule,
     },

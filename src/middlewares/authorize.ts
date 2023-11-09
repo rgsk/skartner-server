@@ -330,6 +330,8 @@ export const checkUserAuthorizedForPermission = async ({
     permissionsThatCanBeGranted: [
       ...whereTrueResult.permissionsThatCanBeGranted,
     ],
+    // set was not properly sent as json
+    // so we convert to array
     rolesThatCanBeGranted: [...rolesThatCanBeGranted],
     rolesThatAffectThisPermission:
       whereTrueResult.rolesThatAffectThisPermission,
