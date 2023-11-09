@@ -26,8 +26,9 @@ export const createAdminUser = async () => {
   const users = await db.user.findMany({
     where: { email: { in: usersData.map((u) => u.email) } },
   });
-  // create 'ACCESS_ADMIN' permission if not exists
-  const accessAdminPermission = await db.permission.upsert({
+
+  // create 'Access Admin Dashboard' permission if not exists
+  const accessAdminDashboardPermission = await db.permission.upsert({
     where: {
       name: permissions['Access Admin Dashboard'].key,
     },
@@ -37,7 +38,90 @@ export const createAdminUser = async () => {
       meta: { description: 'access admin dashboard' },
     },
   });
-  // create 'ADMIN' role if not exists
+
+  const accessConfidentialTablesPermission = await db.permission.upsert({
+    where: {
+      name: permissions['Access Admin Dashboard']['Access Confidential Tables']
+        .key,
+    },
+    update: {},
+    create: {
+      name: permissions['Access Admin Dashboard']['Access Confidential Tables']
+        .key,
+    },
+  });
+
+  await db.permissionHierarchy.upsert({
+    where: {
+      parentPermissionId_childPermissionId: {
+        parentPermissionId: accessAdminDashboardPermission.id,
+        childPermissionId: accessConfidentialTablesPermission.id,
+      },
+    },
+    update: {},
+    create: {
+      parentPermissionId: accessAdminDashboardPermission.id,
+      childPermissionId: accessConfidentialTablesPermission.id,
+    },
+  });
+
+  const accessUsersTablesPermission = await db.permission.upsert({
+    where: {
+      name: permissions['Access Admin Dashboard']['Access Confidential Tables'][
+        'Access Users Table'
+      ].key,
+    },
+    update: {},
+    create: {
+      name: permissions['Access Admin Dashboard']['Access Confidential Tables'][
+        'Access Users Table'
+      ].key,
+    },
+  });
+
+  const accessGreWordsTablesPermission = await db.permission.upsert({
+    where: {
+      name: permissions['Access Admin Dashboard']['Access Confidential Tables'][
+        'Access GreWords Table'
+      ].key,
+    },
+    update: {},
+    create: {
+      name: permissions['Access Admin Dashboard']['Access Confidential Tables'][
+        'Access GreWords Table'
+      ].key,
+    },
+  });
+
+  await db.permissionHierarchy.upsert({
+    where: {
+      parentPermissionId_childPermissionId: {
+        parentPermissionId: accessConfidentialTablesPermission.id,
+        childPermissionId: accessUsersTablesPermission.id,
+      },
+    },
+    update: {},
+    create: {
+      parentPermissionId: accessConfidentialTablesPermission.id,
+      childPermissionId: accessUsersTablesPermission.id,
+    },
+  });
+
+  await db.permissionHierarchy.upsert({
+    where: {
+      parentPermissionId_childPermissionId: {
+        parentPermissionId: accessConfidentialTablesPermission.id,
+        childPermissionId: accessGreWordsTablesPermission.id,
+      },
+    },
+    update: {},
+    create: {
+      parentPermissionId: accessConfidentialTablesPermission.id,
+      childPermissionId: accessGreWordsTablesPermission.id,
+    },
+  });
+
+  // create 'Admin' role if not exists
   const adminRole = await db.role.upsert({
     where: {
       name: Roles.Admin,
@@ -52,24 +136,24 @@ export const createAdminUser = async () => {
       },
     },
   });
-  // connect 'ACCESS_ADMIN' permission and 'ADMIN' role
+  // connect 'Access Admin Dashboard' permission and 'Admin' role
   const accessAdminToAdminRelation = await db.relationPermissionToRole.upsert({
     where: {
       permissionId_roleId: {
-        permissionId: accessAdminPermission.id,
+        permissionId: accessAdminDashboardPermission.id,
         roleId: adminRole.id,
       },
     },
     update: {},
     create: {
-      permissionId: accessAdminPermission.id,
+      permissionId: accessAdminDashboardPermission.id,
       roleId: adminRole.id,
       granterId: rootUser.id,
       isAllowed: true,
     },
   });
 
-  // grant 'ADMIN' role to user
+  // grant 'Admin' role to user
   const { count: rolesAssignedCount } = await db.relationRoleToUser.createMany({
     data: [rootUser, ...users].map((u) => {
       return {

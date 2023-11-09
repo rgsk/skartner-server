@@ -20,6 +20,16 @@ export const getProps = <T>(req: any, key: string) => {
   return req.body[props][key] as T;
 };
 
+export const getOptionalProps = <T>(req: any, key: string) => {
+  if (req.body[props] === undefined) {
+    req.body[props] = {};
+  }
+  if (key in req.body[props]) {
+    return req.body[props][key] as T;
+  }
+  return undefined;
+};
+
 /**
  *  use this function to list all the middlewares and properties attached by them
  */

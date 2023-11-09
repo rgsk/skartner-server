@@ -1,26 +1,58 @@
 import permissions from 'constants/permissions';
 import { Context } from 'context';
+import { AuthorizationError } from 'errors';
+import { GraphQLError } from 'graphql';
 import { chain, rule, shield } from 'graphql-shield';
 import { checkUserAuthorizedForPermission } from 'middlewares/authorize';
 import { nonNull, stringArg } from 'nexus';
 
+const getRuleForPermission = (permissionName: string) =>
+  rule()(async (root: any, args: any, ctx: Context, info: any) => {
+    if (!ctx.user) {
+      return false;
+    }
+    const result = await checkUserAuthorizedForPermission({
+      permissionName: permissionName,
+      userId: ctx.user.id,
+    });
+    if (!result.hasPermission) {
+      throw new AuthorizationError(permissionName, {
+        extensions: result,
+      });
+    }
+    return true;
+  });
+
 export const rules = {
   isAuthenticatedUser: {
     rule: rule()(async (root: any, args: any, ctx: Context, info: any) => {
-      return !!ctx.user;
+      if (!!ctx.user) {
+        return true;
+      }
+      throw new GraphQLError('Authentication Error');
     }),
   },
-  canAccessAdmin: {
-    rule: rule()(async (root: any, args: any, ctx: Context, info: any) => {
-      if (!ctx.user) {
-        return false;
-      }
-      const result = await checkUserAuthorizedForPermission({
-        permissionName: permissions['Access Admin Dashboard'].key,
-        userId: ctx.user.id,
-      });
-      return result;
-    }),
+  canAccessAdminDashboard: {
+    rule: getRuleForPermission(permissions['Access Admin Dashboard'].key),
+  },
+  canAccessConfidentialTables: {
+    rule: getRuleForPermission(
+      permissions['Access Admin Dashboard']['Access Confidential Tables'].key
+    ),
+  },
+  canAccessUsersTable: {
+    rule: getRuleForPermission(
+      permissions['Access Admin Dashboard']['Access Confidential Tables'][
+        'Access Users Table'
+      ].key
+    ),
+  },
+  canAccessGreWordsTable: {
+    rule: getRuleForPermission(
+      permissions['Access Admin Dashboard']['Access Confidential Tables'][
+        'Access GreWords Table'
+      ].key
+    ),
   },
   isGreWordOwner: {
     args: {
@@ -58,7 +90,15 @@ export const graphqlPermissions = shield(
     Query: {
       // "chain" method executes the rules one by one
       // "and" method executes the rules in parellel
-      users: chain(rules.isAuthenticatedUser.rule, rules.canAccessAdmin.rule),
+      users: chain(
+        rules.isAuthenticatedUser.rule,
+        rules.canAccessUsersTable.rule
+      ),
+      greWords: chain(
+        rules.isAuthenticatedUser.rule,
+        rules.canAccessGreWordsTable.rule
+      ),
+      userSessions: rules.canAccessAdminDashboard.rule,
     },
     Mutation: {
       deleteGreWord: rules.isGreWordOwner.rule,
@@ -72,6 +112,8 @@ export const graphqlPermissions = shield(
     // then error thrown thereafter is sent
     // otherwise error in resolvers was not sent
     // and every error was "Not Authorised!"
+
+    debug: true, // debug needs to be set to true, to send the error thrown
   }
 );
 //

@@ -1,55 +1,109 @@
 import { db } from 'db';
 import { NextFunction, Request, Response } from 'express';
-import { getProps } from 'middlewareProps';
+import { addProps, getProps } from 'middlewareProps';
 import { Middlewares } from 'middlewares';
 
-export const checkUserAuthorizedForPermission = async ({
-  permissionName,
-  userId,
-}: {
+const goUpInHierarchyToCheckIfExplicitFalseIsSet: (data: {
   permissionName: string;
   userId: string;
-}) => {
-  const noEntryIsFalse = await db.permission.count({
+  hierarchyChecked?: string[];
+}) => Promise<{
+  hasPermission: boolean;
+  hierarchyChecked?: string[];
+  permissionFailed?: string;
+  assignedPermissionsThatFailed?: string[];
+  assignedRolesThatFailed?: string[];
+}> = async ({ permissionName, userId, hierarchyChecked = [] }) => {
+  const falseExists = await db.permission.findFirst({
     where: {
       name: permissionName,
+      OR: [
+        {
+          relationPermissionToUserAsPermission: {
+            some: { userId: userId, isAllowed: false },
+          },
+        },
+        {
+          relationPermissionToRoleAsPermission: {
+            some: {
+              role: {
+                relationRoleToUserAsRole: { some: { userId: userId } },
+              },
+              isAllowed: false,
+            },
+          },
+        },
+      ],
+    },
+    select: {
       relationPermissionToUserAsPermission: {
-        none: { userId: userId, isAllowed: false },
+        select: { permission: { select: { name: true } } },
       },
       relationPermissionToRoleAsPermission: {
-        none: {
-          role: {
-            relationRoleToUserAsRole: { some: { userId: userId } },
-          },
-          isAllowed: false,
-        },
-      },
-      permissionHierarchyAsChild: {
-        every: {
-          parentPermission: {
-            relationPermissionToUserAsPermission: {
-              none: { userId: userId, isAllowed: false },
-            },
-            relationPermissionToRoleAsPermission: {
-              none: {
-                role: {
-                  relationRoleToUserAsRole: {
-                    some: { userId: userId },
-                  },
-                },
-                isAllowed: false,
-              },
-            },
-          },
-        },
+        select: { role: { select: { name: true } } },
       },
     },
   });
-  //   console.log({ noEntryIsFalse });
-  if (!noEntryIsFalse) {
-    return false;
+
+  if (falseExists) {
+    return {
+      hasPermission: false,
+      hierarchyChecked: [...hierarchyChecked, permissionName],
+      permissionFailed: permissionName,
+      assignedPermissionsThatFailed:
+        falseExists.relationPermissionToUserAsPermission.map(
+          (v) => v.permission.name
+        ),
+      assignedRolesThatFailed:
+        falseExists.relationPermissionToRoleAsPermission.map(
+          (v) => v.role.name
+        ),
+    };
   }
-  const someEntryIsTrue = await db.permission.count({
+
+  const permission = await db.permission.findUnique({
+    where: {
+      name: permissionName,
+    },
+    select: {
+      permissionHierarchyAsChild: {
+        select: { parentPermission: { select: { name: true } } },
+      },
+    },
+  });
+  if (permission) {
+    // check for all the parents
+    const newHierarchy = [...hierarchyChecked, permissionName];
+    for (const {
+      parentPermission: { name },
+    } of permission.permissionHierarchyAsChild) {
+      const result = await goUpInHierarchyToCheckIfExplicitFalseIsSet({
+        userId,
+        permissionName: name,
+        hierarchyChecked: newHierarchy,
+      });
+      if (!result.hasPermission) {
+        return result;
+      }
+    }
+  }
+  return {
+    hasPermission: true,
+  };
+};
+
+const goUpInHierarchyToCheckIfExplicitTrueIsSet: (data: {
+  permissionName: string;
+  userId: string;
+  hierarchyChecked?: string[];
+}) => Promise<{
+  hasPermission: boolean;
+  hierarchyChecked?: string[];
+  permissionSucceeded?: string;
+  assignedPermissionsThatSucceeded?: string[];
+  assignedRolesThatSucceeded?: string[];
+}> = async ({ permissionName, userId, hierarchyChecked = [] }) => {
+  const trueExists = await db.permission.findFirst({
     where: {
       name: permissionName,
       OR: [
@@ -62,49 +116,201 @@ export const checkUserAuthorizedForPermission = async ({
           relationPermissionToRoleAsPermission: {
             some: {
               role: {
-                relationRoleToUserAsRole: {
-                  some: { userId: userId },
-                },
+                relationRoleToUserAsRole: { some: { userId: userId } },
               },
               isAllowed: true,
             },
           },
         },
-        {
-          permissionHierarchyAsChild: {
-            some: {
-              parentPermission: {
-                OR: [
-                  {
-                    relationPermissionToUserAsPermission: {
-                      some: { userId: userId, isAllowed: true },
-                    },
-                  },
-                  {
-                    relationPermissionToRoleAsPermission: {
-                      some: {
-                        role: {
-                          relationRoleToUserAsRole: {
-                            some: { userId: userId },
-                          },
-                        },
-                        isAllowed: true,
-                      },
-                    },
-                  },
-                ],
-              },
+      ],
+    },
+    select: {
+      relationPermissionToUserAsPermission: {
+        select: { permission: { select: { name: true } } },
+      },
+      relationPermissionToRoleAsPermission: {
+        select: { role: { select: { name: true } } },
+      },
+    },
+  });
+  if (trueExists) {
+    return {
+      hasPermission: true,
+      permissionSucceeded: permissionName,
+      hierarchyChecked: [...hierarchyChecked, permissionName],
+      assignedPermissionsThatSucceeded:
+        trueExists.relationPermissionToUserAsPermission.map(
+          (v) => v.permission.name
+        ),
+      assignedRolesThatSucceeded:
+        trueExists.relationPermissionToRoleAsPermission.map((v) => v.role.name),
+    };
+  }
+  // check in parents if someone is true
+  const permission = await db.permission.findUnique({
+    where: {
+      name: permissionName,
+    },
+    select: {
+      permissionHierarchyAsChild: {
+        select: { parentPermission: { select: { name: true } } },
+      },
+    },
+  });
+  if (permission) {
+    // check for all the parents
+    const newHierarchy = [...hierarchyChecked, permissionName];
+    for (const {
+      parentPermission: { name },
+    } of permission.permissionHierarchyAsChild) {
+      const result = await goUpInHierarchyToCheckIfExplicitTrueIsSet({
+        userId,
+        permissionName: name,
+        hierarchyChecked: newHierarchy,
+      });
+      if (result.hasPermission) {
+        return result;
+      }
+    }
+  }
+  return {
+    hasPermission: false,
+  };
+};
+
+type RoleThatAffect = {
+  roleName: string;
+  permissionName: string;
+  isAllowed: boolean | null;
+};
+
+const goUpInHierarchyToCheckWhereTrueCanBeSet: (data: {
+  permissionName: string;
+}) => Promise<{
+  permissionsThatCanBeGranted: Set<string>;
+  rolesThatAffectThisPermission: RoleThatAffect[];
+}> = async ({ permissionName }) => {
+  const exists = await db.permission.findFirst({
+    where: {
+      name: permissionName,
+    },
+    select: {
+      permissionHierarchyAsChild: {
+        select: { parentPermission: { select: { name: true } } },
+      },
+      relationPermissionToRoleAsPermission: {
+        select: {
+          isAllowed: true,
+          role: {
+            select: {
+              name: true,
             },
           },
         },
-      ],
+      },
     },
   });
-  //   console.log({ someEntryIsTrue });
-  if (someEntryIsTrue) {
-    return true;
+  const rolesThatAffectThisPermission: RoleThatAffect[] = [];
+  const permissionsThatCanBeGranted = new Set<string>([]);
+
+  permissionsThatCanBeGranted.add(permissionName);
+
+  if (exists) {
+    for (const {
+      role: { name },
+      isAllowed,
+    } of exists.relationPermissionToRoleAsPermission) {
+      rolesThatAffectThisPermission.push({
+        permissionName: permissionName,
+        roleName: name,
+        isAllowed: isAllowed,
+      });
+    }
+
+    for (const {
+      parentPermission: { name },
+    } of exists.permissionHierarchyAsChild) {
+      const result = await goUpInHierarchyToCheckWhereTrueCanBeSet({
+        permissionName: name,
+      });
+
+      result.permissionsThatCanBeGranted.forEach((name) =>
+        permissionsThatCanBeGranted.add(name)
+      );
+      result.rolesThatAffectThisPermission.forEach((role) =>
+        rolesThatAffectThisPermission.push(role)
+      );
+    }
   }
-  return false;
+  return {
+    permissionsThatCanBeGranted,
+    rolesThatAffectThisPermission,
+  };
+};
+
+const getRolesThatCanBeGranted = (
+  rolesThatAffectThisPermission: RoleThatAffect[]
+) => {
+  // console.log({ rolesThatAffectThisPermission });
+  const mp: Record<string, boolean> = {};
+  for (const {
+    roleName,
+    permissionName,
+    isAllowed,
+  } of rolesThatAffectThisPermission) {
+    if (isAllowed !== null) {
+      if (roleName in mp) {
+        mp[roleName] = mp[roleName] && isAllowed;
+      } else {
+        mp[roleName] = isAllowed;
+      }
+    }
+  }
+  const rolesThatCanBeGranted = new Set<string>();
+  for (const roleName in mp) {
+    if (mp[roleName]) {
+      rolesThatCanBeGranted.add(roleName);
+    }
+  }
+  return rolesThatCanBeGranted;
+};
+
+export const checkUserAuthorizedForPermission = async ({
+  permissionName,
+  userId,
+}: {
+  permissionName: string;
+  userId: string;
+}) => {
+  const falseResult = await goUpInHierarchyToCheckIfExplicitFalseIsSet({
+    permissionName,
+    userId,
+  });
+  // console.log({ falseResult });
+  if (!falseResult.hasPermission) {
+    return falseResult;
+  }
+  const trueResult = await goUpInHierarchyToCheckIfExplicitTrueIsSet({
+    permissionName,
+    userId,
+  });
+  // console.log({ trueResult });
+  if (trueResult.hasPermission) {
+    return trueResult;
+  }
+  const whereTrueResult = await goUpInHierarchyToCheckWhereTrueCanBeSet({
+    permissionName,
+  });
+  const rolesThatCanBeGranted = getRolesThatCanBeGranted(
+    whereTrueResult.rolesThatAffectThisPermission
+  );
+  const finalResult = {
+    hasPermission: false,
+    ...whereTrueResult,
+    rolesThatCanBeGranted,
+  };
+  // console.log({ finalResult });
+  return finalResult;
 };
 
 const authorize =
@@ -117,15 +323,22 @@ const authorize =
       );
       // get the user via token
       if (user) {
-        const isAuthorized = await checkUserAuthorizedForPermission({
+        const result = await checkUserAuthorizedForPermission({
           userId: user.id,
           permissionName,
         });
-        if (isAuthorized) {
+        // console.log({ result });
+        if (result.hasPermission) {
           return next();
         }
+        addProps<Middlewares.ErrorData>(
+          req,
+          { data: result },
+          Middlewares.Keys.errorData
+        );
       }
-      throw new Error('Un-Authorized');
+
+      throw new Error(`Authorization Error: ${permissionName}`);
     } catch (err) {
       next(err);
     }
