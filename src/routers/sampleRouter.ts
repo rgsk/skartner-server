@@ -18,7 +18,7 @@ sampleRouter.get('/', async (req, res, next) => {
 sampleRouter.get('/user', authenticate, async (req, res, next) => {
   const { user } = getProps<Middlewares.Authenticate>(
     req,
-    Middlewares.Keys.authenticate
+    Middlewares.Keys.Authenticate
   );
 
   res.json(user);

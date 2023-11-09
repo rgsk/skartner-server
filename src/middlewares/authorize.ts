@@ -346,7 +346,7 @@ const authorize =
     try {
       const { user } = getProps<Middlewares.Authenticate>(
         req,
-        Middlewares.Keys.authenticate
+        Middlewares.Keys.Authenticate
       );
       // get the user via token
       if (user) {
@@ -361,7 +361,7 @@ const authorize =
         addProps<Middlewares.ErrorData>(
           req,
           { data: result },
-          Middlewares.Keys.errorData
+          Middlewares.Keys.ErrorData
         );
       }
 

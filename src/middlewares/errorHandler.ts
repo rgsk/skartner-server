@@ -9,7 +9,7 @@ const errorHandler = (
   next: NextFunction
 ) => {
   const { data } =
-    getOptionalProps<Middlewares.ErrorData>(req, Middlewares.Keys.errorData) ??
+    getOptionalProps<Middlewares.ErrorData>(req, Middlewares.Keys.ErrorData) ??
     {};
   console.log('Error Handler Middleware: ');
   console.log(err.message);

@@ -3,8 +3,8 @@ import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 
 export namespace Middlewares {
   export enum Keys {
-    'authenticate' = 'authenticate',
-    'errorData' = 'errorData',
+    Authenticate = 'Authenticate',
+    ErrorData = 'ErrorData',
   }
   export type Authenticate = {
     decodedIdToken: DecodedIdToken;

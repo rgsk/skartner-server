@@ -22,7 +22,7 @@ const authenticate = async (
       });
 
       const props: Middlewares.Authenticate = { decodedIdToken, user };
-      addProps(req, props, Middlewares.Keys.authenticate);
+      addProps(req, props, Middlewares.Keys.Authenticate);
       next();
     } else {
       throw new Error('token not present');
