@@ -1,4 +1,4 @@
-import { Permissions } from 'constants/Permissions';
+import permissions from 'constants/permissions';
 import { Roles } from 'constants/Roles';
 import { db } from 'db';
 
@@ -21,6 +21,7 @@ export const createAdminUser = async () => {
     }),
     skipDuplicates: true,
   });
+
   //   console.log({ usersCreatedCount });
   const users = await db.user.findMany({
     where: { email: { in: usersData.map((u) => u.email) } },
@@ -28,22 +29,22 @@ export const createAdminUser = async () => {
   // create 'ACCESS_ADMIN' permission if not exists
   const accessAdminPermission = await db.permission.upsert({
     where: {
-      name: Permissions.ACCESS_ADMIN,
+      name: permissions['Access Admin Dashboard'].key,
     },
     update: {},
     create: {
-      name: Permissions.ACCESS_ADMIN,
+      name: permissions['Access Admin Dashboard'].key,
       meta: { description: 'access admin dashboard' },
     },
   });
   // create 'ADMIN' role if not exists
   const adminRole = await db.role.upsert({
     where: {
-      name: Roles.ADMIN,
+      name: Roles.Admin,
     },
     update: {},
     create: {
-      name: Roles.ADMIN,
+      name: Roles.Admin,
 
       meta: {
         description:

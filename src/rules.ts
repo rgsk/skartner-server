@@ -1,4 +1,4 @@
-import { Permissions } from 'constants/Permissions';
+import permissions from 'constants/permissions';
 import { Context } from 'context';
 import { chain, rule, shield } from 'graphql-shield';
 import { checkUserAuthorizedForPermission } from 'middlewares/authorize';
@@ -16,7 +16,7 @@ export const rules = {
         return false;
       }
       const result = await checkUserAuthorizedForPermission({
-        permissionName: Permissions.ACCESS_ADMIN,
+        permissionName: permissions['Access Admin Dashboard'].key,
         userId: ctx.user.id,
       });
       return result;
@@ -53,7 +53,7 @@ export const rules = {
   },
 };
 
-export const permissions = shield(
+export const graphqlPermissions = shield(
   {
     Query: {
       // "chain" method executes the rules one by one

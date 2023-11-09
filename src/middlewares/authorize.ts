@@ -1,4 +1,3 @@
-import { Permissions } from 'constants/Permissions';
 import { db } from 'db';
 import { NextFunction, Request, Response } from 'express';
 import { getProps } from 'middlewareProps';
@@ -109,7 +108,7 @@ export const checkUserAuthorizedForPermission = async ({
 };
 
 const authorize =
-  (permissionName: Permissions) =>
+  (permissionName: string) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user } = getProps<Middlewares.Authenticate>(

@@ -1,4 +1,4 @@
-import { Permissions } from 'constants/Permissions';
+import permissions from 'constants/permissions';
 import { db } from 'db';
 import { Router } from 'express';
 import cacheValue from 'lib/cache/cacheValue';
@@ -28,7 +28,7 @@ sampleRouter.get('/user', authenticate, async (req, res, next) => {
 sampleRouter.get(
   '/users',
   authenticate,
-  authorize(Permissions.ACCESS_ADMIN),
+  authorize(permissions['Access Admin Dashboard'].key),
   async (req, res, next) => {
     const users = await db.user.findMany();
     res.json(users);

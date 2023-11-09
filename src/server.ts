@@ -15,7 +15,7 @@ import Keyv from 'keyv';
 import environmentVars from 'lib/environmentVars';
 import errorHandler from 'middlewares/errorHandler';
 import rootRouter from 'rootRouter';
-import { permissions } from 'rules';
+import { graphqlPermissions } from 'rules';
 import { schema } from 'schema';
 import { WebSocketServer } from 'ws';
 
@@ -60,7 +60,7 @@ const serverCleanup = useServer(
 
 // Set up ApolloServer.
 export const server = new ApolloServer({
-  schema: applyMiddleware(schema, permissions),
+  schema: applyMiddleware(schema, graphqlPermissions),
   cache: new KeyvAdapter(new Keyv(environmentVars.REDIS_URL)),
   plugins: [
     // Proper shutdown for the HTTP server.
