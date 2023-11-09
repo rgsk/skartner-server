@@ -38,9 +38,19 @@ const goUpInHierarchyToCheckIfExplicitFalseIsSet: (data: {
     select: {
       relationPermissionToUserAsPermission: {
         select: { permission: { select: { name: true } } },
+        where: {
+          userId: userId,
+          isAllowed: false,
+        },
       },
       relationPermissionToRoleAsPermission: {
         select: { role: { select: { name: true } } },
+        where: {
+          role: {
+            relationRoleToUserAsRole: { some: { userId: userId } },
+          },
+          isAllowed: false,
+        },
       },
     },
   });
@@ -127,9 +137,19 @@ const goUpInHierarchyToCheckIfExplicitTrueIsSet: (data: {
     select: {
       relationPermissionToUserAsPermission: {
         select: { permission: { select: { name: true } } },
+        where: {
+          userId: userId,
+          isAllowed: true,
+        },
       },
       relationPermissionToRoleAsPermission: {
         select: { role: { select: { name: true } } },
+        where: {
+          role: {
+            relationRoleToUserAsRole: { some: { userId: userId } },
+          },
+          isAllowed: true,
+        },
       },
     },
   });
@@ -298,6 +318,7 @@ export const checkUserAuthorizedForPermission = async ({
   if (trueResult.hasPermission) {
     return trueResult;
   }
+
   const whereTrueResult = await goUpInHierarchyToCheckWhereTrueCanBeSet({
     permissionName,
   });
@@ -306,8 +327,12 @@ export const checkUserAuthorizedForPermission = async ({
   );
   const finalResult = {
     hasPermission: false,
-    ...whereTrueResult,
-    rolesThatCanBeGranted,
+    permissionsThatCanBeGranted: [
+      ...whereTrueResult.permissionsThatCanBeGranted,
+    ],
+    rolesThatCanBeGranted: [...rolesThatCanBeGranted],
+    rolesThatAffectThisPermission:
+      whereTrueResult.rolesThatAffectThisPermission,
   };
   // console.log({ finalResult });
   return finalResult;
