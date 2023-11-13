@@ -75,7 +75,7 @@ export const GreWordObject = objectType({
       type: 'GreWordTag',
     });
 
-    t.field('cacheWord', {
+    t.nonNull.field('cacheWord', {
       type: 'CacheWord',
       resolve: async (root: any, args, ctx) => {
         return root.cacheWord;

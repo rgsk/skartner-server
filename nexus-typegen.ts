@@ -141,19 +141,19 @@ export interface NexusGenObjects {
     message: string; // String!
   }
   CachePrompt: { // root type
-    cacheResponses?: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     text: string; // String!
   }
   CacheResponse: { // root type
-    gptPrompts?: NexusGenRootTypes['GptPrompt'][] | null; // [GptPrompt!]
+    gptPrompts: NexusGenRootTypes['GptPrompt'][]; // [GptPrompt!]!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     text: string; // String!
   }
   CacheWord: { // root type
-    cacheResponses?: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     text: string; // String!
@@ -204,6 +204,7 @@ export interface NexusGenObjects {
   }
   Query: {};
   SendSinglePromptResponse: { // root type
+    cacheResponseId: string; // String!
     result: string; // String!
     resultIndex: number; // Int!
     totalResultsInCache: number; // Int!
@@ -250,7 +251,7 @@ export interface NexusGenFieldTypes {
     message: string; // String!
   }
   CachePrompt: { // field return type
-    cacheResponses: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     createdAt: string; // String!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
@@ -258,17 +259,17 @@ export interface NexusGenFieldTypes {
     updatedAt: string; // String!
   }
   CacheResponse: { // field return type
-    cachePrompt: NexusGenRootTypes['CachePrompt'] | null; // CachePrompt
-    cacheWord: NexusGenRootTypes['CacheWord'] | null; // CacheWord
+    cachePrompt: NexusGenRootTypes['CachePrompt']; // CachePrompt!
+    cacheWord: NexusGenRootTypes['CacheWord']; // CacheWord!
     createdAt: string; // String!
-    gptPrompts: NexusGenRootTypes['GptPrompt'][] | null; // [GptPrompt!]
+    gptPrompts: NexusGenRootTypes['GptPrompt'][]; // [GptPrompt!]!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     text: string; // String!
     updatedAt: string; // String!
   }
   CacheWord: { // field return type
-    cacheResponses: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     createdAt: string; // String!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
@@ -276,7 +277,7 @@ export interface NexusGenFieldTypes {
     updatedAt: string; // String!
   }
   GptPrompt: { // field return type
-    cacheResponse: NexusGenRootTypes['CacheResponse'] | null; // CacheResponse
+    cacheResponse: NexusGenRootTypes['CacheResponse']; // CacheResponse!
     createdAt: string; // String!
     editedResponse: string | null; // String
     greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
@@ -291,7 +292,7 @@ export interface NexusGenFieldTypes {
     defaultGreWordSearchPromptInputs: string[]; // [String!]!
   }
   GreWord: { // field return type
-    cacheWord: NexusGenRootTypes['CacheWord'] | null; // CacheWord
+    cacheWord: NexusGenRootTypes['CacheWord']; // CacheWord!
     createdAt: string; // String!
     gptPrompts: NexusGenRootTypes['GptPrompt'][]; // [GptPrompt!]!
     greWordTags: NexusGenRootTypes['GreWordTag'][] | null; // [GreWordTag!]
@@ -375,6 +376,7 @@ export interface NexusGenFieldTypes {
     wordsCountForGptPrompts: NexusGenRootTypes['WordsCountForGptPrompts'][]; // [WordsCountForGptPrompts!]!
   }
   SendSinglePromptResponse: { // field return type
+    cacheResponseId: string; // String!
     result: string; // String!
     resultIndex: number; // Int!
     totalResultsInCache: number; // Int!
@@ -550,6 +552,7 @@ export interface NexusGenFieldTypeNames {
     wordsCountForGptPrompts: 'WordsCountForGptPrompts'
   }
   SendSinglePromptResponse: { // field return type name
+    cacheResponseId: 'String'
     result: 'String'
     resultIndex: 'Int'
     totalResultsInCache: 'Int'

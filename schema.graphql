@@ -7,7 +7,7 @@ type AuthenticateResponse {
 }
 
 type CachePrompt {
-  cacheResponses: [CacheResponse!]
+  cacheResponses: [CacheResponse!]!
   createdAt: String!
   id: String!
   meta: Json!
@@ -16,10 +16,10 @@ type CachePrompt {
 }
 
 type CacheResponse {
-  cachePrompt: CachePrompt
-  cacheWord: CacheWord
+  cachePrompt: CachePrompt!
+  cacheWord: CacheWord!
   createdAt: String!
-  gptPrompts: [GptPrompt!]
+  gptPrompts: [GptPrompt!]!
   id: String!
   meta: Json!
   text: String!
@@ -27,7 +27,7 @@ type CacheResponse {
 }
 
 type CacheWord {
-  cacheResponses: [CacheResponse!]
+  cacheResponses: [CacheResponse!]!
   createdAt: String!
   id: String!
   meta: Json!
@@ -43,7 +43,7 @@ input EnumGreWordStatusFilter {
 }
 
 type GptPrompt {
-  cacheResponse: CacheResponse
+  cacheResponse: CacheResponse!
   createdAt: String!
   editedResponse: String
   greWord: GreWord
@@ -60,7 +60,7 @@ type GreConfiguration {
 }
 
 type GreWord {
-  cacheWord: CacheWord
+  cacheWord: CacheWord!
   createdAt: String!
   gptPrompts: [GptPrompt!]!
   greWordTags: [GreWordTag!]
@@ -218,6 +218,7 @@ type Query {
 }
 
 type SendSinglePromptResponse {
+  cacheResponseId: String!
   result: String!
   resultIndex: Int!
   totalResultsInCache: Int!

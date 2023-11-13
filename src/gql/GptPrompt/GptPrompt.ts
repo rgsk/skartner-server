@@ -57,7 +57,7 @@ export const GptPromptObject = objectType({
         return greWordsLoader.load(gptPrompt.greWordId);
       },
     });
-    t.field('cacheResponse', {
+    t.nonNull.field('cacheResponse', {
       type: 'CacheResponse',
       resolve: async (root: any, args, ctx) => {
         return root.cacheResponse;
@@ -85,7 +85,7 @@ export const CachePromptObject = objectType({
     });
     addDateFieldsDefinitions(t);
 
-    t.list.nonNull.field('cacheResponses', {
+    t.nonNull.list.nonNull.field('cacheResponses', {
       type: 'CacheResponse',
     });
   },
@@ -100,7 +100,7 @@ export const CacheWordObject = objectType({
       type: 'Json',
     });
     addDateFieldsDefinitions(t);
-    t.list.nonNull.field('cacheResponses', {
+    t.nonNull.list.nonNull.field('cacheResponses', {
       type: 'CacheResponse',
     });
   },
@@ -117,21 +117,21 @@ export const CacheResponseObject = objectType({
     });
     addDateFieldsDefinitions(t);
 
-    t.field('cachePrompt', {
+    t.nonNull.field('cachePrompt', {
       type: 'CachePrompt',
       resolve: async (cacheResponse: any, args, ctx) => {
         return cacheResponse.cachePrompt;
       },
     });
 
-    t.field('cacheWord', {
+    t.nonNull.field('cacheWord', {
       type: 'CacheWord',
       resolve: async (cacheResponse: any, args, ctx) => {
         return cacheResponse.cacheWord;
       },
     });
 
-    t.list.nonNull.field('gptPrompts', {
+    t.nonNull.list.nonNull.field('gptPrompts', {
       type: 'GptPrompt',
     });
   },
@@ -143,6 +143,7 @@ export const SendSinglePromptResponseObject = objectType({
     t.nonNull.string('result');
     t.nonNull.int('resultIndex');
     t.nonNull.int('totalResultsInCache');
+    t.nonNull.string('cacheResponseId');
   },
 });
 
@@ -208,35 +209,43 @@ export const GptPromptQuery = extendType({
           },
         });
         const len = cacheResponses.length;
-        if (!skipCache) {
-          if (len > 0) {
-            if (typeof resultIndexFromCache === 'number') {
-              if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
-                return {
-                  result: cacheResponses[resultIndexFromCache].text,
-                  resultIndex: resultIndexFromCache,
-                  totalResultsInCache: len,
-                };
-              } else {
-                throw new GraphQLError(
-                  `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
-                    len - 1
-                  }`,
-                  {
-                    extensions: {
-                      totalResultsInCache: len,
-                    },
-                  }
-                );
-              }
-            }
-            const idx = randomBetween(0, len - 1, indexesReturned ?? undefined);
-            if (idx !== null) {
+        if (len > 0) {
+          if (typeof resultIndexFromCache === 'number') {
+            if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
               return {
-                result: cacheResponses[idx].text,
-                resultIndex: idx,
+                result: cacheResponses[resultIndexFromCache].text,
+                resultIndex: resultIndexFromCache,
                 totalResultsInCache: len,
+                cacheResponseId: cacheResponses[resultIndexFromCache].id,
               };
+            } else {
+              throw new GraphQLError(
+                `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
+                  len - 1
+                }`,
+                {
+                  extensions: {
+                    totalResultsInCache: len,
+                  },
+                }
+              );
+            }
+          }
+          const idx = randomBetween(0, len - 1, indexesReturned ?? undefined);
+          if (idx !== null) {
+            return {
+              result: cacheResponses[idx].text,
+              resultIndex: idx,
+              totalResultsInCache: len,
+              cacheResponseId: cacheResponses[idx].id,
+            };
+          } else {
+            if (!skipCache) {
+              throw new GraphQLError(`no more results in cache`, {
+                extensions: {
+                  totalResultsInCache: len,
+                },
+              });
             }
           }
         }
@@ -245,38 +254,37 @@ export const GptPromptQuery = extendType({
 
         const message = await sendPrompt([{ role: 'user', content: input }]);
         const result = message?.content ?? '';
-        if (result) {
-          // save the result in cache
-          const createdCacheResponse = await ctx.db.cacheResponse.create({
-            data: {
-              cachePrompt: {
-                connectOrCreate: {
-                  create: {
-                    text: prompt,
-                  },
-                  where: {
-                    text: prompt,
-                  },
+        // save the result in cache
+        const createdCacheResponse = await ctx.db.cacheResponse.create({
+          data: {
+            cachePrompt: {
+              connectOrCreate: {
+                create: {
+                  text: prompt,
+                },
+                where: {
+                  text: prompt,
                 },
               },
-              cacheWord: {
-                connectOrCreate: {
-                  create: {
-                    text: word,
-                  },
-                  where: {
-                    text: word,
-                  },
-                },
-              },
-              text: result,
             },
-          });
-        }
+            cacheWord: {
+              connectOrCreate: {
+                create: {
+                  text: word,
+                },
+                where: {
+                  text: word,
+                },
+              },
+            },
+            text: result,
+          },
+        });
         return {
           result: result,
           resultIndex: len,
           totalResultsInCache: len + 1,
+          cacheResponseId: createdCacheResponse.id,
         };
       },
     });
