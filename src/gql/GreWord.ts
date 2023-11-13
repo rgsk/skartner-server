@@ -92,8 +92,8 @@ export const GreWordWhereInput = inputObjectType({
     t.field('id', {
       type: 'StringFilter',
     });
-    t.field('spelling', {
-      type: 'StringFilter',
+    t.field('cacheWord', {
+      type: 'CacheWordWhereInput',
     });
     t.field('userId', {
       type: 'StringFilter',
@@ -110,18 +110,11 @@ export const GreWordWhereInput = inputObjectType({
   },
 });
 
-export const GreWordWhereUniqueInput = inputObjectType({
-  name: 'GreWordWhereUniqueInput',
+export const CacheWordWhereInput = inputObjectType({
+  name: 'CacheWordWhereInput',
   definition(t) {
-    t.string('id');
-    t.field('spelling_userId', {
-      type: inputObjectType({
-        name: 'GreWordSpellingUserIdCompoundUniqueInput',
-        definition(t) {
-          t.nonNull.string('spelling');
-          t.nonNull.string('userId');
-        },
-      }),
+    t.field('text', {
+      type: 'StringFilter',
     });
   },
 });
@@ -145,9 +138,6 @@ export const GreWordOrderByWithRelationInput = inputObjectType({
   name: 'GreWordOrderByWithRelationInput',
   definition(t) {
     t.field('id', {
-      type: 'SortOrder',
-    });
-    t.field('spelling', {
       type: 'SortOrder',
     });
     t.field('createdAt', {
@@ -183,14 +173,14 @@ export const GreWordQuery = extendType({
     t.field('greWord', {
       type: 'GreWord',
       args: {
-        where: 'GreWordWhereUniqueInput',
+        where: 'GreWordWhereInput',
       },
       async resolve(root, args, ctx, info) {
-        const prismaArgs: Prisma.GreWordFindUniqueArgs = parseGraphQLQuery(
+        const prismaArgs: Prisma.GreWordFindFirstArgs = parseGraphQLQuery(
           info,
           args
         );
-        const greWord = await ctx.db.greWord.findUnique(prismaArgs);
+        const greWord = await ctx.db.greWord.findFirst(prismaArgs);
         return greWord;
       },
     });

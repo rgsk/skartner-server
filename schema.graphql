@@ -35,6 +35,10 @@ type CacheWord {
   updatedAt: String!
 }
 
+input CacheWordWhereInput {
+  text: StringFilter
+}
+
 input EnumGreWordStatusFilter {
   equals: GreWordStatus
   in: [GreWordStatus!]
@@ -75,7 +79,6 @@ type GreWord {
 input GreWordOrderByWithRelationInput {
   createdAt: SortOrder
   id: SortOrder
-  spelling: SortOrder
   updatedAt: SortOrder
 }
 
@@ -91,11 +94,6 @@ input GreWordSearchPromptInputWhereInput {
   id: StringFilter
   text: StringFilter
   users: UserListRelationFilter
-}
-
-input GreWordSpellingUserIdCompoundUniqueInput {
-  spelling: String!
-  userId: String!
 }
 
 enum GreWordStatus {
@@ -141,17 +139,12 @@ input GreWordTagWhereUniqueInput {
 }
 
 input GreWordWhereInput {
+  cacheWord: CacheWordWhereInput
   greWordTags: GreWordTagListRelationFilter
   id: StringFilter
-  spelling: StringFilter
   status: EnumGreWordStatusFilter
   user: UserWhereInput
   userId: StringFilter
-}
-
-input GreWordWhereUniqueInput {
-  id: String
-  spelling_userId: GreWordSpellingUserIdCompoundUniqueInput
 }
 
 type HelloWorld {
@@ -199,7 +192,7 @@ type Query {
   drafts: [Post]
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
-  greWord(where: GreWordWhereUniqueInput): GreWord
+  greWord(where: GreWordWhereInput): GreWord
   greWordSearchPromptInputs(skip: Int, take: Int, where: GreWordSearchPromptInputWhereInput): [GreWordSearchPromptInput!]!
   greWordTags(skip: Int, take: Int, where: GreWordTagWhereInput): [GreWordTag!]!
   greWords(orderBy: [GreWordOrderByWithRelationInput], skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!

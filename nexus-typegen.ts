@@ -14,6 +14,9 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  CacheWordWhereInput: { // input type
+    text?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   EnumGreWordStatusFilter: { // input type
     equals?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
     in?: NexusGenEnums['GreWordStatus'][] | null; // [GreWordStatus!]
@@ -23,17 +26,12 @@ export interface NexusGenInputs {
   GreWordOrderByWithRelationInput: { // input type
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
-    spelling?: NexusGenEnums['SortOrder'] | null; // SortOrder
     updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
   GreWordSearchPromptInputWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     text?: NexusGenInputs['StringFilter'] | null; // StringFilter
     users?: NexusGenInputs['UserListRelationFilter'] | null; // UserListRelationFilter
-  }
-  GreWordSpellingUserIdCompoundUniqueInput: { // input type
-    spelling: string; // String!
-    userId: string; // String!
   }
   GreWordTagListRelationFilter: { // input type
     every?: NexusGenInputs['GreWordTagWhereInput'] | null; // GreWordTagWhereInput
@@ -54,16 +52,12 @@ export interface NexusGenInputs {
     name_userId?: NexusGenInputs['GreWordTagNameUserIdCompoundUniqueInput'] | null; // GreWordTagNameUserIdCompoundUniqueInput
   }
   GreWordWhereInput: { // input type
+    cacheWord?: NexusGenInputs['CacheWordWhereInput'] | null; // CacheWordWhereInput
     greWordTags?: NexusGenInputs['GreWordTagListRelationFilter'] | null; // GreWordTagListRelationFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
-    spelling?: NexusGenInputs['StringFilter'] | null; // StringFilter
     status?: NexusGenInputs['EnumGreWordStatusFilter'] | null; // EnumGreWordStatusFilter
     user?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
-  }
-  GreWordWhereUniqueInput: { // input type
-    id?: string | null; // String
-    spelling_userId?: NexusGenInputs['GreWordSpellingUserIdCompoundUniqueInput'] | null; // GreWordSpellingUserIdCompoundUniqueInput
   }
   StringFilter: { // input type
     contains?: string | null; // String
@@ -674,7 +668,7 @@ export interface NexusGenArgTypes {
       take?: number | null; // Int
     }
     greWord: { // args
-      where?: NexusGenInputs['GreWordWhereUniqueInput'] | null; // GreWordWhereUniqueInput
+      where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
     }
     greWordSearchPromptInputs: { // args
       skip?: number | null; // Int
