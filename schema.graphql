@@ -6,6 +6,35 @@ type AuthenticateResponse {
   message: String!
 }
 
+type CachePrompt {
+  cacheResponses: [CacheResponse!]
+  createdAt: String!
+  id: String!
+  meta: Json!
+  text: String!
+  updatedAt: String!
+}
+
+type CacheResponse {
+  cachePrompt: CachePrompt
+  cacheWord: CacheWord
+  createdAt: String!
+  gptPrompts: [GptPrompt!]
+  id: String!
+  meta: Json!
+  text: String!
+  updatedAt: String!
+}
+
+type CacheWord {
+  cacheResponses: [CacheResponse!]
+  createdAt: String!
+  id: String!
+  meta: Json!
+  text: String!
+  updatedAt: String!
+}
+
 input EnumGreWordStatusFilter {
   equals: GreWordStatus
   in: [GreWordStatus!]
@@ -14,14 +43,13 @@ input EnumGreWordStatusFilter {
 }
 
 type GptPrompt {
+  cacheResponse: CacheResponse
   createdAt: String!
   editedResponse: String
   greWord: GreWord
   greWordId: String
   id: String!
-  input: String!
   meta: Json!
-  response: String!
   updatedAt: String!
   user: User
   userId: String
@@ -32,12 +60,12 @@ type GreConfiguration {
 }
 
 type GreWord {
+  cacheWord: CacheWord
   createdAt: String!
   gptPrompts: [GptPrompt!]!
   greWordTags: [GreWordTag!]
   id: String!
   meta: Json!
-  spelling: String!
   status: GreWordStatus!
   updatedAt: String!
   user: User
@@ -135,8 +163,8 @@ scalar Json
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  createGptPrompt(greWordId: String!, input: String!, response: String!): GptPrompt!
-  createGreWord(greWordTags: [GreWordTagWhereUniqueInput], promptInput: String!, promptResponse: String!, spelling: String!, status: GreWordStatus, userId: String!): GreWord!
+  createGptPrompt(cacheResponseId: String!, greWordId: String!): GptPrompt!
+  createGreWord(cacheResponseId: String!, greWordTags: [GreWordTagWhereUniqueInput], status: GreWordStatus, userId: String!): GreWord!
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
@@ -178,7 +206,7 @@ type Query {
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
   posts: [Post]
-  sendSinglePrompt(indexesReturned: [Int!], input: String!, resultIndexFromCache: Int, skipCache: Boolean): SendSinglePromptResponse!
+  sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User
   userSession(where: UserSessionWhereUniqueInput!): UserSession
   userSessions(orderBy: [UserSessionOrderByWithRelationInput], skip: Int, take: Int, where: UserSessionWhereInput): [UserSession!]!
@@ -190,9 +218,8 @@ type Query {
 }
 
 type SendSinglePromptResponse {
-  error: String
-  result: String
-  resultIndex: Int
+  result: String!
+  resultIndex: Int!
   totalResultsInCache: Int!
 }
 

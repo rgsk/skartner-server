@@ -67,3 +67,79 @@ const cacheValue = async <T>(
 };
 
 export default cacheValue;
+
+// example usage
+
+/*
+const result = await cacheValue<NexusGenObjects['SendSinglePromptResponse']>(
+  'db',
+  {
+    key: {
+      query: 'sendSinglePrompt',
+      args: {
+        input,
+      },
+    },
+    getValue: async (previousCachedValue) => {
+      const message = await sendPrompt([{ role: 'user', content: input }]);
+      const result = message?.content ?? null;
+      const idx =
+        previousCachedValue && previousCachedValue.results
+          ? previousCachedValue.results.length
+          : 0;
+      return {
+        result: result,
+        resultIndex: idx,
+        totalResultsInCache: idx + 1,
+      };
+    },
+    getFromCache: (cachedValue) => {
+      const len = cachedValue.results.length;
+      if (typeof resultIndexFromCache === 'number') {
+        if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
+          return {
+            result: cachedValue.results[resultIndexFromCache],
+            resultIndex: resultIndexFromCache,
+            totalResultsInCache: len,
+          };
+        } else {
+          return {
+            error: `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
+              len - 1
+            }`,
+            totalResultsInCache: len,
+          };
+        }
+      }
+      const idx = randomBetween(0, len - 1, indexesReturned ?? undefined);
+      if (idx === null) {
+        return {
+          error: 'no more results in cache',
+          totalResultsInCache: len,
+        };
+      } else {
+        return {
+          result: cachedValue.results[idx],
+          resultIndex: idx,
+          totalResultsInCache: len,
+        };
+      }
+    },
+    setInCache: (value, previousCachedValue) => {
+      if (previousCachedValue) {
+        return {
+          results: [...previousCachedValue.results, value.result],
+        };
+      } else {
+        return {
+          results: [value.result],
+        };
+      }
+    },
+  },
+  {
+    disabled: !!skipCache,
+    updateCacheWhileDisabled: true,
+  }
+);
+*/

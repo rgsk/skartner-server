@@ -1,8 +1,7 @@
-import { Cache, GreWord, Prisma } from '@prisma/client';
-import { sqltag } from '@prisma/client/runtime';
+import { GreWord, Prisma } from '@prisma/client';
 import DataLoader from 'dataloader';
 import { db } from 'db';
-import cacheValue from 'lib/cache/cacheValue';
+import { GraphQLError } from 'graphql';
 import { deriveEntityMapFromArray, randomBetween } from 'lib/generalUtils';
 import {
   addDateFieldsDefinitions,
@@ -20,8 +19,6 @@ import {
   stringArg,
 } from 'nexus';
 import { ChatCompletionRequestMessage } from 'openai';
-import { NexusGenObjects } from '../../../nexus-typegen';
-import { extractWord } from './GptPromptUtils';
 
 function createGreWordsLoader() {
   return new DataLoader<string, GreWord>(
@@ -46,8 +43,6 @@ export const GptPromptObject = objectType({
   name: 'GptPrompt',
   definition(t) {
     t.nonNull.string('id');
-    t.nonNull.string('input');
-    t.nonNull.string('response');
     t.string('editedResponse');
 
     t.field('greWord', {
@@ -62,6 +57,12 @@ export const GptPromptObject = objectType({
         return greWordsLoader.load(gptPrompt.greWordId);
       },
     });
+    t.field('cacheResponse', {
+      type: 'CacheResponse',
+      resolve: async (root: any, args, ctx) => {
+        return root.cacheResponse;
+      },
+    });
     t.string('greWordId');
     t.field('user', {
       type: 'User',
@@ -74,12 +75,73 @@ export const GptPromptObject = objectType({
   },
 });
 
+export const CachePromptObject = objectType({
+  name: 'CachePrompt',
+  definition(t) {
+    t.nonNull.string('id');
+    t.nonNull.string('text');
+    t.nonNull.field('meta', {
+      type: 'Json',
+    });
+    addDateFieldsDefinitions(t);
+
+    t.list.nonNull.field('cacheResponses', {
+      type: 'CacheResponse',
+    });
+  },
+});
+
+export const CacheWordObject = objectType({
+  name: 'CacheWord',
+  definition(t) {
+    t.nonNull.string('id');
+    t.nonNull.string('text');
+    t.nonNull.field('meta', {
+      type: 'Json',
+    });
+    addDateFieldsDefinitions(t);
+    t.list.nonNull.field('cacheResponses', {
+      type: 'CacheResponse',
+    });
+  },
+});
+
+export const CacheResponseObject = objectType({
+  name: 'CacheResponse',
+  definition(t) {
+    t.nonNull.string('id');
+    t.nonNull.string('text');
+
+    t.nonNull.field('meta', {
+      type: 'Json',
+    });
+    addDateFieldsDefinitions(t);
+
+    t.field('cachePrompt', {
+      type: 'CachePrompt',
+      resolve: async (cacheResponse: any, args, ctx) => {
+        return cacheResponse.cachePrompt;
+      },
+    });
+
+    t.field('cacheWord', {
+      type: 'CacheWord',
+      resolve: async (cacheResponse: any, args, ctx) => {
+        return cacheResponse.cacheWord;
+      },
+    });
+
+    t.list.nonNull.field('gptPrompts', {
+      type: 'GptPrompt',
+    });
+  },
+});
+
 export const SendSinglePromptResponseObject = objectType({
   name: 'SendSinglePromptResponse',
   definition(t) {
-    t.string('result');
-    t.int('resultIndex');
-    t.string('error');
+    t.nonNull.string('result');
+    t.nonNull.int('resultIndex');
     t.nonNull.int('totalResultsInCache');
   },
 });
@@ -118,94 +180,104 @@ export const GptPromptQuery = extendType({
     t.nonNull.field('sendSinglePrompt', {
       type: 'SendSinglePromptResponse',
       args: {
-        input: nonNull(stringArg()),
+        prompt: nonNull(stringArg()),
+        word: nonNull(stringArg()),
         skipCache: booleanArg(),
         indexesReturned: list(nonNull(intArg())),
         resultIndexFromCache: intArg(),
       },
       async resolve(root, args, ctx) {
-        const { input, skipCache, indexesReturned, resultIndexFromCache } =
-          args;
-        const result = await cacheValue<
-          NexusGenObjects['SendSinglePromptResponse']
-        >(
-          'db',
-          {
-            key: {
-              query: 'sendSinglePrompt',
-              args: {
-                input,
-              },
+        const {
+          prompt,
+          word,
+          skipCache,
+          indexesReturned,
+          resultIndexFromCache,
+        } = args;
+        const cacheResponses = await ctx.db.cacheResponse.findMany({
+          where: {
+            cacheWord: {
+              text: word,
             },
-            getValue: async (previousCachedValue) => {
-              const message = await sendPrompt([
-                { role: 'user', content: input },
-              ]);
-              const result = message?.content ?? null;
-              const idx =
-                previousCachedValue && previousCachedValue.results
-                  ? previousCachedValue.results.length
-                  : 0;
-              return {
-                result: result,
-                resultIndex: idx,
-                totalResultsInCache: idx + 1,
-              };
-            },
-            getFromCache: (cachedValue) => {
-              const len = cachedValue.results.length;
-              if (typeof resultIndexFromCache === 'number') {
-                if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
-                  return {
-                    result: cachedValue.results[resultIndexFromCache],
-                    resultIndex: resultIndexFromCache,
-                    totalResultsInCache: len,
-                  };
-                } else {
-                  return {
-                    error: `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
-                      len - 1
-                    }`,
-                    totalResultsInCache: len,
-                  };
-                }
-              }
-              const idx = randomBetween(
-                0,
-                len - 1,
-                indexesReturned ?? undefined
-              );
-              if (idx === null) {
-                return {
-                  error: 'no more results in cache',
-                  totalResultsInCache: len,
-                };
-              } else {
-                return {
-                  result: cachedValue.results[idx],
-                  resultIndex: idx,
-                  totalResultsInCache: len,
-                };
-              }
-            },
-            setInCache: (value, previousCachedValue) => {
-              if (previousCachedValue) {
-                return {
-                  results: [...previousCachedValue.results, value.result],
-                };
-              } else {
-                return {
-                  results: [value.result],
-                };
-              }
+            cachePrompt: {
+              text: prompt,
             },
           },
-          {
-            disabled: !!skipCache,
-            updateCacheWhileDisabled: true,
+          orderBy: {
+            updatedAt: 'asc',
+          },
+        });
+        const len = cacheResponses.length;
+        if (!skipCache) {
+          if (len > 0) {
+            if (typeof resultIndexFromCache === 'number') {
+              if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
+                return {
+                  result: cacheResponses[resultIndexFromCache].text,
+                  resultIndex: resultIndexFromCache,
+                  totalResultsInCache: len,
+                };
+              } else {
+                throw new GraphQLError(
+                  `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
+                    len - 1
+                  }`,
+                  {
+                    extensions: {
+                      totalResultsInCache: len,
+                    },
+                  }
+                );
+              }
+            }
+            const idx = randomBetween(0, len - 1, indexesReturned ?? undefined);
+            if (idx !== null) {
+              return {
+                result: cacheResponses[idx].text,
+                resultIndex: idx,
+                totalResultsInCache: len,
+              };
+            }
           }
-        );
-        return result;
+        }
+
+        const input = prompt.replaceAll('{word}', word);
+
+        const message = await sendPrompt([{ role: 'user', content: input }]);
+        const result = message?.content ?? '';
+        if (result) {
+          // save the result in cache
+          const createdCacheResponse = await ctx.db.cacheResponse.create({
+            data: {
+              cachePrompt: {
+                connectOrCreate: {
+                  create: {
+                    text: prompt,
+                  },
+                  where: {
+                    text: prompt,
+                  },
+                },
+              },
+              cacheWord: {
+                connectOrCreate: {
+                  create: {
+                    text: word,
+                  },
+                  where: {
+                    text: word,
+                  },
+                },
+              },
+              text: result,
+            },
+          });
+        }
+        return {
+          result: result,
+          resultIndex: len,
+          totalResultsInCache: len + 1,
+        };
       },
     });
     t.nonNull.list.field('wordsAndResponsesForPrompt', {
@@ -216,22 +288,34 @@ export const GptPromptQuery = extendType({
       async resolve(root, args, ctx, info) {
         const { prompt } = args;
 
-        const promptLike = prompt.replaceAll('{word}', '%');
-        const caches = await ctx.db.$queryRaw<Cache[]>(sqltag`
-              SELECT * FROM "Cache"
-              WHERE 
-              key->>'query' = 'sendSinglePrompt'
-              AND
-              key->'args'->>'input' LIKE ${promptLike}
-        `);
-        return caches.map((cache) => {
-          const word = extractWord(prompt, (cache.key as any).args.input)!;
-          const responses = (cache.value as any).results;
-          return {
-            word: word,
-            responses: responses,
-          };
+        const cacheResponses = await ctx.db.cacheResponse.findMany({
+          where: {
+            cachePrompt: {
+              text: prompt,
+            },
+          },
+          select: {
+            text: true,
+            cacheWord: {
+              select: {
+                text: true,
+              },
+            },
+          },
         });
+        const mp: Record<string, string[]> = {};
+        for (let cacheResponse of cacheResponses) {
+          if (mp[cacheResponse.cacheWord.text]) {
+            mp[cacheResponse.cacheWord.text].push(cacheResponse.text);
+          } else {
+            mp[cacheResponse.cacheWord.text] = [cacheResponse.text];
+          }
+        }
+        const result: { word: string; responses: string[] }[] = [];
+        for (let word in mp) {
+          result.push({ word: word, responses: mp[word] });
+        }
+        return result;
       },
     });
     t.nonNull.list.field('wordsCountForGptPrompts', {
@@ -241,67 +325,6 @@ export const GptPromptQuery = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { prompts } = args;
-        const whereFilter = prompts
-          .map((prompt) => `input like '${prompt.replaceAll('{word}', '%')}'`)
-          .join(' or ');
-        // whereFilter
-        /*
-          input like 'meaning of word %, and slang meaning of word %, also give synonyms'
-          or 
-          input like 'one for sde %'
-        */
-        const queryResult = await ctx.db.$queryRawUnsafe<{ input: string }[]>(`
-          select input from 
-          (select key->'args'->>'input' as input from "Cache" 
-          WHERE key->>'query' = 'sendSinglePrompt') as subquery
-          where 
-          (
-            ${whereFilter}
-          )
-    `);
-        // queryResult
-        /*
-        [
-          {
-            input: 'meaning of word good, and slang meaning of word good, also give synonyms'
-          },
-          {
-            input: 'meaning of word joker, and slang meaning of word joker, also give synonyms'
-          },
-          { input: 'one for sde joker' },
-          {
-            input: 'meaning of word ok, and slang meaning of word ok, also give synonyms'
-          },
-          { input: 'one for sde ok' },
-          { input: 'one for sde low' },
-          {
-            input: 'meaning of word deployment, and slang meaning of word deployment, also give synonyms'
-          }
-        ]
-        */
-        const promptToCountMap: Record<string, number> = {};
-        for (const prompt of prompts) {
-          const regexPattern = prompt.replaceAll('{word}', '.*');
-          const regex = new RegExp(`^${regexPattern}$`);
-          let count = 0;
-          for (const { input } of queryResult) {
-            if (regex.test(input)) {
-              count += 1;
-            }
-          }
-          promptToCountMap[prompt] = count;
-        }
-        /*
-        {
-          promptToCountMap: {
-            'meaning of word {word}, and slang meaning of word {word}, also give synonyms': 4,
-            'one for sde {word}': 3
-          }
-        }
-        */
-        const result = Object.entries(promptToCountMap).map(
-          ([prompt, count]) => ({ prompt, count })
-        );
         /*
          {
             result: [
@@ -313,6 +336,19 @@ export const GptPromptQuery = extendType({
             ]
           }
          */
+        const responses = await ctx.db.cacheResponse.findMany({
+          where: { cachePrompt: { text: { in: prompts } } },
+          select: { cachePrompt: { select: { text: true } } },
+        });
+        const mp: Record<string, number> = {};
+        for (let response of responses) {
+          mp[response.cachePrompt.text] =
+            (mp[response.cachePrompt.text] ?? 0) + 1;
+        }
+        const result: { prompt: string; count: number }[] = [];
+        for (let key in mp) {
+          result.push({ prompt: key, count: mp[key] });
+        }
         return result;
       },
     });
@@ -345,22 +381,21 @@ export const GptPromptMutation = extendType({
     t.field('createGptPrompt', {
       type: nonNull('GptPrompt'),
       args: {
-        input: nonNull(stringArg()),
-        response: nonNull(stringArg()),
+        cacheResponseId: nonNull(stringArg()),
         greWordId: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { input, response, greWordId, ...restArgs } = args;
+        const { cacheResponseId, greWordId, ...restArgs } = args;
         const prismaArgs = parseGraphQLQuery<Prisma.GptPromptCreateArgs>(
           info,
           restArgs
         );
+
         const gptPrompt = await ctx.db.gptPrompt.create({
           ...prismaArgs,
           data: {
-            input: input,
-            response: response,
             greWordId: greWordId,
+            cacheResponseId: cacheResponseId,
           },
         });
         // creation of gptPrompt updates the greWord updatedAt

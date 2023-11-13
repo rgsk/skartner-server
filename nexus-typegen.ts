@@ -140,13 +140,29 @@ export interface NexusGenObjects {
   AuthenticateResponse: { // root type
     message: string; // String!
   }
+  CachePrompt: { // root type
+    cacheResponses?: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    text: string; // String!
+  }
+  CacheResponse: { // root type
+    gptPrompts?: NexusGenRootTypes['GptPrompt'][] | null; // [GptPrompt!]
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    text: string; // String!
+  }
+  CacheWord: { // root type
+    cacheResponses?: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    text: string; // String!
+  }
   GptPrompt: { // root type
     editedResponse?: string | null; // String
     greWordId?: string | null; // String
     id: string; // String!
-    input: string; // String!
     meta: NexusGenScalars['Json']; // Json!
-    response: string; // String!
     user?: NexusGenRootTypes['User'] | null; // User
     userId?: string | null; // String
   }
@@ -157,7 +173,6 @@ export interface NexusGenObjects {
     greWordTags?: NexusGenRootTypes['GreWordTag'][] | null; // [GreWordTag!]
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
-    spelling: string; // String!
     status: NexusGenEnums['GreWordStatus']; // GreWordStatus!
     user?: NexusGenRootTypes['User'] | null; // User
     userId?: string | null; // String
@@ -189,9 +204,8 @@ export interface NexusGenObjects {
   }
   Query: {};
   SendSinglePromptResponse: { // root type
-    error?: string | null; // String
-    result?: string | null; // String
-    resultIndex?: number | null; // Int
+    result: string; // String!
+    resultIndex: number; // Int!
     totalResultsInCache: number; // Int!
   }
   Subscription: {};
@@ -235,15 +249,40 @@ export interface NexusGenFieldTypes {
   AuthenticateResponse: { // field return type
     message: string; // String!
   }
+  CachePrompt: { // field return type
+    cacheResponses: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    createdAt: string; // String!
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    text: string; // String!
+    updatedAt: string; // String!
+  }
+  CacheResponse: { // field return type
+    cachePrompt: NexusGenRootTypes['CachePrompt'] | null; // CachePrompt
+    cacheWord: NexusGenRootTypes['CacheWord'] | null; // CacheWord
+    createdAt: string; // String!
+    gptPrompts: NexusGenRootTypes['GptPrompt'][] | null; // [GptPrompt!]
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    text: string; // String!
+    updatedAt: string; // String!
+  }
+  CacheWord: { // field return type
+    cacheResponses: NexusGenRootTypes['CacheResponse'][] | null; // [CacheResponse!]
+    createdAt: string; // String!
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    text: string; // String!
+    updatedAt: string; // String!
+  }
   GptPrompt: { // field return type
+    cacheResponse: NexusGenRootTypes['CacheResponse'] | null; // CacheResponse
     createdAt: string; // String!
     editedResponse: string | null; // String
     greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     greWordId: string | null; // String
     id: string; // String!
-    input: string; // String!
     meta: NexusGenScalars['Json']; // Json!
-    response: string; // String!
     updatedAt: string; // String!
     user: NexusGenRootTypes['User'] | null; // User
     userId: string | null; // String
@@ -252,12 +291,12 @@ export interface NexusGenFieldTypes {
     defaultGreWordSearchPromptInputs: string[]; // [String!]!
   }
   GreWord: { // field return type
+    cacheWord: NexusGenRootTypes['CacheWord'] | null; // CacheWord
     createdAt: string; // String!
     gptPrompts: NexusGenRootTypes['GptPrompt'][]; // [GptPrompt!]!
     greWordTags: NexusGenRootTypes['GreWordTag'][] | null; // [GreWordTag!]
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
-    spelling: string; // String!
     status: NexusGenEnums['GreWordStatus']; // GreWordStatus!
     updatedAt: string; // String!
     user: NexusGenRootTypes['User'] | null; // User
@@ -336,9 +375,8 @@ export interface NexusGenFieldTypes {
     wordsCountForGptPrompts: NexusGenRootTypes['WordsCountForGptPrompts'][]; // [WordsCountForGptPrompts!]!
   }
   SendSinglePromptResponse: { // field return type
-    error: string | null; // String
-    result: string | null; // String
-    resultIndex: number | null; // Int
+    result: string; // String!
+    resultIndex: number; // Int!
     totalResultsInCache: number; // Int!
   }
   Subscription: { // field return type
@@ -386,15 +424,40 @@ export interface NexusGenFieldTypeNames {
   AuthenticateResponse: { // field return type name
     message: 'String'
   }
+  CachePrompt: { // field return type name
+    cacheResponses: 'CacheResponse'
+    createdAt: 'String'
+    id: 'String'
+    meta: 'Json'
+    text: 'String'
+    updatedAt: 'String'
+  }
+  CacheResponse: { // field return type name
+    cachePrompt: 'CachePrompt'
+    cacheWord: 'CacheWord'
+    createdAt: 'String'
+    gptPrompts: 'GptPrompt'
+    id: 'String'
+    meta: 'Json'
+    text: 'String'
+    updatedAt: 'String'
+  }
+  CacheWord: { // field return type name
+    cacheResponses: 'CacheResponse'
+    createdAt: 'String'
+    id: 'String'
+    meta: 'Json'
+    text: 'String'
+    updatedAt: 'String'
+  }
   GptPrompt: { // field return type name
+    cacheResponse: 'CacheResponse'
     createdAt: 'String'
     editedResponse: 'String'
     greWord: 'GreWord'
     greWordId: 'String'
     id: 'String'
-    input: 'String'
     meta: 'Json'
-    response: 'String'
     updatedAt: 'String'
     user: 'User'
     userId: 'String'
@@ -403,12 +466,12 @@ export interface NexusGenFieldTypeNames {
     defaultGreWordSearchPromptInputs: 'String'
   }
   GreWord: { // field return type name
+    cacheWord: 'CacheWord'
     createdAt: 'String'
     gptPrompts: 'GptPrompt'
     greWordTags: 'GreWordTag'
     id: 'String'
     meta: 'Json'
-    spelling: 'String'
     status: 'GreWordStatus'
     updatedAt: 'String'
     user: 'User'
@@ -487,7 +550,6 @@ export interface NexusGenFieldTypeNames {
     wordsCountForGptPrompts: 'WordsCountForGptPrompts'
   }
   SendSinglePromptResponse: { // field return type name
-    error: 'String'
     result: 'String'
     resultIndex: 'Int'
     totalResultsInCache: 'Int'
@@ -540,15 +602,12 @@ export interface NexusGenArgTypes {
       title: string; // String!
     }
     createGptPrompt: { // args
+      cacheResponseId: string; // String!
       greWordId: string; // String!
-      input: string; // String!
-      response: string; // String!
     }
     createGreWord: { // args
+      cacheResponseId: string; // String!
       greWordTags?: Array<NexusGenInputs['GreWordTagWhereUniqueInput'] | null> | null; // [GreWordTagWhereUniqueInput]
-      promptInput: string; // String!
-      promptResponse: string; // String!
-      spelling: string; // String!
       status?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
       userId: string; // String!
     }
@@ -635,9 +694,10 @@ export interface NexusGenArgTypes {
     }
     sendSinglePrompt: { // args
       indexesReturned?: number[] | null; // [Int!]
-      input: string; // String!
+      prompt: string; // String!
       resultIndexFromCache?: number | null; // Int
       skipCache?: boolean | null; // Boolean
+      word: string; // String!
     }
     user: { // args
       where: NexusGenInputs['UserWhereUniqueInput']; // UserWhereUniqueInput!

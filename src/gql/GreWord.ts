@@ -51,7 +51,6 @@ export const GreWordObject = objectType({
   name: 'GreWord',
   definition(t) {
     t.nonNull.string('id');
-    t.nonNull.string('spelling');
     addDateFieldsDefinitions(t);
     t.nonNull.list.field('gptPrompts', {
       type: nonNull('GptPrompt'),
@@ -74,6 +73,13 @@ export const GreWordObject = objectType({
     });
     t.list.nonNull.field('greWordTags', {
       type: 'GreWordTag',
+    });
+
+    t.field('cacheWord', {
+      type: 'CacheWord',
+      resolve: async (root: any, args, ctx) => {
+        return root.cacheWord;
+      },
     });
   },
 });
@@ -210,18 +216,14 @@ export const GreWordMutation = extendType({
     t.field('createGreWord', {
       type: nonNull('GreWord'),
       args: {
-        spelling: nonNull(stringArg()),
-        promptInput: nonNull(stringArg()),
-        promptResponse: nonNull(stringArg()),
+        cacheResponseId: nonNull(stringArg()),
         userId: nonNull(stringArg()),
         status: 'GreWordStatus',
         greWordTags: list('GreWordTagWhereUniqueInput'),
       },
       async resolve(root, args, ctx, info) {
         const {
-          spelling,
-          promptInput,
-          promptResponse,
+          cacheResponseId,
           userId,
           greWordTags: _greWordTags,
           status,
@@ -239,17 +241,23 @@ export const GreWordMutation = extendType({
           greWordTags: _greWordTags,
         });
 
+        const cacheResponse = await ctx.db.cacheResponse.findUnique({
+          where: { id: cacheResponseId },
+          include: { cacheWord: true },
+        });
+        if (!cacheResponse) {
+          throw new Error("cacheResponse doesn't exists");
+        }
         const greWord = await ctx.db.greWord.create({
           ...prismaArgs,
           data: {
-            spelling: spelling,
+            cacheWordId: cacheResponse.cacheWordId,
             userId: userId,
             status: status ?? undefined,
             gptPrompts: {
               create: {
-                input: promptInput,
-                response: promptResponse,
                 userId: userId,
+                cacheResponseId: cacheResponseId,
               },
             },
             greWordTags: {
@@ -257,7 +265,10 @@ export const GreWordMutation = extendType({
             },
           },
         });
-        notifyUser({ userId: userId, message: `${spelling} word added` });
+        notifyUser({
+          userId: userId,
+          message: `${cacheResponse.cacheWord.text} word added`,
+        });
         return greWord;
       },
     });

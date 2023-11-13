@@ -31,7 +31,6 @@ enum GreWordStatus {
 
 model GreWord {
   id         String        @id @default(uuid())
-  spelling   String
   status     GreWordStatus @default(STARTED_LEARNING)
   gptPrompts GptPrompt[]
 
@@ -42,16 +41,18 @@ model GreWord {
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
 
+  cacheWord   CacheWord @relation(fields: [cacheWordId], references: [id])
+  cacheWordId String
+
   greWordTags GreWordTag[]
 
-  @@unique([spelling, userId])
+  @@unique([cacheWordId, userId])
   @@map("GreWords")
 }
 
 model GptPrompt {
-  id             String  @id @default(uuid())
-  input          String
-  response       String
+  id String @id @default(uuid())
+
   editedResponse String?
 
   meta      Json     @default("{}")
@@ -64,7 +65,54 @@ model GptPrompt {
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
 
+  cacheResponseId String
+  cacheResponse   CacheResponse @relation(fields: [cacheResponseId], references: [id])
+
   @@map("GptPrompts")
+}
+
+model CachePrompt {
+  id   String @id @default(uuid())
+  text String @unique
+
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cacheResponses CacheResponse[]
+
+  @@map("CachePrompts")
+}
+
+model CacheWord {
+  id   String @id @default(uuid())
+  text String @unique
+
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cacheResponses CacheResponse[]
+  greWords       GreWord[]
+
+  @@map("CacheWords")
+}
+
+model CacheResponse {
+  id   String @id @default(uuid())
+  text String
+
+  meta      Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cachePromptId String
+  cachePrompt   CachePrompt @relation(fields: [cachePromptId], references: [id])
+  cacheWordId   String
+  cacheWord     CacheWord   @relation(fields: [cacheWordId], references: [id])
+  gptPrompts    GptPrompt[]
+
+  @@map("CacheResponses")
 }
 
 model GreWordTag {
