@@ -6,4 +6,4 @@ dir="$(dirname "$0")"
 sh "$dir/remove-postgres.sh"
 
 
-docker volume rm skartner-server-postgres-pgdata
+docker volume rm skartner-server-postgres-data

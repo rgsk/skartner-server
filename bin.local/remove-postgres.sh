@@ -1,2 +1,2 @@
-docker stop skartner-server-local
-docker rm skartner-server-local 
+docker stop skartner-server-postgres
+docker rm skartner-server-postgres 
