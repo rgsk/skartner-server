@@ -7,6 +7,7 @@
     "start": "NODE_PATH=src ts-node src/server.ts",
     "serve": "NODE_PATH=src ts-node-dev --transpile-only --no-notify src/server.ts",
     "dev": "sh ./bin.local/start.sh",
+    "build": "tsc",
     "kill:process": "kill -9 $(lsof -t -i:8001)",
     "generate": "NODE_PATH=src ts-node --transpile-only src/schema.ts",
     "propagate:schema": "cp schema.graphql ../skartner-app/lib/schema.graphql",
