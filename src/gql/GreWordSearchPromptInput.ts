@@ -21,6 +21,10 @@ export const GreWordSearchPromptInputObject = objectType({
     t.nonNull.field('meta', {
       type: 'Json',
     });
+    t.nonNull.string('userId');
+    t.nonNull.field('user', {
+      type: 'User',
+    });
   },
 });
 
@@ -33,8 +37,8 @@ export const GreWordSearchPromptInputWhereInput = inputObjectType({
     t.field('text', {
       type: 'StringFilter',
     });
-    t.field('users', {
-      type: 'UserListRelationFilter',
+    t.field('userId', {
+      type: 'StringFilter',
     });
   },
 });
@@ -81,23 +85,20 @@ export const GreWordSearchPromptInputMutation = extendType({
             ...prismaArgs,
             data: {
               text: text,
-              users: { connect: { id: userId } },
+              userId: userId,
             },
           });
-        return greWordSearchPromptInput;
+        return greWordSearchPromptInput as any;
       },
     });
     t.field('updateGreWordSearchPromptInput', {
       type: 'GreWordSearchPromptInput',
       args: {
         text: stringArg(),
-        connectedUserId: stringArg(),
-        disconnectedUserId: stringArg(),
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { text, id, connectedUserId, disconnectedUserId, ...restArgs } =
-          args;
+        const { text, id, ...restArgs } = args;
         const prismaArgs =
           parseGraphQLQuery<Prisma.GreWordSearchPromptInputArgs>(
             info,
@@ -108,23 +109,34 @@ export const GreWordSearchPromptInputMutation = extendType({
             ...prismaArgs,
             data: {
               text: text ?? undefined,
-              users:
-                connectedUserId || disconnectedUserId
-                  ? {
-                      connect: connectedUserId
-                        ? { id: connectedUserId }
-                        : undefined,
-                      disconnect: disconnectedUserId
-                        ? { id: disconnectedUserId }
-                        : undefined,
-                    }
-                  : undefined,
             },
             where: {
               id: id,
             },
           });
-        return greWordSearchPromptInput;
+        return greWordSearchPromptInput as any;
+      },
+    });
+    t.field('deleteGreWordSearchPromptInput', {
+      type: 'GreWordSearchPromptInput',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.GreWordSearchPromptInputArgs>(
+            info,
+            restArgs
+          );
+        const greWordSearchPromptInput =
+          await ctx.db.greWordSearchPromptInput.delete({
+            ...prismaArgs,
+            where: {
+              id: id,
+            },
+          });
+        return greWordSearchPromptInput as any;
       },
     });
   },

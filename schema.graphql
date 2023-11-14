@@ -88,12 +88,14 @@ type GreWordSearchPromptInput {
   meta: Json!
   text: String!
   updatedAt: String!
+  user: User!
+  userId: String!
 }
 
 input GreWordSearchPromptInputWhereInput {
   id: StringFilter
   text: StringFilter
-  users: UserListRelationFilter
+  userId: StringFilter
 }
 
 enum GreWordStatus {
@@ -164,11 +166,12 @@ type Mutation {
   createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
+  deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   publish(draftId: String!): Post
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
-  updateGreWordSearchPromptInput(connectedUserId: String, disconnectedUserId: String, id: String!, text: String): GreWordSearchPromptInput
+  updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
 
