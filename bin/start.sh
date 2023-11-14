@@ -1,12 +1,6 @@
-#!/bin/bash
-
-dir="$(dirname "$0")"
-
-sh "$dir/restart-postgres.sh"
-sh "$dir/restart-redis.sh"
-
-yarn watch:schema &
+#!/bin/bash 
 
 yarn studio &
 
-yarn serve
+# listen to changes in files run using nodemon
+yarn start

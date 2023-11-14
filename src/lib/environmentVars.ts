@@ -30,5 +30,5 @@ const fields = {
 };
 
 const environmentVars = environmentVarsSchema.parse(fields);
-
+console.log({ environmentVars });
 export default environmentVars;

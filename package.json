@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_PATH=src ts-node src/server.ts",
     "serve": "NODE_PATH=src ts-node-dev --transpile-only --no-notify src/server.ts",
-    "dev": "sh ./bin/start.sh",
+    "dev": "sh ./bin.local/start.sh",
     "build": "tsc",
     "kill:process": "kill -9 $(lsof -t -i:8001)",
     "generate": "NODE_PATH=src ts-node --transpile-only src/schema.ts",
@@ -21,7 +21,8 @@
     "migrate:reset": "prisma migrate reset",
     "migrate:force-reset": "prisma migrate reset --force",
     "husky-prepare": "husky install",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seeders": "NODE_PATH=src ts-node src/seeders/index.ts"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [

@@ -18,5 +18,4 @@ ENV LOCAL_IP=${LOCAL_IP}
 RUN yarn init:prisma
 RUN yarn build
 
-CMD ["yarn", "start"]
-
+CMD ["sh", "./bin/start.sh"]
