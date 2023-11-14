@@ -13,7 +13,7 @@
     "watch:schema": "nodemon -w schema.graphql --exec \"yarn propagate:schema\"",
     "test": "jest",
     "init:prisma": "prisma generate",
-    "studio": "prisma studio",
+    "studio": "BROWSER=none prisma studio",
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
