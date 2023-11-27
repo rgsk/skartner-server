@@ -1,9 +1,12 @@
 import admin from 'firebase-admin';
+import environmentVars from './environmentVars';
 
 const firebaseAdmin = admin.initializeApp({
-  credential: admin.credential.cert(
-    'skartner-af3bf-firebase-adminsdk-xhdrg-db963b5e94.json'
-  ),
+  credential: admin.credential.cert({
+    clientEmail: environmentVars.FIREBASE.CLIENT_EMAIL,
+    privateKey: environmentVars.FIREBASE.PRIVATE_KEY.replace(/\\n/g, '\n'),
+    projectId: environmentVars.FIREBASE.PROJECT_ID,
+  }),
 });
 
 export default firebaseAdmin;
