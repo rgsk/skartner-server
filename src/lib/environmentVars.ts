@@ -1,4 +1,6 @@
+import { config } from 'dotenv';
 import { z } from 'zod';
+config();
 
 const AppEnvironmentEnum = z.enum([
   'development',
@@ -23,6 +25,10 @@ const environmentVarsSchema = z.object({
     PRIVATE_KEY: z.string(),
     CLIENT_EMAIL: z.string(),
   }),
+  AWS: z.object({
+    ACCESS_KEY: z.string(),
+    SECRET_ACCESS_KEY: z.string(),
+  }),
 });
 
 const fields: z.infer<typeof environmentVarsSchema> = {
@@ -38,8 +44,11 @@ const fields: z.infer<typeof environmentVarsSchema> = {
     PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY!,
     CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL!,
   },
+  AWS: {
+    ACCESS_KEY: process.env.AWS_ACCESS_KEY!,
+    SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 };
 
 const environmentVars = environmentVarsSchema.parse(fields);
-console.log({ environmentVars });
 export default environmentVars;
