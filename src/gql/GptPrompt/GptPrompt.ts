@@ -9,7 +9,7 @@ import {
 } from 'lib/graphqlUtils';
 import openAI from 'lib/openAI';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { getWordSpeechUrl } from 'lib/thirdPartyUtils';
+import { getPresignedUrl, getWordSpeechUrl } from 'lib/thirdPartyUtils';
 import {
   booleanArg,
   extendType,
@@ -97,7 +97,18 @@ export const CacheWordObject = objectType({
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('text');
-    t.string('pronunciationAudioUrl');
+    t.field('pronunciationAudioUrl', {
+      type: 'String',
+      resolve: async (root: any, args, ctx) => {
+        // return signed url
+        const url = root.pronunciationAudioUrl;
+        if (url) {
+          const presignedUrl = await getPresignedUrl(url);
+          return presignedUrl;
+        }
+        return null;
+      },
+    });
     t.nonNull.field('meta', {
       type: 'Json',
     });

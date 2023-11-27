@@ -150,7 +150,6 @@ export interface NexusGenObjects {
     cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
-    pronunciationAudioUrl?: string | null; // String
     text: string; // String!
   }
   GptPrompt: { // root type
