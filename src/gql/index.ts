@@ -6,6 +6,7 @@ export * from './GreWordSearchPromptInput';
 export * from './GreWordTag';
 export * from './Notification';
 export * from './Permission';
+export * from './PermissionHierarchy';
 export * from './Post';
 export * from './RelationPermissionToRole';
 export * from './RelationPermissionToUser';

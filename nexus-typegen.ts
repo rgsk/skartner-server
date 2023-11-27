@@ -197,6 +197,12 @@ export interface NexusGenObjects {
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
   }
+  PermissionHierarchy: { // root type
+    childPermission?: NexusGenRootTypes['Permission'] | null; // Permission
+    childPermissionId: string; // String!
+    parentPermission?: NexusGenRootTypes['Permission'] | null; // Permission
+    parentPermissionId: string; // String!
+  }
   Post: { // root type
     body?: string | null; // String
     id: string; // String!
@@ -386,6 +392,13 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     updatedAt: string; // String!
   }
+  PermissionHierarchy: { // field return type
+    childPermission: NexusGenRootTypes['Permission'] | null; // Permission
+    childPermissionId: string; // String!
+    createdAt: string; // String!
+    parentPermission: NexusGenRootTypes['Permission'] | null; // Permission
+    parentPermissionId: string; // String!
+  }
   Post: { // field return type
     body: string | null; // String
     createdAt: string; // String!
@@ -406,6 +419,7 @@ export interface NexusGenFieldTypes {
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
+    permissionHierarchies: Array<NexusGenRootTypes['PermissionHierarchy'] | null> | null; // [PermissionHierarchy]
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationPermissionToRoles: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
@@ -613,6 +627,13 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     updatedAt: 'String'
   }
+  PermissionHierarchy: { // field return type name
+    childPermission: 'Permission'
+    childPermissionId: 'String'
+    createdAt: 'String'
+    parentPermission: 'Permission'
+    parentPermissionId: 'String'
+  }
   Post: { // field return type name
     body: 'String'
     createdAt: 'String'
@@ -633,6 +654,7 @@ export interface NexusGenFieldTypeNames {
     greWords: 'GreWord'
     greWordsCount: 'Int'
     hello: 'HelloWorld'
+    permissionHierarchies: 'PermissionHierarchy'
     permissions: 'Permission'
     posts: 'Post'
     relationPermissionToRoles: 'RelationPermissionToRole'

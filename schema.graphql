@@ -188,6 +188,14 @@ type Permission {
   updatedAt: String!
 }
 
+type PermissionHierarchy {
+  childPermission: Permission
+  childPermissionId: String!
+  createdAt: String!
+  parentPermission: Permission
+  parentPermissionId: String!
+}
+
 type Post {
   body: String
   createdAt: String!
@@ -209,6 +217,7 @@ type Query {
   greWords(orderBy: [GreWordOrderByWithRelationInput], skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
+  permissionHierarchies: [PermissionHierarchy]
   permissions: [Permission]
   posts: [Post]
   relationPermissionToRoles: [RelationPermissionToRole]
