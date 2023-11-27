@@ -7,7 +7,7 @@ import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
-import openAIApi from 'lib/openAIApi';
+import openAI from 'lib/openAI';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   booleanArg,
@@ -18,7 +18,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
-import { ChatCompletionRequestMessage } from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources';
 
 function createGreWordsLoader() {
   return new DataLoader<string, GreWord>(
@@ -441,10 +441,10 @@ export const GptPromptMutation = extendType({
   },
 });
 
-export const sendPrompt = async (messages: ChatCompletionRequestMessage[]) => {
-  const result = await openAIApi.createChatCompletion({
+export const sendPrompt = async (messages: ChatCompletionMessageParam[]) => {
+  const result = await openAI.chat.completions.create({
     model: 'gpt-3.5-turbo',
-    messages: messages,
+    messages,
   });
-  return result.data.choices[0].message;
+  return result.choices[0].message;
 };
