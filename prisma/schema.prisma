@@ -85,8 +85,9 @@ model CachePrompt {
 }
 
 model CacheWord {
-  id   String @id @default(uuid())
-  text String @unique
+  id                    String  @id @default(uuid())
+  text                  String  @unique
+  pronunciationAudioUrl String?
 
   meta      Json     @default("{}")
   createdAt DateTime @default(now())

@@ -9,6 +9,7 @@ import {
 } from 'lib/graphqlUtils';
 import openAI from 'lib/openAI';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
+import { getWordSpeechUrl } from 'lib/thirdPartyUtils';
 import {
   booleanArg,
   extendType,
@@ -96,6 +97,7 @@ export const CacheWordObject = objectType({
   definition(t) {
     t.nonNull.string('id');
     t.nonNull.string('text');
+    t.string('pronunciationAudioUrl');
     t.nonNull.field('meta', {
       type: 'Json',
     });
@@ -255,6 +257,7 @@ export const GptPromptQuery = extendType({
         const message = await sendPrompt([{ role: 'user', content: input }]);
         const result = message?.content ?? '';
         // save the result in cache
+        const pronunciationAudioUrl = await getWordSpeechUrl(word);
         const createdCacheResponse = await ctx.db.cacheResponse.create({
           data: {
             cachePrompt: {
@@ -271,6 +274,7 @@ export const GptPromptQuery = extendType({
               connectOrCreate: {
                 create: {
                   text: word,
+                  pronunciationAudioUrl: pronunciationAudioUrl,
                 },
                 where: {
                   text: word,

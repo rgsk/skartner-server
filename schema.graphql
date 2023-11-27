@@ -31,6 +31,7 @@ type CacheWord {
   createdAt: String!
   id: String!
   meta: Json!
+  pronunciationAudioUrl: String
   text: String!
   updatedAt: String!
 }
@@ -70,6 +71,7 @@ type GreWord {
   greWordTags: [GreWordTag!]
   id: String!
   meta: Json!
+  pronunciationAudioUrl: String
   status: GreWordStatus!
   updatedAt: String!
   user: User

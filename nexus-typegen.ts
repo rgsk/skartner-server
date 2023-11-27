@@ -150,6 +150,7 @@ export interface NexusGenObjects {
     cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
+    pronunciationAudioUrl?: string | null; // String
     text: string; // String!
   }
   GptPrompt: { // root type
@@ -167,6 +168,7 @@ export interface NexusGenObjects {
     greWordTags?: NexusGenRootTypes['GreWordTag'][] | null; // [GreWordTag!]
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
+    pronunciationAudioUrl?: string | null; // String
     status: NexusGenEnums['GreWordStatus']; // GreWordStatus!
     user?: NexusGenRootTypes['User'] | null; // User
     userId?: string | null; // String
@@ -311,6 +313,7 @@ export interface NexusGenFieldTypes {
     createdAt: string; // String!
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
+    pronunciationAudioUrl: string | null; // String
     text: string; // String!
     updatedAt: string; // String!
   }
@@ -336,6 +339,7 @@ export interface NexusGenFieldTypes {
     greWordTags: NexusGenRootTypes['GreWordTag'][] | null; // [GreWordTag!]
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
+    pronunciationAudioUrl: string | null; // String
     status: NexusGenEnums['GreWordStatus']; // GreWordStatus!
     updatedAt: string; // String!
     user: NexusGenRootTypes['User'] | null; // User
@@ -546,6 +550,7 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'String'
     id: 'String'
     meta: 'Json'
+    pronunciationAudioUrl: 'String'
     text: 'String'
     updatedAt: 'String'
   }
@@ -571,6 +576,7 @@ export interface NexusGenFieldTypeNames {
     greWordTags: 'GreWordTag'
     id: 'String'
     meta: 'Json'
+    pronunciationAudioUrl: 'String'
     status: 'GreWordStatus'
     updatedAt: 'String'
     user: 'User'

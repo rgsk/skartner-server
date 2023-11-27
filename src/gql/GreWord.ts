@@ -51,6 +51,7 @@ export const GreWordObject = objectType({
   name: 'GreWord',
   definition(t) {
     t.nonNull.string('id');
+    t.string('pronunciationAudioUrl');
     addDateFieldsDefinitions(t);
     t.nonNull.list.field('gptPrompts', {
       type: nonNull('GptPrompt'),
