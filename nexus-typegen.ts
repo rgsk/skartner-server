@@ -204,6 +204,19 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   Query: {};
+  RelationRoleToUser: { // root type
+    assigner?: NexusGenRootTypes['User'] | null; // User
+    assignerId: string; // String!
+    role?: NexusGenRootTypes['Role'] | null; // Role
+    roleId: string; // String!
+    user?: NexusGenRootTypes['User'] | null; // User
+    userId: string; // String!
+  }
+  Role: { // root type
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    name: string; // String!
+  }
   SendSinglePromptResponse: { // root type
     cacheResponseId: string; // String!
     result: string; // String!
@@ -377,6 +390,8 @@ export interface NexusGenFieldTypes {
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    relationRoleToUsers: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
+    roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
     userSession: NexusGenRootTypes['UserSession'] | null; // UserSession
@@ -386,6 +401,22 @@ export interface NexusGenFieldTypes {
     usersCount: number; // Int!
     wordsAndResponsesForPrompt: NexusGenRootTypes['WordAndResponses'][]; // [WordAndResponses!]!
     wordsCountForGptPrompts: NexusGenRootTypes['WordsCountForGptPrompts'][]; // [WordsCountForGptPrompts!]!
+  }
+  RelationRoleToUser: { // field return type
+    assignedAt: string; // String!
+    assigner: NexusGenRootTypes['User'] | null; // User
+    assignerId: string; // String!
+    role: NexusGenRootTypes['Role'] | null; // Role
+    roleId: string; // String!
+    user: NexusGenRootTypes['User'] | null; // User
+    userId: string; // String!
+  }
+  Role: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    name: string; // String!
+    updatedAt: string; // String!
   }
   SendSinglePromptResponse: { // field return type
     cacheResponseId: string; // String!
@@ -564,6 +595,8 @@ export interface NexusGenFieldTypeNames {
     hello: 'HelloWorld'
     permissions: 'Permission'
     posts: 'Post'
+    relationRoleToUsers: 'RelationRoleToUser'
+    roles: 'Role'
     sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'
     userSession: 'UserSession'
@@ -573,6 +606,22 @@ export interface NexusGenFieldTypeNames {
     usersCount: 'Int'
     wordsAndResponsesForPrompt: 'WordAndResponses'
     wordsCountForGptPrompts: 'WordsCountForGptPrompts'
+  }
+  RelationRoleToUser: { // field return type name
+    assignedAt: 'String'
+    assigner: 'User'
+    assignerId: 'String'
+    role: 'Role'
+    roleId: 'String'
+    user: 'User'
+    userId: 'String'
+  }
+  Role: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    meta: 'Json'
+    name: 'String'
+    updatedAt: 'String'
   }
   SendSinglePromptResponse: { // field return type name
     cacheResponseId: 'String'

@@ -211,6 +211,8 @@ type Query {
   hello: HelloWorld!
   permissions: [Permission]
   posts: [Post]
+  relationRoleToUsers: [RelationRoleToUser]
+  roles: [Role]
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User
   userSession(where: UserSessionWhereUniqueInput!): UserSession
@@ -220,6 +222,24 @@ type Query {
   usersCount(where: UserWhereInput): Int!
   wordsAndResponsesForPrompt(prompt: String!): [WordAndResponses!]!
   wordsCountForGptPrompts(prompts: [String!]!): [WordsCountForGptPrompts!]!
+}
+
+type RelationRoleToUser {
+  assignedAt: String!
+  assigner: User
+  assignerId: String!
+  role: Role
+  roleId: String!
+  user: User
+  userId: String!
+}
+
+type Role {
+  createdAt: String!
+  id: String!
+  meta: Json!
+  name: String!
+  updatedAt: String!
 }
 
 type SendSinglePromptResponse {
