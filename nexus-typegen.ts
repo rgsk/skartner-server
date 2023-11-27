@@ -213,6 +213,15 @@ export interface NexusGenObjects {
     role?: NexusGenRootTypes['Role'] | null; // Role
     roleId: string; // String!
   }
+  RelationPermissionToUser: { // root type
+    granter?: NexusGenRootTypes['User'] | null; // User
+    granterId: string; // String!
+    isAllowed?: boolean | null; // Boolean
+    permission?: NexusGenRootTypes['Permission'] | null; // Permission
+    permissionId: string; // String!
+    user?: NexusGenRootTypes['User'] | null; // User
+    userId: string; // String!
+  }
   RelationRoleToUser: { // root type
     assigner?: NexusGenRootTypes['User'] | null; // User
     assignerId: string; // String!
@@ -400,6 +409,7 @@ export interface NexusGenFieldTypes {
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationPermissionToRoles: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
+    relationPermissionToUsers: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
     relationRoleToUsers: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
     roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
@@ -421,6 +431,16 @@ export interface NexusGenFieldTypes {
     permissionId: string; // String!
     role: NexusGenRootTypes['Role'] | null; // Role
     roleId: string; // String!
+  }
+  RelationPermissionToUser: { // field return type
+    grantedAt: string; // String!
+    granter: NexusGenRootTypes['User'] | null; // User
+    granterId: string; // String!
+    isAllowed: boolean | null; // Boolean
+    permission: NexusGenRootTypes['Permission'] | null; // Permission
+    permissionId: string; // String!
+    user: NexusGenRootTypes['User'] | null; // User
+    userId: string; // String!
   }
   RelationRoleToUser: { // field return type
     assignedAt: string; // String!
@@ -616,6 +636,7 @@ export interface NexusGenFieldTypeNames {
     permissions: 'Permission'
     posts: 'Post'
     relationPermissionToRoles: 'RelationPermissionToRole'
+    relationPermissionToUsers: 'RelationPermissionToUser'
     relationRoleToUsers: 'RelationRoleToUser'
     roles: 'Role'
     sendSinglePrompt: 'SendSinglePromptResponse'
@@ -637,6 +658,16 @@ export interface NexusGenFieldTypeNames {
     permissionId: 'String'
     role: 'Role'
     roleId: 'String'
+  }
+  RelationPermissionToUser: { // field return type name
+    grantedAt: 'String'
+    granter: 'User'
+    granterId: 'String'
+    isAllowed: 'Boolean'
+    permission: 'Permission'
+    permissionId: 'String'
+    user: 'User'
+    userId: 'String'
   }
   RelationRoleToUser: { // field return type name
     assignedAt: 'String'

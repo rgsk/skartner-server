@@ -212,6 +212,7 @@ type Query {
   permissions: [Permission]
   posts: [Post]
   relationPermissionToRoles: [RelationPermissionToRole]
+  relationPermissionToUsers: [RelationPermissionToUser]
   relationRoleToUsers: [RelationRoleToUser]
   roles: [Role]
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
@@ -234,6 +235,17 @@ type RelationPermissionToRole {
   permissionId: String!
   role: Role
   roleId: String!
+}
+
+type RelationPermissionToUser {
+  grantedAt: String!
+  granter: User
+  granterId: String!
+  isAllowed: Boolean
+  permission: Permission
+  permissionId: String!
+  user: User
+  userId: String!
 }
 
 type RelationRoleToUser {

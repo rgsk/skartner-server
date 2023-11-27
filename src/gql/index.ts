@@ -8,6 +8,7 @@ export * from './Notification';
 export * from './Permission';
 export * from './Post';
 export * from './RelationPermissionToRole';
+export * from './RelationPermissionToUser';
 export * from './RelationRoleToUser';
 export * from './Role';
 export * from './Types';
