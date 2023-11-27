@@ -180,6 +180,14 @@ type Notification {
   userId: String!
 }
 
+type Permission {
+  createdAt: String!
+  id: String!
+  meta: Json!
+  name: String!
+  updatedAt: String!
+}
+
 type Post {
   body: String
   createdAt: String!
@@ -201,6 +209,7 @@ type Query {
   greWords(orderBy: [GreWordOrderByWithRelationInput], skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
+  permissions: [Permission]
   posts: [Post]
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User

@@ -192,6 +192,11 @@ export interface NexusGenObjects {
     message: string; // String!
     userId: string; // String!
   }
+  Permission: { // root type
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    name: string; // String!
+  }
   Post: { // root type
     body?: string | null; // String
     id: string; // String!
@@ -343,6 +348,13 @@ export interface NexusGenFieldTypes {
     message: string; // String!
     userId: string; // String!
   }
+  Permission: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    meta: NexusGenScalars['Json']; // Json!
+    name: string; // String!
+    updatedAt: string; // String!
+  }
   Post: { // field return type
     body: string | null; // String
     createdAt: string; // String!
@@ -363,6 +375,7 @@ export interface NexusGenFieldTypes {
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
+    permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
@@ -522,6 +535,13 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
     userId: 'String'
   }
+  Permission: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    meta: 'Json'
+    name: 'String'
+    updatedAt: 'String'
+  }
   Post: { // field return type name
     body: 'String'
     createdAt: 'String'
@@ -542,6 +562,7 @@ export interface NexusGenFieldTypeNames {
     greWords: 'GreWord'
     greWordsCount: 'Int'
     hello: 'HelloWorld'
+    permissions: 'Permission'
     posts: 'Post'
     sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'

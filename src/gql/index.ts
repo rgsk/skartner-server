@@ -5,6 +5,7 @@ export * from './GreWord';
 export * from './GreWordSearchPromptInput';
 export * from './GreWordTag';
 export * from './Notification';
+export * from './Permission';
 export * from './Post';
 export * from './Types';
 export * from './User';
