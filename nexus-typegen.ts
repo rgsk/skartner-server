@@ -422,9 +422,9 @@ export interface NexusGenFieldTypes {
     permissionHierarchies: Array<NexusGenRootTypes['PermissionHierarchy'] | null> | null; // [PermissionHierarchy]
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
-    relationPermissionToRoles: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
-    relationPermissionToUsers: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
-    relationRoleToUsers: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
+    relationsPermissionToRole: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
+    relationsPermissionToUser: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
+    relationsRoleToUser: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
     roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
@@ -657,9 +657,9 @@ export interface NexusGenFieldTypeNames {
     permissionHierarchies: 'PermissionHierarchy'
     permissions: 'Permission'
     posts: 'Post'
-    relationPermissionToRoles: 'RelationPermissionToRole'
-    relationPermissionToUsers: 'RelationPermissionToUser'
-    relationRoleToUsers: 'RelationRoleToUser'
+    relationsPermissionToRole: 'RelationPermissionToRole'
+    relationsPermissionToUser: 'RelationPermissionToUser'
+    relationsRoleToUser: 'RelationRoleToUser'
     roles: 'Role'
     sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'

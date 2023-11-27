@@ -41,15 +41,15 @@ export const RelationRoleToUserObject = objectType({
 export const RelationRoleToUserQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('relationRoleToUsers', {
+    t.list.field('relationsRoleToUser', {
       type: 'RelationRoleToUser',
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationRoleToUserFindManyArgs =
           parseGraphQLQuery(info, args);
-        const relationRoleToUsers = await ctx.db.relationRoleToUser.findMany(
+        const relationsRoleToUser = await ctx.db.relationRoleToUser.findMany(
           prismaArgs
         );
-        return relationRoleToUsers;
+        return relationsRoleToUser;
       },
     });
   },

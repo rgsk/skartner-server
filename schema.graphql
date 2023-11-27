@@ -220,9 +220,9 @@ type Query {
   permissionHierarchies: [PermissionHierarchy]
   permissions: [Permission]
   posts: [Post]
-  relationPermissionToRoles: [RelationPermissionToRole]
-  relationPermissionToUsers: [RelationPermissionToUser]
-  relationRoleToUsers: [RelationRoleToUser]
+  relationsPermissionToRole: [RelationPermissionToRole]
+  relationsPermissionToUser: [RelationPermissionToUser]
+  relationsRoleToUser: [RelationRoleToUser]
   roles: [Role]
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User

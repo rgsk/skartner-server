@@ -44,14 +44,14 @@ export const RelationPermissionToUserObject = objectType({
 export const RelationPermissionToUserQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('relationPermissionToUsers', {
+    t.list.field('relationsPermissionToUser', {
       type: 'RelationPermissionToUser',
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationPermissionToUserFindManyArgs =
           parseGraphQLQuery(info, args);
-        const relationPermissionToUsers =
+        const relationsPermissionToUser =
           await ctx.db.relationPermissionToUser.findMany(prismaArgs);
-        return relationPermissionToUsers;
+        return relationsPermissionToUser;
       },
     });
   },
