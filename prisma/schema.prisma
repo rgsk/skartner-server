@@ -207,9 +207,9 @@ model RelationRoleToUser {
   role       Role     @relation(fields: [roleId], references: [id])
   userId     String
   user       User     @relation(name: "User", fields: [userId], references: [id])
-  assignedAt DateTime @default(now())
   assignerId String
   assigner   User     @relation(name: "Assigner", fields: [assignerId], references: [id])
+  assignedAt DateTime @default(now())
 
   @@id([roleId, userId])
 }
@@ -236,6 +236,7 @@ model RelationPermissionToUser {
   granterId    String
   granter      User       @relation(name: "Granter", fields: [granterId], references: [id])
   isAllowed    Boolean?
+  grantedAt    DateTime   @default(now())
 
   @@id([permissionId, userId])
 }
@@ -248,6 +249,7 @@ model RelationPermissionToRole {
   granterId    String
   granter      User       @relation(fields: [granterId], references: [id])
   isAllowed    Boolean?
+  grantedAt    DateTime   @default(now())
 
   @@id([permissionId, roleId])
 }
@@ -257,6 +259,7 @@ model PermissionHierarchy {
   parentPermission   Permission @relation("Parent", fields: [parentPermissionId], references: [id])
   childPermissionId  String
   childPermission    Permission @relation("Child", fields: [childPermissionId], references: [id])
+  createdAt          DateTime   @default(now())
 
   @@id([parentPermissionId, childPermissionId])
 }

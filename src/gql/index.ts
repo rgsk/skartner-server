@@ -7,6 +7,7 @@ export * from './GreWordTag';
 export * from './Notification';
 export * from './Permission';
 export * from './Post';
+export * from './RelationPermissionToRole';
 export * from './RelationRoleToUser';
 export * from './Role';
 export * from './Types';

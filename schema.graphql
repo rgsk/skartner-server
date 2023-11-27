@@ -211,6 +211,7 @@ type Query {
   hello: HelloWorld!
   permissions: [Permission]
   posts: [Post]
+  relationPermissionToRoles: [RelationPermissionToRole]
   relationRoleToUsers: [RelationRoleToUser]
   roles: [Role]
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
@@ -222,6 +223,17 @@ type Query {
   usersCount(where: UserWhereInput): Int!
   wordsAndResponsesForPrompt(prompt: String!): [WordAndResponses!]!
   wordsCountForGptPrompts(prompts: [String!]!): [WordsCountForGptPrompts!]!
+}
+
+type RelationPermissionToRole {
+  grantedAt: String!
+  granter: User
+  granterId: String!
+  isAllowed: Boolean
+  permission: Permission
+  permissionId: String!
+  role: Role
+  roleId: String!
 }
 
 type RelationRoleToUser {

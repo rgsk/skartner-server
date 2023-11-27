@@ -204,6 +204,15 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   Query: {};
+  RelationPermissionToRole: { // root type
+    granter?: NexusGenRootTypes['User'] | null; // User
+    granterId: string; // String!
+    isAllowed?: boolean | null; // Boolean
+    permission?: NexusGenRootTypes['Permission'] | null; // Permission
+    permissionId: string; // String!
+    role?: NexusGenRootTypes['Role'] | null; // Role
+    roleId: string; // String!
+  }
   RelationRoleToUser: { // root type
     assigner?: NexusGenRootTypes['User'] | null; // User
     assignerId: string; // String!
@@ -390,6 +399,7 @@ export interface NexusGenFieldTypes {
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    relationPermissionToRoles: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
     relationRoleToUsers: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
     roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
@@ -401,6 +411,16 @@ export interface NexusGenFieldTypes {
     usersCount: number; // Int!
     wordsAndResponsesForPrompt: NexusGenRootTypes['WordAndResponses'][]; // [WordAndResponses!]!
     wordsCountForGptPrompts: NexusGenRootTypes['WordsCountForGptPrompts'][]; // [WordsCountForGptPrompts!]!
+  }
+  RelationPermissionToRole: { // field return type
+    grantedAt: string; // String!
+    granter: NexusGenRootTypes['User'] | null; // User
+    granterId: string; // String!
+    isAllowed: boolean | null; // Boolean
+    permission: NexusGenRootTypes['Permission'] | null; // Permission
+    permissionId: string; // String!
+    role: NexusGenRootTypes['Role'] | null; // Role
+    roleId: string; // String!
   }
   RelationRoleToUser: { // field return type
     assignedAt: string; // String!
@@ -595,6 +615,7 @@ export interface NexusGenFieldTypeNames {
     hello: 'HelloWorld'
     permissions: 'Permission'
     posts: 'Post'
+    relationPermissionToRoles: 'RelationPermissionToRole'
     relationRoleToUsers: 'RelationRoleToUser'
     roles: 'Role'
     sendSinglePrompt: 'SendSinglePromptResponse'
@@ -606,6 +627,16 @@ export interface NexusGenFieldTypeNames {
     usersCount: 'Int'
     wordsAndResponsesForPrompt: 'WordAndResponses'
     wordsCountForGptPrompts: 'WordsCountForGptPrompts'
+  }
+  RelationPermissionToRole: { // field return type name
+    grantedAt: 'String'
+    granter: 'User'
+    granterId: 'String'
+    isAllowed: 'Boolean'
+    permission: 'Permission'
+    permissionId: 'String'
+    role: 'Role'
+    roleId: 'String'
   }
   RelationRoleToUser: { // field return type name
     assignedAt: 'String'
