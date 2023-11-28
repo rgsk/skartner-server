@@ -199,6 +199,8 @@ export const GptPromptQuery = extendType({
         return gptPrompts;
       },
     });
+
+    // this is not integrated for now
     t.field('generateImagesForWord', {
       type: objectType({
         name: 'GenerateImagesForWordResponse',
