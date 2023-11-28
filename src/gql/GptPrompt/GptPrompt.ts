@@ -200,7 +200,7 @@ export const GptPromptQuery = extendType({
       },
     });
 
-    // this is not integrated for now
+    // TODO: not integrated
     t.field('generateImagesForWord', {
       type: objectType({
         name: 'GenerateImagesForWordResponse',
@@ -466,6 +466,7 @@ export const GptPromptMutation = extendType({
         return gptPrompt;
       },
     });
+
     // this saveImageToS3 mutation is not used for now
     // it can be used to upload openAI image url to s3
     /*
@@ -484,6 +485,7 @@ export const GptPromptMutation = extendType({
       }
     }
    */
+    // TODO: not integrated
     t.field('saveImageToS3', {
       type: objectType({
         name: 'SaveImageToS3Response',
