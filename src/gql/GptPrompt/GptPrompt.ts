@@ -15,6 +15,7 @@ import {
   getWordSpeechUrl,
   saveImageToS3,
   sendPrompt,
+  uploadImageToS3,
 } from 'lib/thirdPartyUtils';
 import {
   booleanArg,
@@ -235,11 +236,19 @@ export const GptPromptQuery = extendType({
           prompt: prompt,
           n: 1,
           size: '256x256',
-          response_format: 'url',
+          response_format: 'b64_json',
         });
-        const imageUrls = imagesResponse.data.map((i) => i.url!);
+        const imageUrls = await Promise.all(
+          imagesResponse.data.map((res, i) => {
+            const buffer = Buffer.from(res.b64_json!, 'base64');
+            return uploadImageToS3({ buffer, key: uuidv4() });
+          })
+        );
+        const presignedImageUrls =
+          imageUrls &&
+          (await Promise.all(imageUrls.map((url) => getPresignedUrl(url))));
         return {
-          imageUrls: imageUrls,
+          imageUrls: presignedImageUrls,
         };
       },
     });
@@ -454,6 +463,24 @@ export const GptPromptMutation = extendType({
         return gptPrompt;
       },
     });
+    // this saveImageToS3 mutation is not used for now
+    // it can be used to upload openAI image url to s3
+    /*
+    args
+    {
+      "imageUrl": "https://oaidalleapiprodscus.blob.core.windows.net/private/org-LedaM9ZptbYAOWSNfz05Z5Ug/user-WveI6TsKFKIg30CC8anhvbpW/img-61lVy1ATx9CL7dvkjahVSHyH.png?st=2023-11-28T04%3A20%3A00Z&se=2023-11-28T06%3A20%3A00Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-11-28T00%3A32%3A32Z&ske=2023-11-29T00%3A32%3A32Z&sks=b&skv=2021-08-06&sig=dHF3oYWdJfzocWKF1A892isKLMvhwLWKvG8nhDWkqao%3D"
+    }
+    */
+    /*
+   response
+   {
+      "data": {
+        "saveImageToS3": {
+          "s3Url": "https://skartner.s3.ap-south-1.amazonaws.com/108466b3-16e6-4ae0-bc32-7d7d82c09107?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAVMF64MVPJMUUHD6G%2F20231128%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20231128T061024Z&X-Amz-Expires=86400&X-Amz-Signature=fd3bac9866ef16b4bb9deeef1760a05d31688c594b304a46dd2c807ca523bb9e&X-Amz-SignedHeaders=host&x-id=GetObject"
+        }
+      }
+    }
+   */
     t.field('saveImageToS3', {
       type: objectType({
         name: 'SaveImageToS3Response',
