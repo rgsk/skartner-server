@@ -1,6 +1,7 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import axios from 'axios';
 import { secondsInDay } from 'date-fns';
 import openAI from 'lib/openAI';
 import s3Client, { s3ClientBuckets, s3ClientRegion } from 'lib/s3Client';
@@ -59,7 +60,7 @@ export async function uploadAudio({
   return objectUrl;
 }
 
-export async function uploadImage({
+export async function uploadImageToS3({
   buffer,
   key,
 }: {
@@ -175,9 +176,22 @@ export async function getImagesForWord({
     const imageUrls = await Promise.all(
       response.data.map((res, i) => {
         const buffer = Buffer.from(res.b64_json!, 'base64');
-        return uploadImage({ buffer, key: `${word}-${i + 1}.png` });
+        return uploadImageToS3({ buffer, key: `${word}-${i + 1}.png` });
       })
     );
     return imageUrls;
   }
+}
+
+export async function saveImageToS3({
+  imageUrl,
+  key,
+}: {
+  imageUrl: string;
+  key: string;
+}) {
+  const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  const buffer = Buffer.from(response.data, 'utf-8');
+
+  return uploadImageToS3({ buffer, key });
 }

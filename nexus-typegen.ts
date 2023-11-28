@@ -248,6 +248,9 @@ export interface NexusGenObjects {
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
   }
+  SaveImageToS3Response: { // root type
+    s3Url?: string | null; // String
+  }
   SendSinglePromptResponse: { // root type
     cacheResponseId: string; // String!
     result: string; // String!
@@ -391,6 +394,7 @@ export interface NexusGenFieldTypes {
     deleteGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     deleteGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     publish: NexusGenRootTypes['Post'] | null; // Post
+    saveImageToS3: NexusGenRootTypes['SaveImageToS3Response'] | null; // SaveImageToS3Response
     updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
@@ -488,6 +492,9 @@ export interface NexusGenFieldTypes {
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
     updatedAt: string; // String!
+  }
+  SaveImageToS3Response: { // field return type
+    s3Url: string | null; // String
   }
   SendSinglePromptResponse: { // field return type
     cacheResponseId: string; // String!
@@ -636,6 +643,7 @@ export interface NexusGenFieldTypeNames {
     deleteGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     deleteGreWordTag: 'GreWordTag'
     publish: 'Post'
+    saveImageToS3: 'SaveImageToS3Response'
     updateGptPrompt: 'GptPrompt'
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
@@ -734,6 +742,9 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     updatedAt: 'String'
   }
+  SaveImageToS3Response: { // field return type name
+    s3Url: 'String'
+  }
   SendSinglePromptResponse: { // field return type name
     cacheResponseId: 'String'
     result: 'String'
@@ -828,6 +839,10 @@ export interface NexusGenArgTypes {
     }
     publish: { // args
       draftId: string; // String!
+    }
+    saveImageToS3: { // args
+      imageUrl: string; // String!
+      key?: string | null; // String
     }
     updateGptPrompt: { // args
       editedResponse?: string | null; // String

@@ -13,6 +13,7 @@ import {
   getImagesForWord,
   getPresignedUrl,
   getWordSpeechUrl,
+  saveImageToS3,
   sendPrompt,
 } from 'lib/thirdPartyUtils';
 import {
@@ -24,6 +25,7 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import { v4 as uuidv4 } from 'uuid';
 
 function createGreWordsLoader() {
   return new DataLoader<string, GreWord>(
@@ -241,6 +243,7 @@ export const GptPromptQuery = extendType({
         };
       },
     });
+
     t.nonNull.field('sendSinglePrompt', {
       type: 'SendSinglePromptResponse',
       args: {
@@ -451,34 +454,54 @@ export const GptPromptMutation = extendType({
         return gptPrompt;
       },
     });
-    t.field('createGptPrompt', {
-      type: nonNull('GptPrompt'),
+    t.field('saveImageToS3', {
+      type: objectType({
+        name: 'SaveImageToS3Response',
+        definition(t) {
+          t.string('s3Url');
+        },
+      }),
       args: {
-        cacheResponseId: nonNull(stringArg()),
-        greWordId: nonNull(stringArg()),
+        imageUrl: nonNull(stringArg()),
+        key: stringArg(),
       },
       async resolve(root, args, ctx, info) {
-        const { cacheResponseId, greWordId, ...restArgs } = args;
-        const prismaArgs = parseGraphQLQuery<Prisma.GptPromptCreateArgs>(
-          info,
-          restArgs
-        );
-
-        const gptPrompt = await ctx.db.gptPrompt.create({
-          ...prismaArgs,
-          data: {
-            greWordId: greWordId,
-            cacheResponseId: cacheResponseId,
-          },
-        });
-        // creation of gptPrompt updates the greWord updatedAt
-        await ctx.db.greWord.update({
-          where: { id: greWordId },
-          data: { updatedAt: new Date() },
-        });
-        return gptPrompt;
+        const { imageUrl, key } = args;
+        const s3Url = await saveImageToS3({ imageUrl, key: key || uuidv4() });
+        const presignedS3Url = await getPresignedUrl(s3Url);
+        return {
+          s3Url: presignedS3Url,
+        };
       },
-    });
+    }),
+      t.field('createGptPrompt', {
+        type: nonNull('GptPrompt'),
+        args: {
+          cacheResponseId: nonNull(stringArg()),
+          greWordId: nonNull(stringArg()),
+        },
+        async resolve(root, args, ctx, info) {
+          const { cacheResponseId, greWordId, ...restArgs } = args;
+          const prismaArgs = parseGraphQLQuery<Prisma.GptPromptCreateArgs>(
+            info,
+            restArgs
+          );
+
+          const gptPrompt = await ctx.db.gptPrompt.create({
+            ...prismaArgs,
+            data: {
+              greWordId: greWordId,
+              cacheResponseId: cacheResponseId,
+            },
+          });
+          // creation of gptPrompt updates the greWord updatedAt
+          await ctx.db.greWord.update({
+            where: { id: greWordId },
+            data: { updatedAt: new Date() },
+          });
+          return gptPrompt;
+        },
+      });
     t.field('updateGptPrompt', {
       type: 'GptPrompt',
       args: {

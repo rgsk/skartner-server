@@ -179,6 +179,7 @@ type Mutation {
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   publish(draftId: String!): Post
+  saveImageToS3(imageUrl: String!, key: String): SaveImageToS3Response
   updateGptPrompt(editedResponse: String, id: String!): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
@@ -285,6 +286,10 @@ type Role {
   meta: Json!
   name: String!
   updatedAt: String!
+}
+
+type SaveImageToS3Response {
+  s3Url: String
 }
 
 type SendSinglePromptResponse {
