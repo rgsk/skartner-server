@@ -7,9 +7,12 @@ import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
-import openAI from 'lib/openAI';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { getPresignedUrl, getWordSpeechUrl } from 'lib/thirdPartyUtils';
+import {
+  getPresignedUrl,
+  getWordSpeechUrl,
+  sendPrompt,
+} from 'lib/thirdPartyUtils';
 import {
   booleanArg,
   extendType,
@@ -19,7 +22,6 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
-import { ChatCompletionMessageParam } from 'openai/resources';
 
 function createGreWordsLoader() {
   return new DataLoader<string, GreWord>(
@@ -455,11 +457,3 @@ export const GptPromptMutation = extendType({
     });
   },
 });
-
-export const sendPrompt = async (messages: ChatCompletionMessageParam[]) => {
-  const result = await openAI.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages,
-  });
-  return result.choices[0].message;
-};

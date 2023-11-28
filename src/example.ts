@@ -1,5 +1,8 @@
+import { getImagesForWord } from 'lib/thirdPartyUtils';
+
 export async function example() {
-  // const url = await getWordSpeechUrl('cat');
-  // console.log({ url });
-  // return url;
+  console.log('example function ran');
+
+  const imagesUrls = await getImagesForWord('hen');
+  console.log(imagesUrls);
 }

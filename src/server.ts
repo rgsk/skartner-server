@@ -7,7 +7,6 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 import { createContext, verifyToken } from 'context';
 import cors from 'cors';
-import { example } from 'example';
 import express from 'express';
 import { applyMiddleware } from 'graphql-middleware';
 import { useServer } from 'graphql-ws/lib/use/ws';
@@ -95,4 +94,3 @@ export const server = new ApolloServer({
     console.log(`Server is now running on http://localhost:${PORT}/graphql`);
   });
 })();
-example();

@@ -1,9 +1,10 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { secondsInDay } from 'date-fns';
 import openAI from 'lib/openAI';
 import s3Client, { s3ClientBuckets, s3ClientRegion } from 'lib/s3Client';
+import { ChatCompletionMessageParam } from 'openai/resources';
 import { Readable } from 'stream';
 
 export async function getWordSpeechUrl(word: string) {
@@ -54,6 +55,26 @@ export async function uploadAudio({
     },
   });
   await multipartUpload.done();
+  const objectUrl = composeS3Url({ bucket, region, key });
+  return objectUrl;
+}
+
+export async function uploadImage({
+  buffer,
+  key,
+}: {
+  buffer: Buffer;
+  key: string;
+}) {
+  const bucket = s3ClientBuckets.skartner;
+  const region = s3ClientRegion;
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: buffer,
+  });
+
+  const response = await s3Client.send(command);
   const objectUrl = composeS3Url({ bucket, region, key });
   return objectUrl;
 }
@@ -113,3 +134,49 @@ export const getPresignedUrl = async (url: string) => {
   });
   return presignedUrl;
 };
+
+export const sendPrompt = async (messages: ChatCompletionMessageParam[]) => {
+  const result = await openAI.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    messages,
+  });
+  return result.choices[0].message;
+};
+
+const getDallePrompt = async (word: string) => {
+  const result = await openAI.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'user',
+        content: `I am using dalle-2 for generating images, please write a prompt to generate an image for remembering the meaning of word - ${word}, please be concise`,
+      },
+    ],
+  });
+  return result.choices[0].message.content;
+};
+
+const generateImages = async ({ n, prompt }: { n: number; prompt: string }) => {
+  const response = await openAI.images.generate({
+    model: 'dall-e-2',
+    prompt,
+    n,
+    size: '256x256',
+    response_format: 'b64_json',
+  });
+  return response;
+};
+
+export async function getImagesForWord(word: string) {
+  const dallePrompt = await getDallePrompt(word);
+  if (dallePrompt) {
+    const response = await generateImages({ prompt: dallePrompt, n: 3 });
+    const imageUrls = await Promise.all(
+      response.data.map((res, i) => {
+        const buffer = Buffer.from(res.b64_json!, 'base64');
+        return uploadImage({ buffer, key: `${word}-${i + 1}.png` });
+      })
+    );
+    return imageUrls;
+  }
+}
