@@ -50,6 +50,16 @@ export const createAdminUser = async () => {
     },
   });
 
+  const accessBullMonitorPermission = await db.permission.upsert({
+    where: {
+      name: permissions['Access Bull Monitor'].key,
+    },
+    update: {},
+    create: {
+      name: permissions['Access Bull Monitor'].key,
+    },
+  });
+
   const accessConfidentialTablesPermission = await db.permission.upsert({
     where: {
       name: permissions['Access Admin Dashboard']['Access Confidential Tables']
@@ -176,6 +186,23 @@ export const createAdminUser = async () => {
       update: {},
       create: {
         permissionId: accessGraphqlPlaygroundPermission.id,
+        roleId: adminRole.id,
+        granterId: rootUser.id,
+        isAllowed: true,
+      },
+    });
+
+  const accessBullMonitorToAdminRelation =
+    await db.relationPermissionToRole.upsert({
+      where: {
+        permissionId_roleId: {
+          permissionId: accessBullMonitorPermission.id,
+          roleId: adminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        permissionId: accessBullMonitorPermission.id,
         roleId: adminRole.id,
         granterId: rootUser.id,
         isAllowed: true,

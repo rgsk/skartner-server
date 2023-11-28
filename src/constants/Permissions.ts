@@ -14,5 +14,8 @@ const permissions = {
   'Access Graphql Playground': {
     key: 'Access Graphql Playground',
   },
+  'Access Bull Monitor': {
+    key: 'Access Bull Monitor',
+  },
 };
 export default permissions;

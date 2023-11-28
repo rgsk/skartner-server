@@ -1,6 +1,10 @@
 import axios from 'axios';
-import { Router } from 'express';
+import permissions from 'constants/permissions';
+import { Request, Router } from 'express';
 import fileLogger from 'lib/fileLogger';
+import authenticate from 'middlewares/authenticate';
+import authorize from 'middlewares/authorize';
+import conditionalMiddleware from 'middlewares/conditionalMiddleware';
 import { bullMonitorExpress } from 'queues';
 import sampleRouter from 'routers/sampleRouter';
 const rootRouter = Router();
@@ -75,9 +79,20 @@ rootRouter.get('/pincode/:pincode', async (req, res, next) => {
   res.json(response.data);
 });
 
+const condition = (req: Request) => {
+  return req.path === '/' && req.method === 'GET';
+};
 (async () => {
   await bullMonitorExpress.init();
-  rootRouter.use('/queues', bullMonitorExpress.router);
+  rootRouter.use(
+    '/queues',
+    conditionalMiddleware(condition, authenticate),
+    conditionalMiddleware(
+      condition,
+      authorize(permissions['Access Bull Monitor'].key)
+    ),
+    bullMonitorExpress.router
+  );
 })();
 
 export default rootRouter;
