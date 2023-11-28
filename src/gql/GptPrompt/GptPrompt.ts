@@ -52,6 +52,7 @@ export const GptPromptObject = objectType({
   definition(t) {
     t.nonNull.string('id');
     t.string('editedResponse');
+    t.nonNull.list.nonNull.string('imageUrls');
 
     t.field('greWord', {
       type: 'GreWord',
@@ -534,9 +535,10 @@ export const GptPromptMutation = extendType({
       args: {
         id: nonNull(stringArg()),
         editedResponse: stringArg(),
+        imageUrls: list(nonNull(stringArg())),
       },
       async resolve(root, args, ctx, info) {
-        const { id, editedResponse, ...restArgs } = args;
+        const { id, editedResponse, imageUrls, ...restArgs } = args;
         const prismaArgs = parseGraphQLQuery<Prisma.GptPromptUpdateArgs>(
           info,
           restArgs
@@ -547,7 +549,8 @@ export const GptPromptMutation = extendType({
             id: id,
           },
           data: {
-            editedResponse,
+            editedResponse: editedResponse,
+            imageUrls: imageUrls ?? undefined,
           },
         });
         return gptPrompt;

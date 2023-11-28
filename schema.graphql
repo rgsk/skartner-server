@@ -62,6 +62,7 @@ type GptPrompt {
   greWord: GreWord
   greWordId: String
   id: String!
+  imageUrls: [String!]!
   meta: Json!
   updatedAt: String!
   user: User
@@ -180,7 +181,7 @@ type Mutation {
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   publish(draftId: String!): Post
   saveImageToS3(imageUrl: String!, key: String): SaveImageToS3Response
-  updateGptPrompt(editedResponse: String, id: String!): GptPrompt
+  updateGptPrompt(editedResponse: String, id: String!, imageUrls: [String!]): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User

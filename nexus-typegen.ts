@@ -162,6 +162,7 @@ export interface NexusGenObjects {
     editedResponse?: string | null; // String
     greWordId?: string | null; // String
     id: string; // String!
+    imageUrls: string[]; // [String!]!
     meta: NexusGenScalars['Json']; // Json!
     user?: NexusGenRootTypes['User'] | null; // User
     userId?: string | null; // String
@@ -338,6 +339,7 @@ export interface NexusGenFieldTypes {
     greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     greWordId: string | null; // String
     id: string; // String!
+    imageUrls: string[]; // [String!]!
     meta: NexusGenScalars['Json']; // Json!
     updatedAt: string; // String!
     user: NexusGenRootTypes['User'] | null; // User
@@ -587,6 +589,7 @@ export interface NexusGenFieldTypeNames {
     greWord: 'GreWord'
     greWordId: 'String'
     id: 'String'
+    imageUrls: 'String'
     meta: 'Json'
     updatedAt: 'String'
     user: 'User'
@@ -847,6 +850,7 @@ export interface NexusGenArgTypes {
     updateGptPrompt: { // args
       editedResponse?: string | null; // String
       id: string; // String!
+      imageUrls?: string[] | null; // [String!]
     }
     updateGreWord: { // args
       greWordTags?: Array<NexusGenInputs['GreWordTagWhereUniqueInput'] | null> | null; // [GreWordTagWhereUniqueInput]
