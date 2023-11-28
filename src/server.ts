@@ -5,6 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { KeyvAdapter } from '@apollo/utils.keyvadapter';
+import permissions from 'constants/permissions';
 import { createContext, verifyToken } from 'context';
 import cors from 'cors';
 import express from 'express';
@@ -13,6 +14,8 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
 import Keyv from 'keyv';
 import environmentVars from 'lib/environmentVars';
+import authenticate from 'middlewares/authenticate';
+import authorize from 'middlewares/authorize';
 import errorHandler from 'middlewares/errorHandler';
 import rootRouter from 'rootRouter';
 import { graphqlPermissions } from 'rules';
@@ -83,6 +86,8 @@ export const server = new ApolloServer({
   await server.start();
   app.use(
     '/graphql',
+    authenticate,
+    authorize(permissions['Access Graphql Playground'].key),
     expressMiddleware(server, {
       context: createContext,
     })

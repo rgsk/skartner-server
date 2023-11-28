@@ -11,5 +11,8 @@ const permissions = {
       },
     },
   },
+  'Access Graphql Playground': {
+    key: 'Access Graphql Playground',
+  },
 };
 export default permissions;

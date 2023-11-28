@@ -10,11 +10,20 @@ const authenticate = async (
   next: NextFunction
 ) => {
   try {
+    const queryToken = req.query['token'];
     const authorizationHeader = req.header('Authorization');
-    if (!authorizationHeader) {
-      throw new Error('Authorization header not present');
+
+    if (queryToken) {
+      if (typeof queryToken !== 'string') {
+        throw new Error('query token must be string');
+      }
+    } else {
+      if (!authorizationHeader) {
+        throw new Error('Authorization Header not present');
+      }
     }
-    const idToken = authorizationHeader.split(' ')[1];
+
+    const idToken = queryToken || authorizationHeader?.split(' ')[1];
     if (idToken) {
       const decodedIdToken = await firebaseAdmin.auth().verifyIdToken(idToken);
       const user = await db.user.findUnique({

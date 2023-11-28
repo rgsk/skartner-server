@@ -39,6 +39,17 @@ export const createAdminUser = async () => {
     },
   });
 
+  // create 'Access Graphql Playground' permission if not exists
+  const accessGraphqlPlaygroundPermission = await db.permission.upsert({
+    where: {
+      name: permissions['Access Graphql Playground'].key,
+    },
+    update: {},
+    create: {
+      name: permissions['Access Graphql Playground'].key,
+    },
+  });
+
   const accessConfidentialTablesPermission = await db.permission.upsert({
     where: {
       name: permissions['Access Admin Dashboard']['Access Confidential Tables']
@@ -152,6 +163,24 @@ export const createAdminUser = async () => {
       isAllowed: true,
     },
   });
+
+  // connect 'Access Graphql Playground' permission and 'Admin' role
+  const accessGraphqlPlaygroundToAdminRelation =
+    await db.relationPermissionToRole.upsert({
+      where: {
+        permissionId_roleId: {
+          permissionId: accessGraphqlPlaygroundPermission.id,
+          roleId: adminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        permissionId: accessGraphqlPlaygroundPermission.id,
+        roleId: adminRole.id,
+        granterId: rootUser.id,
+        isAllowed: true,
+      },
+    });
 
   // grant 'Admin' role to user
   const { count: rolesAssignedCount } = await db.relationRoleToUser.createMany({
