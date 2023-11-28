@@ -47,6 +47,10 @@ input EnumGreWordStatusFilter {
   notIn: [GreWordStatus!]
 }
 
+type GenerateImagesForWordResponse {
+  imageUrls: [String!]
+}
+
 type GptPrompt {
   cacheResponse: CacheResponse!
   createdAt: String!
@@ -211,6 +215,7 @@ type Query {
   allPosts(isPublished: Boolean!, token: String): [Post]
   authenticate: AuthenticateResponse!
   drafts: [Post]
+  generateImagesForWord(word: String!): GenerateImagesForWordResponse
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
   greWord(where: GreWordWhereInput): GreWord

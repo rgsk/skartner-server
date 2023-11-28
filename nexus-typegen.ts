@@ -152,6 +152,9 @@ export interface NexusGenObjects {
     meta: NexusGenScalars['Json']; // Json!
     text: string; // String!
   }
+  GenerateImagesForWordResponse: { // root type
+    imageUrls?: string[] | null; // [String!]
+  }
   GptPrompt: { // root type
     editedResponse?: string | null; // String
     greWordId?: string | null; // String
@@ -316,6 +319,9 @@ export interface NexusGenFieldTypes {
     text: string; // String!
     updatedAt: string; // String!
   }
+  GenerateImagesForWordResponse: { // field return type
+    imageUrls: string[] | null; // [String!]
+  }
   GptPrompt: { // field return type
     cacheResponse: NexusGenRootTypes['CacheResponse']; // CacheResponse!
     createdAt: string; // String!
@@ -414,6 +420,7 @@ export interface NexusGenFieldTypes {
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     authenticate: NexusGenRootTypes['AuthenticateResponse']; // AuthenticateResponse!
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    generateImagesForWord: NexusGenRootTypes['GenerateImagesForWordResponse'] | null; // GenerateImagesForWordResponse
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
     greConfiguration: NexusGenRootTypes['GreConfiguration']; // GreConfiguration!
     greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
@@ -553,6 +560,9 @@ export interface NexusGenFieldTypeNames {
     text: 'String'
     updatedAt: 'String'
   }
+  GenerateImagesForWordResponse: { // field return type name
+    imageUrls: 'String'
+  }
   GptPrompt: { // field return type name
     cacheResponse: 'CacheResponse'
     createdAt: 'String'
@@ -651,6 +661,7 @@ export interface NexusGenFieldTypeNames {
     allPosts: 'Post'
     authenticate: 'AuthenticateResponse'
     drafts: 'Post'
+    generateImagesForWord: 'GenerateImagesForWordResponse'
     gptPrompts: 'GptPrompt'
     greConfiguration: 'GreConfiguration'
     greWord: 'GreWord'
@@ -830,6 +841,9 @@ export interface NexusGenArgTypes {
     allPosts: { // args
       isPublished: boolean; // Boolean!
       token?: string | null; // String
+    }
+    generateImagesForWord: { // args
+      word: string; // String!
     }
     gptPrompts: { // args
       skip?: number | null; // Int

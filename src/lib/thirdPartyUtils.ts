@@ -167,10 +167,19 @@ const generateImages = async ({ n, prompt }: { n: number; prompt: string }) => {
   return response;
 };
 
-export async function getImagesForWord(word: string) {
+export async function getImagesForWord({
+  word,
+  numberOfImages,
+}: {
+  word: string;
+  numberOfImages: number;
+}) {
   const dallePrompt = await getDallePrompt(word);
   if (dallePrompt) {
-    const response = await generateImages({ prompt: dallePrompt, n: 3 });
+    const response = await generateImages({
+      prompt: dallePrompt,
+      n: numberOfImages,
+    });
     const imageUrls = await Promise.all(
       response.data.map((res, i) => {
         const buffer = Buffer.from(res.b64_json!, 'base64');

@@ -9,6 +9,7 @@ import {
 } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
+  getImagesForWord,
   getPresignedUrl,
   getWordSpeechUrl,
   sendPrompt,
@@ -191,6 +192,27 @@ export const GptPromptQuery = extendType({
         );
         const gptPrompts = await ctx.db.gptPrompt.findMany(prismaArgs);
         return gptPrompts;
+      },
+    });
+    t.field('generateImagesForWord', {
+      type: objectType({
+        name: 'GenerateImagesForWordResponse',
+        definition(t) {
+          t.list.nonNull.string('imageUrls');
+        },
+      }),
+      args: {
+        word: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { word } = args;
+        const imageUrls = await getImagesForWord({ word, numberOfImages: 1 });
+        const presignedImageUrls =
+          imageUrls &&
+          (await Promise.all(imageUrls.map((url) => getPresignedUrl(url))));
+        return {
+          imageUrls: presignedImageUrls,
+        };
       },
     });
     t.nonNull.field('sendSinglePrompt', {
