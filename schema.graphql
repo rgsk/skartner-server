@@ -197,6 +197,10 @@ type Permission {
   id: String!
   meta: Json!
   name: String!
+  permissionHierarchyAsChild: [PermissionHierarchy!]!
+  permissionHierarchyAsParent: [PermissionHierarchy!]!
+  relationPermissionToRoleAsPermission: [RelationPermissionToRole!]!
+  relationPermissionToUserAsPermission: [RelationPermissionToUser!]!
   updatedAt: String!
 }
 
@@ -286,6 +290,8 @@ type Role {
   id: String!
   meta: Json!
   name: String!
+  relationPermissionToRoleAsRole: [RelationPermissionToRole!]!
+  relationRoleToUserAsRole: [RelationRoleToUser!]!
   updatedAt: String!
 }
 

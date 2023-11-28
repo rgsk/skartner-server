@@ -204,6 +204,10 @@ export interface NexusGenObjects {
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
+    permissionHierarchyAsChild: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
+    permissionHierarchyAsParent: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
+    relationPermissionToRoleAsPermission: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
+    relationPermissionToUserAsPermission: NexusGenRootTypes['RelationPermissionToUser'][]; // [RelationPermissionToUser!]!
   }
   PermissionHierarchy: { // root type
     childPermission?: NexusGenRootTypes['Permission'] | null; // Permission
@@ -248,6 +252,8 @@ export interface NexusGenObjects {
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
+    relationPermissionToRoleAsRole: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
+    relationRoleToUserAsRole: NexusGenRootTypes['RelationRoleToUser'][]; // [RelationRoleToUser!]!
   }
   SaveImageToS3Response: { // root type
     s3Url?: string | null; // String
@@ -411,6 +417,10 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
+    permissionHierarchyAsChild: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
+    permissionHierarchyAsParent: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
+    relationPermissionToRoleAsPermission: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
+    relationPermissionToUserAsPermission: NexusGenRootTypes['RelationPermissionToUser'][]; // [RelationPermissionToUser!]!
     updatedAt: string; // String!
   }
   PermissionHierarchy: { // field return type
@@ -493,6 +503,8 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     meta: NexusGenScalars['Json']; // Json!
     name: string; // String!
+    relationPermissionToRoleAsRole: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
+    relationRoleToUserAsRole: NexusGenRootTypes['RelationRoleToUser'][]; // [RelationRoleToUser!]!
     updatedAt: string; // String!
   }
   SaveImageToS3Response: { // field return type
@@ -661,6 +673,10 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     meta: 'Json'
     name: 'String'
+    permissionHierarchyAsChild: 'PermissionHierarchy'
+    permissionHierarchyAsParent: 'PermissionHierarchy'
+    relationPermissionToRoleAsPermission: 'RelationPermissionToRole'
+    relationPermissionToUserAsPermission: 'RelationPermissionToUser'
     updatedAt: 'String'
   }
   PermissionHierarchy: { // field return type name
@@ -743,6 +759,8 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     meta: 'Json'
     name: 'String'
+    relationPermissionToRoleAsRole: 'RelationPermissionToRole'
+    relationRoleToUserAsRole: 'RelationRoleToUser'
     updatedAt: 'String'
   }
   SaveImageToS3Response: { // field return type name

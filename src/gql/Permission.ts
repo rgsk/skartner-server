@@ -29,6 +29,18 @@ export const PermissionObject = objectType({
       type: 'Json',
     });
     addDateFieldsDefinitions(t);
+    t.nonNull.list.nonNull.field('relationPermissionToUserAsPermission', {
+      type: 'RelationPermissionToUser',
+    });
+    t.nonNull.list.nonNull.field('relationPermissionToRoleAsPermission', {
+      type: 'RelationPermissionToRole',
+    });
+    t.nonNull.list.nonNull.field('permissionHierarchyAsChild', {
+      type: 'PermissionHierarchy',
+    });
+    t.nonNull.list.nonNull.field('permissionHierarchyAsParent', {
+      type: 'PermissionHierarchy',
+    });
   },
 });
 
@@ -43,7 +55,7 @@ export const PermissionQuery = extendType({
           args
         );
         const permissions = await ctx.db.permission.findMany(prismaArgs);
-        return permissions;
+        return permissions as any;
       },
     });
   },

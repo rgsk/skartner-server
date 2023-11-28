@@ -26,6 +26,12 @@ export const RoleObject = objectType({
       type: 'Json',
     });
     addDateFieldsDefinitions(t);
+    t.nonNull.list.nonNull.field('relationRoleToUserAsRole', {
+      type: 'RelationRoleToUser',
+    });
+    t.nonNull.list.nonNull.field('relationPermissionToRoleAsRole', {
+      type: 'RelationPermissionToRole',
+    });
   },
 });
 
@@ -40,7 +46,7 @@ export const RoleQuery = extendType({
           args
         );
         const roles = await ctx.db.role.findMany(prismaArgs);
-        return roles;
+        return roles as any;
       },
     });
   },
