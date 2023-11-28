@@ -156,17 +156,6 @@ const getDallePrompt = async (word: string) => {
   return result.choices[0].message.content;
 };
 
-const generateImages = async ({ n, prompt }: { n: number; prompt: string }) => {
-  const response = await openAI.images.generate({
-    model: 'dall-e-2',
-    prompt,
-    n,
-    size: '256x256',
-    response_format: 'b64_json',
-  });
-  return response;
-};
-
 export async function getImagesForWord({
   word,
   numberOfImages,
@@ -176,9 +165,12 @@ export async function getImagesForWord({
 }) {
   const dallePrompt = await getDallePrompt(word);
   if (dallePrompt) {
-    const response = await generateImages({
+    const response = await openAI.images.generate({
+      model: 'dall-e-2',
       prompt: dallePrompt,
       n: numberOfImages,
+      size: '256x256',
+      response_format: 'b64_json',
     });
     const imageUrls = await Promise.all(
       response.data.map((res, i) => {

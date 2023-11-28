@@ -7,6 +7,7 @@ import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
 } from 'lib/graphqlUtils';
+import openAI from 'lib/openAI';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   getImagesForWord,
@@ -212,6 +213,31 @@ export const GptPromptQuery = extendType({
           (await Promise.all(imageUrls.map((url) => getPresignedUrl(url))));
         return {
           imageUrls: presignedImageUrls,
+        };
+      },
+    });
+    t.field('generateImagesForPrompt', {
+      type: objectType({
+        name: 'GenerateImagesForPromptResponse',
+        definition(t) {
+          t.list.string('imageUrls');
+        },
+      }),
+      args: {
+        prompt: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { prompt } = args;
+        const imagesResponse = await openAI.images.generate({
+          model: 'dall-e-2',
+          prompt: prompt,
+          n: 1,
+          size: '256x256',
+          response_format: 'url',
+        });
+        const imageUrls = imagesResponse.data.map((i) => i.url!);
+        return {
+          imageUrls: imageUrls,
         };
       },
     });

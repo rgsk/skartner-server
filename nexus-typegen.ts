@@ -152,6 +152,9 @@ export interface NexusGenObjects {
     meta: NexusGenScalars['Json']; // Json!
     text: string; // String!
   }
+  GenerateImagesForPromptResponse: { // root type
+    imageUrls?: Array<string | null> | null; // [String]
+  }
   GenerateImagesForWordResponse: { // root type
     imageUrls?: string[] | null; // [String!]
   }
@@ -319,6 +322,9 @@ export interface NexusGenFieldTypes {
     text: string; // String!
     updatedAt: string; // String!
   }
+  GenerateImagesForPromptResponse: { // field return type
+    imageUrls: Array<string | null> | null; // [String]
+  }
   GenerateImagesForWordResponse: { // field return type
     imageUrls: string[] | null; // [String!]
   }
@@ -420,6 +426,7 @@ export interface NexusGenFieldTypes {
     allPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     authenticate: NexusGenRootTypes['AuthenticateResponse']; // AuthenticateResponse!
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    generateImagesForPrompt: NexusGenRootTypes['GenerateImagesForPromptResponse'] | null; // GenerateImagesForPromptResponse
     generateImagesForWord: NexusGenRootTypes['GenerateImagesForWordResponse'] | null; // GenerateImagesForWordResponse
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
     greConfiguration: NexusGenRootTypes['GreConfiguration']; // GreConfiguration!
@@ -560,6 +567,9 @@ export interface NexusGenFieldTypeNames {
     text: 'String'
     updatedAt: 'String'
   }
+  GenerateImagesForPromptResponse: { // field return type name
+    imageUrls: 'String'
+  }
   GenerateImagesForWordResponse: { // field return type name
     imageUrls: 'String'
   }
@@ -661,6 +671,7 @@ export interface NexusGenFieldTypeNames {
     allPosts: 'Post'
     authenticate: 'AuthenticateResponse'
     drafts: 'Post'
+    generateImagesForPrompt: 'GenerateImagesForPromptResponse'
     generateImagesForWord: 'GenerateImagesForWordResponse'
     gptPrompts: 'GptPrompt'
     greConfiguration: 'GreConfiguration'
@@ -841,6 +852,9 @@ export interface NexusGenArgTypes {
     allPosts: { // args
       isPublished: boolean; // Boolean!
       token?: string | null; // String
+    }
+    generateImagesForPrompt: { // args
+      prompt: string; // String!
     }
     generateImagesForWord: { // args
       word: string; // String!
