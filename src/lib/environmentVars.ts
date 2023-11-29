@@ -29,6 +29,10 @@ const environmentVarsSchema = z.object({
     ACCESS_KEY: z.string(),
     SECRET_ACCESS_KEY: z.string(),
   }),
+  WHATSAPP: z.object({
+    APP_ID: z.string(),
+    PERMANENT_TOKEN: z.string(),
+  }),
 });
 
 const fields: z.infer<typeof environmentVarsSchema> = {
@@ -47,6 +51,10 @@ const fields: z.infer<typeof environmentVarsSchema> = {
   AWS: {
     ACCESS_KEY: process.env.AWS_ACCESS_KEY!,
     SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+  WHATSAPP: {
+    APP_ID: process.env.WHATSAPP_APP_ID!,
+    PERMANENT_TOKEN: process.env.WHATSAPP_PERMANENT_TOKEN!,
   },
 };
 
