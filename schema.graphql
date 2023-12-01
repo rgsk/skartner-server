@@ -179,6 +179,7 @@ type Mutation {
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
   createPermission(name: String!): Permission!
+  createRole(name: String!): Role!
   createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
@@ -186,12 +187,15 @@ type Mutation {
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   deletePermission(id: String!): Permission
   deletePermissions(ids: [String!]!): BatchPayload
+  deleteRole(id: String!): Role
+  deleteRoles(ids: [String!]!): BatchPayload
   publish(draftId: String!): Post
   saveImageToS3(imageUrl: String!, key: String): SaveImageToS3Response
   updateGptPrompt(editedResponse: String, id: String!, imageUrls: [String!]): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updatePermission(data: PermissionUpdateInput!, id: String!): Permission!
+  updateRole(data: RoleUpdateInput!, id: String!): Role!
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
 
@@ -223,6 +227,7 @@ type PermissionHierarchy {
 
 input PermissionOrderByWithRelationInput {
   createdAt: SortOrder
+  id: SortOrder
   updatedAt: SortOrder
 }
 
@@ -266,7 +271,9 @@ type Query {
   relationsPermissionToRole: [RelationPermissionToRole]
   relationsPermissionToUser: [RelationPermissionToUser]
   relationsRoleToUser: [RelationRoleToUser]
-  roles: [Role]
+  role(where: RoleWhereInput): Role
+  roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role]
+  rolesCount(where: RoleWhereInput): Int!
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereUniqueInput!): User
   userSession(where: UserSessionWhereUniqueInput!): UserSession
@@ -326,6 +333,21 @@ type Role {
   relationPermissionToRoleAsRole: [RelationPermissionToRole!]!
   relationRoleToUserAsRole: [RelationRoleToUser!]!
   updatedAt: String!
+}
+
+input RoleOrderByWithRelationInput {
+  createdAt: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input RoleUpdateInput {
+  name: String
+}
+
+input RoleWhereInput {
+  id: StringFilter
+  name: StringFilter
 }
 
 type SaveImageToS3Response {

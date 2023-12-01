@@ -69,6 +69,9 @@ export const PermissionObject = objectType({
 export const PermissionOrderByWithRelationInput = inputObjectType({
   name: 'PermissionOrderByWithRelationInput',
   definition(t) {
+    t.field('id', {
+      type: 'SortOrder',
+    });
     t.field('createdAt', {
       type: 'SortOrder',
     });

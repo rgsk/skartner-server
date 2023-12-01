@@ -61,12 +61,25 @@ export interface NexusGenInputs {
   }
   PermissionOrderByWithRelationInput: { // input type
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
     updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
   PermissionUpdateInput: { // input type
     name?: string | null; // String
   }
   PermissionWhereInput: { // input type
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    name?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
+  RoleOrderByWithRelationInput: { // input type
+    createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
+  RoleUpdateInput: { // input type
+    name?: string | null; // String
+  }
+  RoleWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     name?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
@@ -420,6 +433,7 @@ export interface NexusGenFieldTypes {
     createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     createNotification: NexusGenRootTypes['Notification']; // Notification!
     createPermission: NexusGenRootTypes['Permission']; // Permission!
+    createRole: NexusGenRootTypes['Role']; // Role!
     createUser: NexusGenRootTypes['User']; // User!
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     deleteGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
@@ -427,12 +441,15 @@ export interface NexusGenFieldTypes {
     deleteGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     deletePermission: NexusGenRootTypes['Permission'] | null; // Permission
     deletePermissions: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
+    deleteRole: NexusGenRootTypes['Role'] | null; // Role
+    deleteRoles: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     publish: NexusGenRootTypes['Post'] | null; // Post
     saveImageToS3: NexusGenRootTypes['SaveImageToS3Response'] | null; // SaveImageToS3Response
     updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updatePermission: NexusGenRootTypes['Permission']; // Permission!
+    updateRole: NexusGenRootTypes['Role']; // Role!
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
   Notification: { // field return type
@@ -488,7 +505,9 @@ export interface NexusGenFieldTypes {
     relationsPermissionToRole: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
     relationsPermissionToUser: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
     relationsRoleToUser: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
+    role: NexusGenRootTypes['Role'] | null; // Role
     roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
+    rolesCount: number; // Int!
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
     userSession: NexusGenRootTypes['UserSession'] | null; // UserSession
@@ -689,6 +708,7 @@ export interface NexusGenFieldTypeNames {
     createGreWordTag: 'GreWordTag'
     createNotification: 'Notification'
     createPermission: 'Permission'
+    createRole: 'Role'
     createUser: 'User'
     deleteGptPrompt: 'GptPrompt'
     deleteGreWord: 'GreWord'
@@ -696,12 +716,15 @@ export interface NexusGenFieldTypeNames {
     deleteGreWordTag: 'GreWordTag'
     deletePermission: 'Permission'
     deletePermissions: 'BatchPayload'
+    deleteRole: 'Role'
+    deleteRoles: 'BatchPayload'
     publish: 'Post'
     saveImageToS3: 'SaveImageToS3Response'
     updateGptPrompt: 'GptPrompt'
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updatePermission: 'Permission'
+    updateRole: 'Role'
     updateUser: 'User'
   }
   Notification: { // field return type name
@@ -757,7 +780,9 @@ export interface NexusGenFieldTypeNames {
     relationsPermissionToRole: 'RelationPermissionToRole'
     relationsPermissionToUser: 'RelationPermissionToUser'
     relationsRoleToUser: 'RelationRoleToUser'
+    role: 'Role'
     roles: 'Role'
+    rolesCount: 'Int'
     sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'
     userSession: 'UserSession'
@@ -890,6 +915,9 @@ export interface NexusGenArgTypes {
     createPermission: { // args
       name: string; // String!
     }
+    createRole: { // args
+      name: string; // String!
+    }
     createUser: { // args
       email: string; // String!
       meta?: NexusGenInputs['UserMetaParsedJsonValueInput'] | null; // UserMetaParsedJsonValueInput
@@ -911,6 +939,12 @@ export interface NexusGenArgTypes {
       id: string; // String!
     }
     deletePermissions: { // args
+      ids: string[]; // [String!]!
+    }
+    deleteRole: { // args
+      id: string; // String!
+    }
+    deleteRoles: { // args
       ids: string[]; // [String!]!
     }
     publish: { // args
@@ -936,6 +970,10 @@ export interface NexusGenArgTypes {
     }
     updatePermission: { // args
       data: NexusGenInputs['PermissionUpdateInput']; // PermissionUpdateInput!
+      id: string; // String!
+    }
+    updateRole: { // args
+      data: NexusGenInputs['RoleUpdateInput']; // RoleUpdateInput!
       id: string; // String!
     }
     updateUser: { // args
@@ -992,6 +1030,18 @@ export interface NexusGenArgTypes {
     }
     permissionsCount: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
+    role: { // args
+      where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
+    }
+    roles: { // args
+      orderBy?: Array<NexusGenInputs['RoleOrderByWithRelationInput'] | null> | null; // [RoleOrderByWithRelationInput]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
+    }
+    rolesCount: { // args
+      where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
     }
     sendSinglePrompt: { // args
       indexesReturned?: number[] | null; // [Int!]
