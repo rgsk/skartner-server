@@ -32,7 +32,13 @@ export const StringFilter = inputObjectType({
     t.string('not');
     t.list.nonNull.string('notIn');
     t.string('startsWith');
+    t.field('mode', { type: 'QueryMode' });
   },
+});
+
+export const QueryMode = enumType({
+  name: 'QueryMode',
+  members: ['default', 'insensitive'],
 });
 
 export const Json = scalarType({

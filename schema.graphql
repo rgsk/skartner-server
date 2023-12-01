@@ -221,12 +221,18 @@ type PermissionHierarchy {
   parentPermissionId: String!
 }
 
+input PermissionOrderByWithRelationInput {
+  createdAt: SortOrder
+  updatedAt: SortOrder
+}
+
 input PermissionUpdateInput {
   name: String
 }
 
 input PermissionWhereInput {
   id: StringFilter
+  name: StringFilter
 }
 
 type Post {
@@ -254,7 +260,8 @@ type Query {
   hello: HelloWorld!
   permission(where: PermissionWhereInput): Permission
   permissionHierarchies: [PermissionHierarchy]
-  permissions: [Permission]
+  permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission]
+  permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]
   relationsPermissionToRole: [RelationPermissionToRole]
   relationsPermissionToUser: [RelationPermissionToUser]
@@ -269,6 +276,11 @@ type Query {
   usersCount(where: UserWhereInput): Int!
   wordsAndResponsesForPrompt(prompt: String!): [WordAndResponses!]!
   wordsCountForGptPrompts(prompts: [String!]!): [WordsCountForGptPrompts!]!
+}
+
+enum QueryMode {
+  default
+  insensitive
 }
 
 type RelationPermissionToRole {
@@ -341,6 +353,7 @@ input StringFilter {
   in: [String!]
   lt: String
   lte: String
+  mode: QueryMode
   not: String
   notIn: [String!]
   startsWith: String

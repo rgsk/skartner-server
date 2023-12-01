@@ -59,11 +59,16 @@ export interface NexusGenInputs {
     user?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  PermissionOrderByWithRelationInput: { // input type
+    createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
   PermissionUpdateInput: { // input type
     name?: string | null; // String
   }
   PermissionWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    name?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
   StringFilter: { // input type
     contains?: string | null; // String
@@ -74,6 +79,7 @@ export interface NexusGenInputs {
     in?: string[] | null; // [String!]
     lt?: string | null; // String
     lte?: string | null; // String
+    mode?: NexusGenEnums['QueryMode'] | null; // QueryMode
     not?: string | null; // String
     notIn?: string[] | null; // [String!]
     startsWith?: string | null; // String
@@ -124,6 +130,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   GreWordStatus: "ALMOST_LEARNT" | "FINISHED_LEARNING" | "MASTERED" | "MEMORY_MODE" | "STARTED_LEARNING" | "STILL_LEARNING"
+  QueryMode: "default" | "insensitive"
   SortOrder: "asc" | "desc"
 }
 
@@ -476,6 +483,7 @@ export interface NexusGenFieldTypes {
     permission: NexusGenRootTypes['Permission'] | null; // Permission
     permissionHierarchies: Array<NexusGenRootTypes['PermissionHierarchy'] | null> | null; // [PermissionHierarchy]
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
+    permissionsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationsPermissionToRole: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
     relationsPermissionToUser: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
@@ -744,6 +752,7 @@ export interface NexusGenFieldTypeNames {
     permission: 'Permission'
     permissionHierarchies: 'PermissionHierarchy'
     permissions: 'Permission'
+    permissionsCount: 'Int'
     posts: 'Post'
     relationsPermissionToRole: 'RelationPermissionToRole'
     relationsPermissionToUser: 'RelationPermissionToUser'
@@ -973,6 +982,15 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
     }
     permission: { // args
+      where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
+    permissions: { // args
+      orderBy?: Array<NexusGenInputs['PermissionOrderByWithRelationInput'] | null> | null; // [PermissionOrderByWithRelationInput]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
+    permissionsCount: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
     }
     sendSinglePrompt: { // args

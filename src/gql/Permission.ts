@@ -1,5 +1,8 @@
 import { Prisma } from '@prisma/client';
-import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
+import {
+  addDateFieldsDefinitions,
+  findManyGraphqlArgs,
+} from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   extendType,
@@ -33,6 +36,9 @@ export const PermissionWhereInput = inputObjectType({
     t.field('id', {
       type: 'StringFilter',
     });
+    t.field('name', {
+      type: 'StringFilter',
+    });
   },
 });
 
@@ -60,11 +66,28 @@ export const PermissionObject = objectType({
   },
 });
 
+export const PermissionOrderByWithRelationInput = inputObjectType({
+  name: 'PermissionOrderByWithRelationInput',
+  definition(t) {
+    t.field('createdAt', {
+      type: 'SortOrder',
+    });
+    t.field('updatedAt', {
+      type: 'SortOrder',
+    });
+  },
+});
+
 export const PermissionQuery = extendType({
   type: 'Query',
   definition(t) {
     t.list.field('permissions', {
       type: 'Permission',
+      args: {
+        ...findManyGraphqlArgs,
+        where: 'PermissionWhereInput',
+        orderBy: list('PermissionOrderByWithRelationInput'),
+      },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.PermissionFindManyArgs = parseGraphQLQuery(
           info,
@@ -87,6 +110,20 @@ export const PermissionQuery = extendType({
         );
         const permission = await ctx.db.permission.findFirst(prismaArgs);
         return permission as any;
+      },
+    });
+
+    t.nonNull.int('permissionsCount', {
+      args: {
+        where: 'PermissionWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionCountArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const permissionsCount = await ctx.db.permission.count(prismaArgs);
+        return permissionsCount;
       },
     });
   },
