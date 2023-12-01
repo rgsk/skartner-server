@@ -8,7 +8,7 @@ import { KeyvAdapter } from '@apollo/utils.keyvadapter';
 import permissions from 'constants/permissions';
 import { createContext, verifyToken } from 'context';
 import cors from 'cors';
-import express from 'express';
+import express, { Request } from 'express';
 import { applyMiddleware } from 'graphql-middleware';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
@@ -16,6 +16,7 @@ import Keyv from 'keyv';
 import environmentVars from 'lib/environmentVars';
 import authenticate from 'middlewares/authenticate';
 import authorize from 'middlewares/authorize';
+import conditionalMiddleware from 'middlewares/conditionalMiddleware';
 import errorHandler from 'middlewares/errorHandler';
 import rootRouter from 'rootRouter';
 import { graphqlPermissions } from 'rules';
@@ -84,10 +85,17 @@ export const server = new ApolloServer({
 
 (async () => {
   await server.start();
+  const condition = (req: Request) => {
+    return req.path === '/' && req.method === 'GET';
+  };
+
   app.use(
     '/graphql',
-    authenticate,
-    authorize(permissions['Access Graphql Playground'].key),
+    conditionalMiddleware(condition, authenticate),
+    conditionalMiddleware(
+      condition,
+      authorize(permissions['Access Graphql Playground'].key)
+    ),
     expressMiddleware(server, {
       context: createContext,
     })
