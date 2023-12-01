@@ -1,6 +1,13 @@
 import environmentVars from 'lib/environmentVars';
 import { extendType, nonNull, objectType } from 'nexus';
 
+export const BatchPayloadObject = objectType({
+  name: 'BatchPayload',
+  definition(t) {
+    t.nonNull.int('count');
+  },
+});
+
 export const GeneralQuery = extendType({
   type: 'Query',
   definition(t) {

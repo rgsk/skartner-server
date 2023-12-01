@@ -1,7 +1,14 @@
 import { Prisma } from '@prisma/client';
 import { addDateFieldsDefinitions } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, objectType } from 'nexus';
+import {
+  extendType,
+  inputObjectType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 /*
 model Permission {
@@ -19,6 +26,15 @@ model Permission {
 }
 
 */
+
+export const PermissionWhereInput = inputObjectType({
+  name: 'PermissionWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: 'StringFilter',
+    });
+  },
+});
 
 export const PermissionObject = objectType({
   name: 'Permission',
@@ -56,6 +72,104 @@ export const PermissionQuery = extendType({
         );
         const permissions = await ctx.db.permission.findMany(prismaArgs);
         return permissions as any;
+      },
+    });
+
+    t.field('permission', {
+      type: 'Permission',
+      args: {
+        where: 'PermissionWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionFindFirstArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const permission = await ctx.db.permission.findFirst(prismaArgs);
+        return permission as any;
+      },
+    });
+  },
+});
+
+export const PermissionMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('createPermission', {
+      type: 'Permission',
+      args: { name: nonNull(stringArg()) },
+      async resolve(root, args, ctx, info) {
+        const { name } = args;
+        const permission = await ctx.db.permission.create({
+          data: {
+            name: name,
+          },
+        });
+        return permission as any;
+      },
+    });
+    t.nonNull.field('updatePermission', {
+      type: 'Permission',
+      args: {
+        id: nonNull(stringArg()),
+        data: nonNull(
+          inputObjectType({
+            name: 'PermissionUpdateInput',
+            definition(t) {
+              t.string('name');
+            },
+          })
+        ),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, data } = args;
+        const permission = await ctx.db.permission.update({
+          where: {
+            id: id,
+          },
+          data: { name: data.name ?? undefined },
+        });
+        return permission as any;
+      },
+    });
+    t.field('deletePermission', {
+      type: 'Permission',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery<Prisma.PermissionDeleteArgs>(
+          info,
+          restArgs
+        );
+        const permission = await ctx.db.permission.delete({
+          ...prismaArgs,
+          where: {
+            id: id,
+          },
+        });
+        return permission as any;
+      },
+    });
+    t.field('deletePermissions', {
+      type: 'BatchPayload',
+      args: {
+        ids: nonNull(list(nonNull(stringArg()))),
+      },
+      async resolve(root, args, ctx, info) {
+        const { ids, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery<Prisma.PermissionDeleteManyArgs>(
+          info,
+          restArgs
+        );
+        const batchPayload = await ctx.db.permission.deleteMany({
+          ...prismaArgs,
+          where: {
+            id: { in: ids },
+          },
+        });
+        return batchPayload;
       },
     });
   },

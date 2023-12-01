@@ -6,6 +6,10 @@ type AuthenticateResponse {
   message: String!
 }
 
+type BatchPayload {
+  count: Int!
+}
+
 type CachePrompt {
   cacheResponses: [CacheResponse!]!
   createdAt: String!
@@ -174,16 +178,20 @@ type Mutation {
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
+  createPermission(name: String!): Permission!
   createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
   deleteGptPrompt(id: String!): GptPrompt
   deleteGreWord(id: String!): GreWord
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
+  deletePermission(id: String!): Permission
+  deletePermissions(ids: [String!]!): BatchPayload
   publish(draftId: String!): Post
   saveImageToS3(imageUrl: String!, key: String): SaveImageToS3Response
   updateGptPrompt(editedResponse: String, id: String!, imageUrls: [String!]): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
+  updatePermission(data: PermissionUpdateInput!, id: String!): Permission!
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
 
@@ -213,6 +221,14 @@ type PermissionHierarchy {
   parentPermissionId: String!
 }
 
+input PermissionUpdateInput {
+  name: String
+}
+
+input PermissionWhereInput {
+  id: StringFilter
+}
+
 type Post {
   body: String
   createdAt: String!
@@ -236,6 +252,7 @@ type Query {
   greWords(orderBy: [GreWordOrderByWithRelationInput], skip: Int, take: Int, where: GreWordWhereInput): [GreWord!]!
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
+  permission(where: PermissionWhereInput): Permission
   permissionHierarchies: [PermissionHierarchy]
   permissions: [Permission]
   posts: [Post]

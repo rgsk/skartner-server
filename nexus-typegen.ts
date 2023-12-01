@@ -59,6 +59,12 @@ export interface NexusGenInputs {
     user?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  PermissionUpdateInput: { // input type
+    name?: string | null; // String
+  }
+  PermissionWhereInput: { // input type
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   StringFilter: { // input type
     contains?: string | null; // String
     endsWith?: string | null; // String
@@ -133,6 +139,9 @@ export interface NexusGenScalars {
 export interface NexusGenObjects {
   AuthenticateResponse: { // root type
     message: string; // String!
+  }
+  BatchPayload: { // root type
+    count: number; // Int!
   }
   CachePrompt: { // root type
     cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
@@ -309,6 +318,9 @@ export interface NexusGenFieldTypes {
   AuthenticateResponse: { // field return type
     message: string; // String!
   }
+  BatchPayload: { // field return type
+    count: number; // Int!
+  }
   CachePrompt: { // field return type
     cacheResponses: NexusGenRootTypes['CacheResponse'][]; // [CacheResponse!]!
     createdAt: string; // String!
@@ -400,16 +412,20 @@ export interface NexusGenFieldTypes {
     createGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput']; // GreWordSearchPromptInput!
     createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     createNotification: NexusGenRootTypes['Notification']; // Notification!
+    createPermission: NexusGenRootTypes['Permission']; // Permission!
     createUser: NexusGenRootTypes['User']; // User!
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     deleteGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     deleteGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     deleteGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
+    deletePermission: NexusGenRootTypes['Permission'] | null; // Permission
+    deletePermissions: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     publish: NexusGenRootTypes['Post'] | null; // Post
     saveImageToS3: NexusGenRootTypes['SaveImageToS3Response'] | null; // SaveImageToS3Response
     updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
+    updatePermission: NexusGenRootTypes['Permission']; // Permission!
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
   Notification: { // field return type
@@ -457,6 +473,7 @@ export interface NexusGenFieldTypes {
     greWords: NexusGenRootTypes['GreWord'][]; // [GreWord!]!
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
+    permission: NexusGenRootTypes['Permission'] | null; // Permission
     permissionHierarchies: Array<NexusGenRootTypes['PermissionHierarchy'] | null> | null; // [PermissionHierarchy]
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
@@ -569,6 +586,9 @@ export interface NexusGenFieldTypeNames {
   AuthenticateResponse: { // field return type name
     message: 'String'
   }
+  BatchPayload: { // field return type name
+    count: 'Int'
+  }
   CachePrompt: { // field return type name
     cacheResponses: 'CacheResponse'
     createdAt: 'String'
@@ -660,16 +680,20 @@ export interface NexusGenFieldTypeNames {
     createGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     createGreWordTag: 'GreWordTag'
     createNotification: 'Notification'
+    createPermission: 'Permission'
     createUser: 'User'
     deleteGptPrompt: 'GptPrompt'
     deleteGreWord: 'GreWord'
     deleteGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     deleteGreWordTag: 'GreWordTag'
+    deletePermission: 'Permission'
+    deletePermissions: 'BatchPayload'
     publish: 'Post'
     saveImageToS3: 'SaveImageToS3Response'
     updateGptPrompt: 'GptPrompt'
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
+    updatePermission: 'Permission'
     updateUser: 'User'
   }
   Notification: { // field return type name
@@ -717,6 +741,7 @@ export interface NexusGenFieldTypeNames {
     greWords: 'GreWord'
     greWordsCount: 'Int'
     hello: 'HelloWorld'
+    permission: 'Permission'
     permissionHierarchies: 'PermissionHierarchy'
     permissions: 'Permission'
     posts: 'Post'
@@ -853,6 +878,9 @@ export interface NexusGenArgTypes {
       message: string; // String!
       userId: string; // String!
     }
+    createPermission: { // args
+      name: string; // String!
+    }
     createUser: { // args
       email: string; // String!
       meta?: NexusGenInputs['UserMetaParsedJsonValueInput'] | null; // UserMetaParsedJsonValueInput
@@ -869,6 +897,12 @@ export interface NexusGenArgTypes {
     deleteGreWordTag: { // args
       name: string; // String!
       userId: string; // String!
+    }
+    deletePermission: { // args
+      id: string; // String!
+    }
+    deletePermissions: { // args
+      ids: string[]; // [String!]!
     }
     publish: { // args
       draftId: string; // String!
@@ -890,6 +924,10 @@ export interface NexusGenArgTypes {
     updateGreWordSearchPromptInput: { // args
       id: string; // String!
       text?: string | null; // String
+    }
+    updatePermission: { // args
+      data: NexusGenInputs['PermissionUpdateInput']; // PermissionUpdateInput!
+      id: string; // String!
     }
     updateUser: { // args
       email?: string | null; // String
@@ -933,6 +971,9 @@ export interface NexusGenArgTypes {
     }
     greWordsCount: { // args
       where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
+    }
+    permission: { // args
+      where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
     }
     sendSinglePrompt: { // args
       indexesReturned?: number[] | null; // [Int!]
