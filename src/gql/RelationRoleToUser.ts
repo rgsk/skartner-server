@@ -4,21 +4,23 @@ import { extendType, objectType } from 'nexus';
 
 /*
 model RelationRoleToUser {
+  id         String   @id @default(uuid())
   roleId     String
   role       Role     @relation(fields: [roleId], references: [id])
   userId     String
   user       User     @relation(name: "User", fields: [userId], references: [id])
-  assignedAt DateTime @default(now())
   assignerId String
   assigner   User     @relation(name: "Assigner", fields: [assignerId], references: [id])
+  assignedAt DateTime @default(now())
 
-  @@id([roleId, userId])
+  @@unique([roleId, userId])
 }
 */
 
 export const RelationRoleToUserObject = objectType({
   name: 'RelationRoleToUser',
   definition(t) {
+    t.nonNull.string('id');
     t.nonNull.string('roleId');
     t.field('role', {
       type: 'Role',

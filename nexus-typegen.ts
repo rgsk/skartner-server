@@ -212,6 +212,7 @@ export interface NexusGenObjects {
   PermissionHierarchy: { // root type
     childPermission?: NexusGenRootTypes['Permission'] | null; // Permission
     childPermissionId: string; // String!
+    id: string; // String!
     parentPermission?: NexusGenRootTypes['Permission'] | null; // Permission
     parentPermissionId: string; // String!
   }
@@ -225,6 +226,7 @@ export interface NexusGenObjects {
   RelationPermissionToRole: { // root type
     granter?: NexusGenRootTypes['User'] | null; // User
     granterId: string; // String!
+    id: string; // String!
     isAllowed?: boolean | null; // Boolean
     permission?: NexusGenRootTypes['Permission'] | null; // Permission
     permissionId: string; // String!
@@ -234,6 +236,7 @@ export interface NexusGenObjects {
   RelationPermissionToUser: { // root type
     granter?: NexusGenRootTypes['User'] | null; // User
     granterId: string; // String!
+    id: string; // String!
     isAllowed?: boolean | null; // Boolean
     permission?: NexusGenRootTypes['Permission'] | null; // Permission
     permissionId: string; // String!
@@ -243,6 +246,7 @@ export interface NexusGenObjects {
   RelationRoleToUser: { // root type
     assigner?: NexusGenRootTypes['User'] | null; // User
     assignerId: string; // String!
+    id: string; // String!
     role?: NexusGenRootTypes['Role'] | null; // Role
     roleId: string; // String!
     user?: NexusGenRootTypes['User'] | null; // User
@@ -427,6 +431,7 @@ export interface NexusGenFieldTypes {
     childPermission: NexusGenRootTypes['Permission'] | null; // Permission
     childPermissionId: string; // String!
     createdAt: string; // String!
+    id: string; // String!
     parentPermission: NexusGenRootTypes['Permission'] | null; // Permission
     parentPermissionId: string; // String!
   }
@@ -473,6 +478,7 @@ export interface NexusGenFieldTypes {
     grantedAt: string; // String!
     granter: NexusGenRootTypes['User'] | null; // User
     granterId: string; // String!
+    id: string; // String!
     isAllowed: boolean | null; // Boolean
     permission: NexusGenRootTypes['Permission'] | null; // Permission
     permissionId: string; // String!
@@ -483,6 +489,7 @@ export interface NexusGenFieldTypes {
     grantedAt: string; // String!
     granter: NexusGenRootTypes['User'] | null; // User
     granterId: string; // String!
+    id: string; // String!
     isAllowed: boolean | null; // Boolean
     permission: NexusGenRootTypes['Permission'] | null; // Permission
     permissionId: string; // String!
@@ -493,6 +500,7 @@ export interface NexusGenFieldTypes {
     assignedAt: string; // String!
     assigner: NexusGenRootTypes['User'] | null; // User
     assignerId: string; // String!
+    id: string; // String!
     role: NexusGenRootTypes['Role'] | null; // Role
     roleId: string; // String!
     user: NexusGenRootTypes['User'] | null; // User
@@ -683,6 +691,7 @@ export interface NexusGenFieldTypeNames {
     childPermission: 'Permission'
     childPermissionId: 'String'
     createdAt: 'String'
+    id: 'String'
     parentPermission: 'Permission'
     parentPermissionId: 'String'
   }
@@ -729,6 +738,7 @@ export interface NexusGenFieldTypeNames {
     grantedAt: 'String'
     granter: 'User'
     granterId: 'String'
+    id: 'String'
     isAllowed: 'Boolean'
     permission: 'Permission'
     permissionId: 'String'
@@ -739,6 +749,7 @@ export interface NexusGenFieldTypeNames {
     grantedAt: 'String'
     granter: 'User'
     granterId: 'String'
+    id: 'String'
     isAllowed: 'Boolean'
     permission: 'Permission'
     permissionId: 'String'
@@ -749,6 +760,7 @@ export interface NexusGenFieldTypeNames {
     assignedAt: 'String'
     assigner: 'User'
     assignerId: 'String'
+    id: 'String'
     role: 'Role'
     roleId: 'String'
     user: 'User'

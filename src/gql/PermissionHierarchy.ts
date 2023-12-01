@@ -1,12 +1,13 @@
 /*
 model PermissionHierarchy {
+  id                 String     @id @default(uuid())
   parentPermissionId String
   parentPermission   Permission @relation("Parent", fields: [parentPermissionId], references: [id])
   childPermissionId  String
   childPermission    Permission @relation("Child", fields: [childPermissionId], references: [id])
   createdAt          DateTime   @default(now())
 
-  @@id([parentPermissionId, childPermissionId])
+  @@unique([parentPermissionId, childPermissionId])
 }
 */
 
@@ -17,6 +18,7 @@ import { extendType, objectType } from 'nexus';
 export const PermissionHierarchyObject = objectType({
   name: 'PermissionHierarchy',
   definition(t) {
+    t.nonNull.string('id');
     t.nonNull.string('parentPermissionId');
     t.field('parentPermission', {
       type: 'Permission',

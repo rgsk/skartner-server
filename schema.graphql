@@ -208,6 +208,7 @@ type PermissionHierarchy {
   childPermission: Permission
   childPermissionId: String!
   createdAt: String!
+  id: String!
   parentPermission: Permission
   parentPermissionId: String!
 }
@@ -257,6 +258,7 @@ type RelationPermissionToRole {
   grantedAt: String!
   granter: User
   granterId: String!
+  id: String!
   isAllowed: Boolean
   permission: Permission
   permissionId: String!
@@ -268,6 +270,7 @@ type RelationPermissionToUser {
   grantedAt: String!
   granter: User
   granterId: String!
+  id: String!
   isAllowed: Boolean
   permission: Permission
   permissionId: String!
@@ -279,6 +282,7 @@ type RelationRoleToUser {
   assignedAt: String!
   assigner: User
   assignerId: String!
+  id: String!
   role: Role
   roleId: String!
   user: User

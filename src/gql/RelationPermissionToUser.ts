@@ -4,6 +4,7 @@ import { extendType, objectType } from 'nexus';
 
 /*
 model RelationPermissionToUser {
+  id           String     @id @default(uuid())
   permissionId String
   permission   Permission @relation(fields: [permissionId], references: [id])
   userId       String
@@ -13,13 +14,14 @@ model RelationPermissionToUser {
   isAllowed    Boolean?
   grantedAt    DateTime   @default(now())
 
-  @@id([permissionId, userId])
+  @@unique([permissionId, userId])
 }
 */
 
 export const RelationPermissionToUserObject = objectType({
   name: 'RelationPermissionToUser',
   definition(t) {
+    t.nonNull.string('id');
     t.nonNull.string('permissionId');
     t.field('permission', {
       type: 'Permission',
