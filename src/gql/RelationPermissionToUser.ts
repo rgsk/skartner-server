@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
+import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, objectType } from 'nexus';
+import { extendType, inputObjectType, list, objectType } from 'nexus';
 
 /*
 model RelationPermissionToUser {
@@ -43,17 +44,62 @@ export const RelationPermissionToUserObject = objectType({
   },
 });
 
+export const RelationPermissionToUserWhereInput = inputObjectType({
+  name: 'RelationPermissionToUserWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: 'StringFilter',
+    });
+    t.field('permissionId', {
+      type: 'StringFilter',
+    });
+  },
+});
+
+export const RelationPermissionToUserOrderByWithRelationInput = inputObjectType(
+  {
+    name: 'RelationPermissionToUserOrderByWithRelationInput',
+    definition(t) {
+      t.field('id', {
+        type: 'SortOrder',
+      });
+      t.field('createdAt', {
+        type: 'SortOrder',
+      });
+      t.field('updatedAt', {
+        type: 'SortOrder',
+      });
+    },
+  }
+);
+
 export const RelationPermissionToUserQuery = extendType({
   type: 'Query',
   definition(t) {
     t.list.field('relationsPermissionToUser', {
       type: 'RelationPermissionToUser',
+      args: {
+        ...findManyGraphqlArgs,
+        where: 'RelationPermissionToUserWhereInput',
+        orderBy: list('RelationPermissionToUserOrderByWithRelationInput'),
+      },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationPermissionToUserFindManyArgs =
           parseGraphQLQuery(info, args);
         const relationsPermissionToUser =
           await ctx.db.relationPermissionToUser.findMany(prismaArgs);
         return relationsPermissionToUser;
+      },
+    });
+    t.nonNull.int('relationsPermissionToUserCount', {
+      args: {
+        where: 'RelationPermissionToUserWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RelationPermissionToUserCountArgs =
+          parseGraphQLQuery(info, args);
+        const count = await ctx.db.relationPermissionToUser.count(prismaArgs);
+        return count;
       },
     });
   },
