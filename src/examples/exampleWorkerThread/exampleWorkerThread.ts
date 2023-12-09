@@ -1,7 +1,8 @@
 import { runOnWorkerThread } from 'lib/workerThreadUtils';
 import path from 'path';
+
 const withThread = (n: number) =>
-  runOnWorkerThread(path.join(__dirname, 'fib.ts'), { n: n });
+  runOnWorkerThread(path.join(__dirname, 'fib.js'), { n: n });
 
 function fibonacci(n: number): number {
   return n < 1 ? 0 : n <= 2 ? 1 : fibonacci(n - 1) + fibonacci(n - 2);

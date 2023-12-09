@@ -107,3 +107,4 @@ export const server = new ApolloServer({
     console.log(`Server is now running on http://localhost:${PORT}/graphql`);
   });
 })();
+

@@ -1,4 +1,4 @@
-FROM node:16.14.0-slim
+FROM node:18.19-slim
 
 RUN apt-get update -y && apt-get install -y openssl
 
