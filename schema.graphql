@@ -268,7 +268,8 @@ type Query {
   permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission]
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]
-  relationsPermissionToRole: [RelationPermissionToRole]
+  relationsPermissionToRole(orderBy: [RelationPermissionToRoleOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToRoleWhereInput): [RelationPermissionToRole]
+  relationsPermissionToRoleCount(where: RelationPermissionToRoleWhereInput): Int!
   relationsPermissionToUser(orderBy: [RelationPermissionToUserOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToUserWhereInput): [RelationPermissionToUser]
   relationsPermissionToUserCount(where: RelationPermissionToUserWhereInput): Int!
   relationsRoleToUser: [RelationRoleToUser]
@@ -301,6 +302,17 @@ type RelationPermissionToRole {
   permissionId: String!
   role: Role
   roleId: String!
+}
+
+input RelationPermissionToRoleOrderByWithRelationInput {
+  createdAt: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input RelationPermissionToRoleWhereInput {
+  id: StringFilter
+  permissionId: StringFilter
 }
 
 type RelationPermissionToUser {

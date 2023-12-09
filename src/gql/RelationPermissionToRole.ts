@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
+import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, objectType } from 'nexus';
+import { extendType, inputObjectType, list, objectType } from 'nexus';
 
 /*
 model RelationPermissionToRole {
@@ -42,17 +43,65 @@ export const RelationPermissionToRoleObject = objectType({
   },
 });
 
+export const RelationPermissionToRoleWhereInput = inputObjectType({
+  name: 'RelationPermissionToRoleWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: 'StringFilter',
+    });
+    t.field('permissionId', {
+      type: 'StringFilter',
+    });
+  },
+});
+
+export const RelationPermissionToRoleOrderByWithRelationInput = inputObjectType(
+  {
+    name: 'RelationPermissionToRoleOrderByWithRelationInput',
+    definition(t) {
+      t.field('id', {
+        type: 'SortOrder',
+      });
+      t.field('createdAt', {
+        type: 'SortOrder',
+      });
+      t.field('updatedAt', {
+        type: 'SortOrder',
+      });
+    },
+  }
+);
+
 export const RelationPermissionToRoleQuery = extendType({
   type: 'Query',
+
   definition(t) {
     t.list.field('relationsPermissionToRole', {
       type: 'RelationPermissionToRole',
+      args: {
+        ...findManyGraphqlArgs,
+        where: 'RelationPermissionToRoleWhereInput',
+        orderBy: list('RelationPermissionToRoleOrderByWithRelationInput'),
+      },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationPermissionToRoleFindManyArgs =
           parseGraphQLQuery(info, args);
+        console.log({ prismaArgs });
         const relationsPermissionToRole =
           await ctx.db.relationPermissionToRole.findMany(prismaArgs);
         return relationsPermissionToRole;
+      },
+    });
+
+    t.nonNull.int('relationsPermissionToRoleCount', {
+      args: {
+        where: 'RelationPermissionToRoleWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RelationPermissionToRoleCountArgs =
+          parseGraphQLQuery(info, args);
+        const count = await ctx.db.relationPermissionToRole.count(prismaArgs);
+        return count;
       },
     });
   },

@@ -71,6 +71,15 @@ export interface NexusGenInputs {
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     name?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  RelationPermissionToRoleOrderByWithRelationInput: { // input type
+    createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
+  RelationPermissionToRoleWhereInput: { // input type
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    permissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   RelationPermissionToUserOrderByWithRelationInput: { // input type
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
@@ -512,6 +521,7 @@ export interface NexusGenFieldTypes {
     permissionsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationsPermissionToRole: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
+    relationsPermissionToRoleCount: number; // Int!
     relationsPermissionToUser: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
     relationsPermissionToUserCount: number; // Int!
     relationsRoleToUser: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
@@ -788,6 +798,7 @@ export interface NexusGenFieldTypeNames {
     permissionsCount: 'Int'
     posts: 'Post'
     relationsPermissionToRole: 'RelationPermissionToRole'
+    relationsPermissionToRoleCount: 'Int'
     relationsPermissionToUser: 'RelationPermissionToUser'
     relationsPermissionToUserCount: 'Int'
     relationsRoleToUser: 'RelationRoleToUser'
@@ -1041,6 +1052,15 @@ export interface NexusGenArgTypes {
     }
     permissionsCount: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
+    relationsPermissionToRole: { // args
+      orderBy?: Array<NexusGenInputs['RelationPermissionToRoleOrderByWithRelationInput'] | null> | null; // [RelationPermissionToRoleOrderByWithRelationInput]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['RelationPermissionToRoleWhereInput'] | null; // RelationPermissionToRoleWhereInput
+    }
+    relationsPermissionToRoleCount: { // args
+      where?: NexusGenInputs['RelationPermissionToRoleWhereInput'] | null; // RelationPermissionToRoleWhereInput
     }
     relationsPermissionToUser: { // args
       orderBy?: Array<NexusGenInputs['RelationPermissionToUserOrderByWithRelationInput'] | null> | null; // [RelationPermissionToUserOrderByWithRelationInput]
