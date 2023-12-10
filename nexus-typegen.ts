@@ -85,6 +85,12 @@ export interface NexusGenInputs {
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
     updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
+  RelationPermissionToUserUpdateInput: { // input type
+    granterId?: string | null; // String
+    isAllowed?: boolean | null; // Boolean
+    permissionId?: string | null; // String
+    userId?: string | null; // String
+  }
   RelationPermissionToUserWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     permissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -152,10 +158,6 @@ export interface NexusGenInputs {
   UserWhereInput: { // input type
     email?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
-  }
-  UserWhereUniqueInput: { // input type
-    email?: string | null; // String
-    id?: string | null; // String
   }
 }
 
@@ -451,6 +453,7 @@ export interface NexusGenFieldTypes {
     createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     createNotification: NexusGenRootTypes['Notification']; // Notification!
     createPermission: NexusGenRootTypes['Permission']; // Permission!
+    createRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     createRole: NexusGenRootTypes['Role']; // Role!
     createUser: NexusGenRootTypes['User']; // User!
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
@@ -467,6 +470,7 @@ export interface NexusGenFieldTypes {
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updatePermission: NexusGenRootTypes['Permission']; // Permission!
+    updateRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     updateRole: NexusGenRootTypes['Role']; // Role!
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -728,6 +732,7 @@ export interface NexusGenFieldTypeNames {
     createGreWordTag: 'GreWordTag'
     createNotification: 'Notification'
     createPermission: 'Permission'
+    createRelationPermissionToUser: 'RelationPermissionToUser'
     createRole: 'Role'
     createUser: 'User'
     deleteGptPrompt: 'GptPrompt'
@@ -744,6 +749,7 @@ export interface NexusGenFieldTypeNames {
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updatePermission: 'Permission'
+    updateRelationPermissionToUser: 'RelationPermissionToUser'
     updateRole: 'Role'
     updateUser: 'User'
   }
@@ -937,6 +943,12 @@ export interface NexusGenArgTypes {
     createPermission: { // args
       name: string; // String!
     }
+    createRelationPermissionToUser: { // args
+      granterId: string; // String!
+      isAllowed?: boolean | null; // Boolean
+      permissionId: string; // String!
+      userId: string; // String!
+    }
     createRole: { // args
       name: string; // String!
     }
@@ -992,6 +1004,10 @@ export interface NexusGenArgTypes {
     }
     updatePermission: { // args
       data: NexusGenInputs['PermissionUpdateInput']; // PermissionUpdateInput!
+      id: string; // String!
+    }
+    updateRelationPermissionToUser: { // args
+      data: NexusGenInputs['RelationPermissionToUserUpdateInput']; // RelationPermissionToUserUpdateInput!
       id: string; // String!
     }
     updateRole: { // args
@@ -1091,7 +1107,7 @@ export interface NexusGenArgTypes {
       word: string; // String!
     }
     user: { // args
-      where: NexusGenInputs['UserWhereUniqueInput']; // UserWhereUniqueInput!
+      where: NexusGenInputs['UserWhereInput']; // UserWhereInput!
     }
     userSession: { // args
       where: NexusGenInputs['UserSessionWhereUniqueInput']; // UserSessionWhereUniqueInput!

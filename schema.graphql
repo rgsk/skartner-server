@@ -179,6 +179,7 @@ type Mutation {
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
   createPermission(name: String!): Permission!
+  createRelationPermissionToUser(granterId: String!, isAllowed: Boolean, permissionId: String!, userId: String!): RelationPermissionToUser!
   createRole(name: String!): Role!
   createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
   deleteGptPrompt(id: String!): GptPrompt
@@ -195,6 +196,7 @@ type Mutation {
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updatePermission(data: PermissionUpdateInput!, id: String!): Permission!
+  updateRelationPermissionToUser(data: RelationPermissionToUserUpdateInput!, id: String!): RelationPermissionToUser!
   updateRole(data: RoleUpdateInput!, id: String!): Role!
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
 }
@@ -277,7 +279,7 @@ type Query {
   roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role]
   rolesCount(where: RoleWhereInput): Int!
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
-  user(where: UserWhereUniqueInput!): User
+  user(where: UserWhereInput!): User
   userSession(where: UserSessionWhereUniqueInput!): UserSession
   userSessions(orderBy: [UserSessionOrderByWithRelationInput], skip: Int, take: Int, where: UserSessionWhereInput): [UserSession!]!
   userSessionsCount(where: UserSessionWhereInput): Int!
@@ -331,6 +333,13 @@ input RelationPermissionToUserOrderByWithRelationInput {
   createdAt: SortOrder
   id: SortOrder
   updatedAt: SortOrder
+}
+
+input RelationPermissionToUserUpdateInput {
+  granterId: String
+  isAllowed: Boolean
+  permissionId: String
+  userId: String
 }
 
 input RelationPermissionToUserWhereInput {
@@ -485,11 +494,6 @@ input UserSessionWhereUniqueInput {
 input UserWhereInput {
   email: StringFilter
   id: StringFilter
-}
-
-input UserWhereUniqueInput {
-  email: String
-  id: String
 }
 
 type WordAndResponses {

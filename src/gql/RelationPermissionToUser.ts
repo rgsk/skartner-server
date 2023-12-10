@@ -1,7 +1,15 @@
 import { Prisma } from '@prisma/client';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, inputObjectType, list, objectType } from 'nexus';
+import {
+  booleanArg,
+  extendType,
+  inputObjectType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 /*
 model RelationPermissionToUser {
@@ -100,6 +108,65 @@ export const RelationPermissionToUserQuery = extendType({
           parseGraphQLQuery(info, args);
         const count = await ctx.db.relationPermissionToUser.count(prismaArgs);
         return count;
+      },
+    });
+  },
+});
+
+export const RelationPermissionToUserMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('createRelationPermissionToUser', {
+      type: 'RelationPermissionToUser',
+      args: {
+        permissionId: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
+        isAllowed: booleanArg(),
+        granterId: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { permissionId, userId, isAllowed, granterId } = args;
+        const relationPermissionToUser =
+          await ctx.db.relationPermissionToUser.create({
+            data: {
+              permissionId,
+              userId,
+              isAllowed,
+              granterId,
+            },
+          });
+        return relationPermissionToUser;
+      },
+    });
+    t.nonNull.field('updateRelationPermissionToUser', {
+      type: 'RelationPermissionToUser',
+      args: {
+        id: nonNull(stringArg()),
+        data: nonNull(
+          inputObjectType({
+            name: 'RelationPermissionToUserUpdateInput',
+            definition(t) {
+              t.string('permissionId');
+              t.string('userId');
+              t.string('granterId');
+              t.boolean('isAllowed');
+            },
+          })
+        ),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, data } = args;
+        const relationPermissionToUser =
+          await ctx.db.relationPermissionToUser.update({
+            where: { id },
+            data: {
+              permissionId: data.permissionId ?? undefined,
+              userId: data.userId ?? undefined,
+              granterId: data.granterId ?? undefined,
+              isAllowed: data.isAllowed,
+            },
+          });
+        return relationPermissionToUser;
       },
     });
   },
