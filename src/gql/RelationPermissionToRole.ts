@@ -86,7 +86,6 @@ export const RelationPermissionToRoleQuery = extendType({
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationPermissionToRoleFindManyArgs =
           parseGraphQLQuery(info, args);
-        console.log({ prismaArgs });
         const relationsPermissionToRole =
           await ctx.db.relationPermissionToRole.findMany(prismaArgs);
         return relationsPermissionToRole;
