@@ -179,6 +179,7 @@ type Mutation {
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
   createPermission(name: String!): Permission!
+  createRelationPermissionToRole(granterId: String!, isAllowed: Boolean, permissionId: String!, roleId: String!): RelationPermissionToRole!
   createRelationPermissionToUser(granterId: String!, isAllowed: Boolean, permissionId: String!, userId: String!): RelationPermissionToUser!
   createRole(name: String!): Role!
   createUser(email: String!, meta: UserMetaParsedJsonValueInput): User!
@@ -202,6 +203,7 @@ type Mutation {
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updatePermission(data: PermissionUpdateInput!, id: String!): Permission!
+  updateRelationPermissionToRole(data: RelationPermissionToRoleUpdateInput!, id: String!): RelationPermissionToRole!
   updateRelationPermissionToUser(data: RelationPermissionToUserUpdateInput!, id: String!): RelationPermissionToUser!
   updateRole(data: RoleUpdateInput!, id: String!): Role!
   updateUser(email: String, id: String, meta: UserMetaParsedJsonValueInput): User
@@ -316,6 +318,13 @@ input RelationPermissionToRoleOrderByWithRelationInput {
   createdAt: SortOrder
   id: SortOrder
   updatedAt: SortOrder
+}
+
+input RelationPermissionToRoleUpdateInput {
+  granterId: String
+  isAllowed: Boolean
+  permissionId: String
+  roleId: String
 }
 
 input RelationPermissionToRoleWhereInput {

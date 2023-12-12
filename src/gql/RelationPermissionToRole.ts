@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
+  booleanArg,
   extendType,
   inputObjectType,
   list,
@@ -116,6 +117,59 @@ export const RelationPermissionToRoleQuery = extendType({
 export const RelationPermissionToRoleMutation = extendType({
   type: 'Mutation',
   definition(t) {
+    t.nonNull.field('createRelationPermissionToRole', {
+      type: 'RelationPermissionToRole',
+      args: {
+        permissionId: nonNull(stringArg()),
+        roleId: nonNull(stringArg()),
+        isAllowed: booleanArg(),
+        granterId: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { permissionId, roleId, isAllowed, granterId } = args;
+        const relationPermissionToRole =
+          await ctx.db.relationPermissionToRole.create({
+            data: {
+              permissionId,
+              roleId,
+              isAllowed,
+              granterId,
+            },
+          });
+        return relationPermissionToRole;
+      },
+    });
+    t.nonNull.field('updateRelationPermissionToRole', {
+      type: 'RelationPermissionToRole',
+      args: {
+        id: nonNull(stringArg()),
+        data: nonNull(
+          inputObjectType({
+            name: 'RelationPermissionToRoleUpdateInput',
+            definition(t) {
+              t.string('permissionId');
+              t.string('roleId');
+              t.string('granterId');
+              t.boolean('isAllowed');
+            },
+          })
+        ),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, data } = args;
+        const relationPermissionToRole =
+          await ctx.db.relationPermissionToRole.update({
+            where: { id },
+            data: {
+              permissionId: data.permissionId ?? undefined,
+              roleId: data.roleId ?? undefined,
+              granterId: data.granterId ?? undefined,
+              isAllowed: data.isAllowed,
+            },
+          });
+        return relationPermissionToRole;
+      },
+    });
     t.field('deleteRelationPermissionToRole', {
       type: 'RelationPermissionToRole',
       args: {

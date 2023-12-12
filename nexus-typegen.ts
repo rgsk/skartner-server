@@ -76,6 +76,12 @@ export interface NexusGenInputs {
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
     updatedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
+  RelationPermissionToRoleUpdateInput: { // input type
+    granterId?: string | null; // String
+    isAllowed?: boolean | null; // Boolean
+    permissionId?: string | null; // String
+    roleId?: string | null; // String
+  }
   RelationPermissionToRoleWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     permissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -453,6 +459,7 @@ export interface NexusGenFieldTypes {
     createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     createNotification: NexusGenRootTypes['Notification']; // Notification!
     createPermission: NexusGenRootTypes['Permission']; // Permission!
+    createRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     createRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     createRole: NexusGenRootTypes['Role']; // Role!
     createUser: NexusGenRootTypes['User']; // User!
@@ -476,6 +483,7 @@ export interface NexusGenFieldTypes {
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updatePermission: NexusGenRootTypes['Permission']; // Permission!
+    updateRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     updateRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     updateRole: NexusGenRootTypes['Role']; // Role!
     updateUser: NexusGenRootTypes['User'] | null; // User
@@ -738,6 +746,7 @@ export interface NexusGenFieldTypeNames {
     createGreWordTag: 'GreWordTag'
     createNotification: 'Notification'
     createPermission: 'Permission'
+    createRelationPermissionToRole: 'RelationPermissionToRole'
     createRelationPermissionToUser: 'RelationPermissionToUser'
     createRole: 'Role'
     createUser: 'User'
@@ -761,6 +770,7 @@ export interface NexusGenFieldTypeNames {
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updatePermission: 'Permission'
+    updateRelationPermissionToRole: 'RelationPermissionToRole'
     updateRelationPermissionToUser: 'RelationPermissionToUser'
     updateRole: 'Role'
     updateUser: 'User'
@@ -955,6 +965,12 @@ export interface NexusGenArgTypes {
     createPermission: { // args
       name: string; // String!
     }
+    createRelationPermissionToRole: { // args
+      granterId: string; // String!
+      isAllowed?: boolean | null; // Boolean
+      permissionId: string; // String!
+      roleId: string; // String!
+    }
     createRelationPermissionToUser: { // args
       granterId: string; // String!
       isAllowed?: boolean | null; // Boolean
@@ -1034,6 +1050,10 @@ export interface NexusGenArgTypes {
     }
     updatePermission: { // args
       data: NexusGenInputs['PermissionUpdateInput']; // PermissionUpdateInput!
+      id: string; // String!
+    }
+    updateRelationPermissionToRole: { // args
+      data: NexusGenInputs['RelationPermissionToRoleUpdateInput']; // RelationPermissionToRoleUpdateInput!
       id: string; // String!
     }
     updateRelationPermissionToUser: { // args
