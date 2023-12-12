@@ -57,32 +57,31 @@ export const RelationRoleToUserQuery = extendType({
   },
 });
 
-export const RelationPermissionToRoleMutation = extendType({
+export const RelationRoleToUserMutation = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('deleteRelationPermissionToRole', {
-      type: 'RelationPermissionToRole',
+    t.field('deleteRelationRoleToUser', {
+      type: 'RelationRoleToUser',
       args: {
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
         const { id, ...restArgs } = args;
         const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationPermissionToRoleDeleteArgs>(
+          parseGraphQLQuery<Prisma.RelationRoleToUserDeleteArgs>(
             info,
             restArgs
           );
-        const relationPermissionToRole =
-          await ctx.db.relationPermissionToRole.delete({
-            ...prismaArgs,
-            where: {
-              id: id,
-            },
-          });
-        return relationPermissionToRole as any;
+        const relationRoleToUser = await ctx.db.relationRoleToUser.delete({
+          ...prismaArgs,
+          where: {
+            id: id,
+          },
+        });
+        return relationRoleToUser as any;
       },
     });
-    t.field('deleteRelationsPermissionToRole', {
+    t.field('deleteRelationsRoleToUser', {
       type: 'BatchPayload',
       args: {
         ids: nonNull(list(nonNull(stringArg()))),
@@ -90,11 +89,11 @@ export const RelationPermissionToRoleMutation = extendType({
       async resolve(root, args, ctx, info) {
         const { ids, ...restArgs } = args;
         const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationPermissionToRoleDeleteManyArgs>(
+          parseGraphQLQuery<Prisma.RelationRoleToUserDeleteManyArgs>(
             info,
             restArgs
           );
-        const batchPayload = await ctx.db.relationPermissionToRole.deleteMany({
+        const batchPayload = await ctx.db.relationRoleToUser.deleteMany({
           ...prismaArgs,
           where: {
             id: { in: ids },

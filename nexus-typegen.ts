@@ -464,8 +464,10 @@ export interface NexusGenFieldTypes {
     deletePermissions: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     deleteRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'] | null; // RelationPermissionToRole
     deleteRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'] | null; // RelationPermissionToUser
+    deleteRelationRoleToUser: NexusGenRootTypes['RelationRoleToUser'] | null; // RelationRoleToUser
     deleteRelationsPermissionToRole: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     deleteRelationsPermissionToUser: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
+    deleteRelationsRoleToUser: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     deleteRole: NexusGenRootTypes['Role'] | null; // Role
     deleteRoles: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     publish: NexusGenRootTypes['Post'] | null; // Post
@@ -747,8 +749,10 @@ export interface NexusGenFieldTypeNames {
     deletePermissions: 'BatchPayload'
     deleteRelationPermissionToRole: 'RelationPermissionToRole'
     deleteRelationPermissionToUser: 'RelationPermissionToUser'
+    deleteRelationRoleToUser: 'RelationRoleToUser'
     deleteRelationsPermissionToRole: 'BatchPayload'
     deleteRelationsPermissionToUser: 'BatchPayload'
+    deleteRelationsRoleToUser: 'BatchPayload'
     deleteRole: 'Role'
     deleteRoles: 'BatchPayload'
     publish: 'Post'
@@ -989,10 +993,16 @@ export interface NexusGenArgTypes {
     deleteRelationPermissionToUser: { // args
       id: string; // String!
     }
+    deleteRelationRoleToUser: { // args
+      id: string; // String!
+    }
     deleteRelationsPermissionToRole: { // args
       ids: string[]; // [String!]!
     }
     deleteRelationsPermissionToUser: { // args
+      ids: string[]; // [String!]!
+    }
+    deleteRelationsRoleToUser: { // args
       ids: string[]; // [String!]!
     }
     deleteRole: { // args

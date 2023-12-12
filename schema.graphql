@@ -190,8 +190,10 @@ type Mutation {
   deletePermissions(ids: [String!]!): BatchPayload
   deleteRelationPermissionToRole(id: String!): RelationPermissionToRole
   deleteRelationPermissionToUser(id: String!): RelationPermissionToUser
+  deleteRelationRoleToUser(id: String!): RelationRoleToUser
   deleteRelationsPermissionToRole(ids: [String!]!): BatchPayload
   deleteRelationsPermissionToUser(ids: [String!]!): BatchPayload
+  deleteRelationsRoleToUser(ids: [String!]!): BatchPayload
   deleteRole(id: String!): Role
   deleteRoles(ids: [String!]!): BatchPayload
   publish(draftId: String!): Post
