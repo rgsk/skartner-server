@@ -169,5 +169,48 @@ export const RelationPermissionToUserMutation = extendType({
         return relationPermissionToUser;
       },
     });
+    t.field('deleteRelationPermissionToUser', {
+      type: 'RelationPermissionToUser',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.RelationPermissionToUserDeleteArgs>(
+            info,
+            restArgs
+          );
+        const relationPermissionToUser =
+          await ctx.db.relationPermissionToUser.delete({
+            ...prismaArgs,
+            where: {
+              id: id,
+            },
+          });
+        return relationPermissionToUser as any;
+      },
+    });
+    t.field('deleteRelationsPermissionToUser', {
+      type: 'BatchPayload',
+      args: {
+        ids: nonNull(list(nonNull(stringArg()))),
+      },
+      async resolve(root, args, ctx, info) {
+        const { ids, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.RelationPermissionToUserDeleteManyArgs>(
+            info,
+            restArgs
+          );
+        const batchPayload = await ctx.db.relationPermissionToUser.deleteMany({
+          ...prismaArgs,
+          where: {
+            id: { in: ids },
+          },
+        });
+        return batchPayload;
+      },
+    });
   },
 });

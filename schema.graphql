@@ -188,6 +188,10 @@ type Mutation {
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   deletePermission(id: String!): Permission
   deletePermissions(ids: [String!]!): BatchPayload
+  deleteRelationPermissionToRole(id: String!): RelationPermissionToRole
+  deleteRelationPermissionToUser(id: String!): RelationPermissionToUser
+  deleteRelationsPermissionToRole(ids: [String!]!): BatchPayload
+  deleteRelationsPermissionToUser(ids: [String!]!): BatchPayload
   deleteRole(id: String!): Role
   deleteRoles(ids: [String!]!): BatchPayload
   publish(draftId: String!): Post

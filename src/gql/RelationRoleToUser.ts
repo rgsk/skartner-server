@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, objectType } from 'nexus';
+import { extendType, list, nonNull, objectType, stringArg } from 'nexus';
 
 /*
 model RelationRoleToUser {
@@ -52,6 +52,55 @@ export const RelationRoleToUserQuery = extendType({
           prismaArgs
         );
         return relationsRoleToUser;
+      },
+    });
+  },
+});
+
+export const RelationPermissionToRoleMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.field('deleteRelationPermissionToRole', {
+      type: 'RelationPermissionToRole',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.RelationPermissionToRoleDeleteArgs>(
+            info,
+            restArgs
+          );
+        const relationPermissionToRole =
+          await ctx.db.relationPermissionToRole.delete({
+            ...prismaArgs,
+            where: {
+              id: id,
+            },
+          });
+        return relationPermissionToRole as any;
+      },
+    });
+    t.field('deleteRelationsPermissionToRole', {
+      type: 'BatchPayload',
+      args: {
+        ids: nonNull(list(nonNull(stringArg()))),
+      },
+      async resolve(root, args, ctx, info) {
+        const { ids, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.RelationPermissionToRoleDeleteManyArgs>(
+            info,
+            restArgs
+          );
+        const batchPayload = await ctx.db.relationPermissionToRole.deleteMany({
+          ...prismaArgs,
+          where: {
+            id: { in: ids },
+          },
+        });
+        return batchPayload;
       },
     });
   },
