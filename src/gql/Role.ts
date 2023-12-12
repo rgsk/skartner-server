@@ -75,7 +75,7 @@ export const RoleOrderByWithRelationInput = inputObjectType({
 export const RoleQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('roles', {
+    t.nonNull.list.nonNull.field('roles', {
       type: 'Role',
       args: {
         ...findManyGraphqlArgs,

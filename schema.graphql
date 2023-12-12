@@ -278,13 +278,13 @@ type Query {
   permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission]
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]
-  relationsPermissionToRole(orderBy: [RelationPermissionToRoleOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToRoleWhereInput): [RelationPermissionToRole]
+  relationsPermissionToRole(orderBy: [RelationPermissionToRoleOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToRoleWhereInput): [RelationPermissionToRole!]!
   relationsPermissionToRoleCount(where: RelationPermissionToRoleWhereInput): Int!
-  relationsPermissionToUser(orderBy: [RelationPermissionToUserOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToUserWhereInput): [RelationPermissionToUser]
+  relationsPermissionToUser(orderBy: [RelationPermissionToUserOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToUserWhereInput): [RelationPermissionToUser!]!
   relationsPermissionToUserCount(where: RelationPermissionToUserWhereInput): Int!
   relationsRoleToUser: [RelationRoleToUser]
   role(where: RoleWhereInput): Role
-  roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role]
+  roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   rolesCount(where: RoleWhereInput): Int!
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereInput!): User

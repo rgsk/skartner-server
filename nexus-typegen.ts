@@ -538,13 +538,13 @@ export interface NexusGenFieldTypes {
     permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
     permissionsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
-    relationsPermissionToRole: Array<NexusGenRootTypes['RelationPermissionToRole'] | null> | null; // [RelationPermissionToRole]
+    relationsPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
     relationsPermissionToRoleCount: number; // Int!
-    relationsPermissionToUser: Array<NexusGenRootTypes['RelationPermissionToUser'] | null> | null; // [RelationPermissionToUser]
+    relationsPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'][]; // [RelationPermissionToUser!]!
     relationsPermissionToUserCount: number; // Int!
     relationsRoleToUser: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
     role: NexusGenRootTypes['Role'] | null; // Role
-    roles: Array<NexusGenRootTypes['Role'] | null> | null; // [Role]
+    roles: NexusGenRootTypes['Role'][]; // [Role!]!
     rolesCount: number; // Int!
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User

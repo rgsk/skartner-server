@@ -84,8 +84,8 @@ export const RelationPermissionToRoleQuery = extendType({
   type: 'Query',
 
   definition(t) {
-    t.list.field('relationsPermissionToRole', {
-      type: 'RelationPermissionToRole',
+    t.nonNull.list.field('relationsPermissionToRole', {
+      type: nonNull('RelationPermissionToRole'),
       args: {
         ...findManyGraphqlArgs,
         where: 'RelationPermissionToRoleWhereInput',
