@@ -100,6 +100,20 @@ export const RelationPermissionToRoleQuery = extendType({
       },
     });
 
+    t.field('relationPermissionToRole', {
+      type: 'RelationPermissionToRole',
+      args: {
+        where: nonNull('RelationPermissionToRoleWhereInput'),
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RelationPermissionToRoleFindFirstArgs =
+          parseGraphQLQuery(info, args);
+        const relationPermissionToRole =
+          await ctx.db.relationPermissionToRole.findFirst(prismaArgs);
+        return relationPermissionToRole as any;
+      },
+    });
+
     t.nonNull.int('relationsPermissionToRoleCount', {
       args: {
         where: 'RelationPermissionToRoleWhereInput',
