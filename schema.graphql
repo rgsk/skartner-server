@@ -279,6 +279,7 @@ type Query {
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]
   relationPermissionToRole(where: RelationPermissionToRoleWhereInput!): RelationPermissionToRole
+  relationPermissionToUser(where: RelationPermissionToUserWhereInput!): RelationPermissionToUser
   relationsPermissionToRole(orderBy: [RelationPermissionToRoleOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToRoleWhereInput): [RelationPermissionToRole!]!
   relationsPermissionToRoleCount(where: RelationPermissionToRoleWhereInput): Int!
   relationsPermissionToUser(orderBy: [RelationPermissionToUserOrderByWithRelationInput], skip: Int, take: Int, where: RelationPermissionToUserWhereInput): [RelationPermissionToUser!]!

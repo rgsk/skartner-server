@@ -99,6 +99,21 @@ export const RelationPermissionToUserQuery = extendType({
         return relationsPermissionToUser;
       },
     });
+
+    t.field('relationPermissionToUser', {
+      type: 'RelationPermissionToUser',
+      args: {
+        where: nonNull('RelationPermissionToUserWhereInput'),
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RelationPermissionToUserFindFirstArgs =
+          parseGraphQLQuery(info, args);
+        const relationPermissionToUser =
+          await ctx.db.relationPermissionToUser.findFirst(prismaArgs);
+        return relationPermissionToUser as any;
+      },
+    });
+
     t.nonNull.int('relationsPermissionToUserCount', {
       args: {
         where: 'RelationPermissionToUserWhereInput',

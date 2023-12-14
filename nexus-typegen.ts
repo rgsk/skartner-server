@@ -539,6 +539,7 @@ export interface NexusGenFieldTypes {
     permissionsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'] | null; // RelationPermissionToRole
+    relationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'] | null; // RelationPermissionToUser
     relationsPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
     relationsPermissionToRoleCount: number; // Int!
     relationsPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'][]; // [RelationPermissionToUser!]!
@@ -827,6 +828,7 @@ export interface NexusGenFieldTypeNames {
     permissionsCount: 'Int'
     posts: 'Post'
     relationPermissionToRole: 'RelationPermissionToRole'
+    relationPermissionToUser: 'RelationPermissionToUser'
     relationsPermissionToRole: 'RelationPermissionToRole'
     relationsPermissionToRoleCount: 'Int'
     relationsPermissionToUser: 'RelationPermissionToUser'
@@ -1123,6 +1125,9 @@ export interface NexusGenArgTypes {
     }
     relationPermissionToRole: { // args
       where: NexusGenInputs['RelationPermissionToRoleWhereInput']; // RelationPermissionToRoleWhereInput!
+    }
+    relationPermissionToUser: { // args
+      where: NexusGenInputs['RelationPermissionToUserWhereInput']; // RelationPermissionToUserWhereInput!
     }
     relationsPermissionToRole: { // args
       orderBy?: Array<NexusGenInputs['RelationPermissionToRoleOrderByWithRelationInput'] | null> | null; // [RelationPermissionToRoleOrderByWithRelationInput]
