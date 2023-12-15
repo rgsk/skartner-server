@@ -101,6 +101,17 @@ export interface NexusGenInputs {
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     permissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  RelationRoleToUserUpdateInput: { // input type
+    assignerId?: string | null; // String
+    roleId?: string | null; // String
+    userId?: string | null; // String
+  }
+  RelationRoleToUserWhereInput: { // input type
+    assignerId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    roleId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   RoleOrderByWithRelationInput: { // input type
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
@@ -461,6 +472,7 @@ export interface NexusGenFieldTypes {
     createPermission: NexusGenRootTypes['Permission']; // Permission!
     createRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     createRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
+    createRelationRoleToUser: NexusGenRootTypes['RelationRoleToUser']; // RelationRoleToUser!
     createRole: NexusGenRootTypes['Role']; // Role!
     createUser: NexusGenRootTypes['User']; // User!
     deleteGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
@@ -485,6 +497,7 @@ export interface NexusGenFieldTypes {
     updatePermission: NexusGenRootTypes['Permission']; // Permission!
     updateRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     updateRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
+    updateRelationRoleToUser: NexusGenRootTypes['RelationRoleToUser']; // RelationRoleToUser!
     updateRole: NexusGenRootTypes['Role']; // Role!
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -540,11 +553,12 @@ export interface NexusGenFieldTypes {
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'] | null; // RelationPermissionToRole
     relationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'] | null; // RelationPermissionToUser
+    relationRoleToUser: NexusGenRootTypes['RelationRoleToUser'] | null; // RelationRoleToUser
     relationsPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'][]; // [RelationPermissionToRole!]!
     relationsPermissionToRoleCount: number; // Int!
     relationsPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'][]; // [RelationPermissionToUser!]!
     relationsPermissionToUserCount: number; // Int!
-    relationsRoleToUser: Array<NexusGenRootTypes['RelationRoleToUser'] | null> | null; // [RelationRoleToUser]
+    relationsRoleToUser: NexusGenRootTypes['RelationRoleToUser'][]; // [RelationRoleToUser!]!
     role: NexusGenRootTypes['Role'] | null; // Role
     roles: NexusGenRootTypes['Role'][]; // [Role!]!
     rolesCount: number; // Int!
@@ -750,6 +764,7 @@ export interface NexusGenFieldTypeNames {
     createPermission: 'Permission'
     createRelationPermissionToRole: 'RelationPermissionToRole'
     createRelationPermissionToUser: 'RelationPermissionToUser'
+    createRelationRoleToUser: 'RelationRoleToUser'
     createRole: 'Role'
     createUser: 'User'
     deleteGptPrompt: 'GptPrompt'
@@ -774,6 +789,7 @@ export interface NexusGenFieldTypeNames {
     updatePermission: 'Permission'
     updateRelationPermissionToRole: 'RelationPermissionToRole'
     updateRelationPermissionToUser: 'RelationPermissionToUser'
+    updateRelationRoleToUser: 'RelationRoleToUser'
     updateRole: 'Role'
     updateUser: 'User'
   }
@@ -829,6 +845,7 @@ export interface NexusGenFieldTypeNames {
     posts: 'Post'
     relationPermissionToRole: 'RelationPermissionToRole'
     relationPermissionToUser: 'RelationPermissionToUser'
+    relationRoleToUser: 'RelationRoleToUser'
     relationsPermissionToRole: 'RelationPermissionToRole'
     relationsPermissionToRoleCount: 'Int'
     relationsPermissionToUser: 'RelationPermissionToUser'
@@ -981,6 +998,11 @@ export interface NexusGenArgTypes {
       permissionId: string; // String!
       userId: string; // String!
     }
+    createRelationRoleToUser: { // args
+      assignerId: string; // String!
+      roleId: string; // String!
+      userId: string; // String!
+    }
     createRole: { // args
       name: string; // String!
     }
@@ -1064,6 +1086,10 @@ export interface NexusGenArgTypes {
       data: NexusGenInputs['RelationPermissionToUserUpdateInput']; // RelationPermissionToUserUpdateInput!
       id: string; // String!
     }
+    updateRelationRoleToUser: { // args
+      data: NexusGenInputs['RelationRoleToUserUpdateInput']; // RelationRoleToUserUpdateInput!
+      id: string; // String!
+    }
     updateRole: { // args
       data: NexusGenInputs['RoleUpdateInput']; // RoleUpdateInput!
       id: string; // String!
@@ -1128,6 +1154,9 @@ export interface NexusGenArgTypes {
     }
     relationPermissionToUser: { // args
       where: NexusGenInputs['RelationPermissionToUserWhereInput']; // RelationPermissionToUserWhereInput!
+    }
+    relationRoleToUser: { // args
+      where: NexusGenInputs['RelationRoleToUserWhereInput']; // RelationRoleToUserWhereInput!
     }
     relationsPermissionToRole: { // args
       orderBy?: Array<NexusGenInputs['RelationPermissionToRoleOrderByWithRelationInput'] | null> | null; // [RelationPermissionToRoleOrderByWithRelationInput]

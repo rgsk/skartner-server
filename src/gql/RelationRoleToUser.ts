@@ -1,6 +1,13 @@
 import { Prisma } from '@prisma/client';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, list, nonNull, objectType, stringArg } from 'nexus';
+import {
+  extendType,
+  inputObjectType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 /*
 model RelationRoleToUser {
@@ -40,10 +47,28 @@ export const RelationRoleToUserObject = objectType({
   },
 });
 
+export const RelationRoleToUserWhereInput = inputObjectType({
+  name: 'RelationRoleToUserWhereInput',
+  definition(t) {
+    t.field('id', {
+      type: 'StringFilter',
+    });
+    t.field('assignerId', {
+      type: 'StringFilter',
+    });
+    t.field('roleId', {
+      type: 'StringFilter',
+    });
+    t.field('userId', {
+      type: 'StringFilter',
+    });
+  },
+});
+
 export const RelationRoleToUserQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('relationsRoleToUser', {
+    t.nonNull.list.nonNull.field('relationsRoleToUser', {
       type: 'RelationRoleToUser',
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationRoleToUserFindManyArgs =
@@ -54,12 +79,74 @@ export const RelationRoleToUserQuery = extendType({
         return relationsRoleToUser;
       },
     });
+    t.field('relationRoleToUser', {
+      type: 'RelationRoleToUser',
+      args: {
+        where: nonNull('RelationRoleToUserWhereInput'),
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RelationRoleToUserFindFirstArgs =
+          parseGraphQLQuery(info, args);
+        const relationRoleToUser = await ctx.db.relationRoleToUser.findFirst(
+          prismaArgs
+        );
+        return relationRoleToUser;
+      },
+    });
   },
 });
 
 export const RelationRoleToUserMutation = extendType({
   type: 'Mutation',
   definition(t) {
+    t.nonNull.field('createRelationRoleToUser', {
+      type: 'RelationRoleToUser',
+      args: {
+        assignerId: nonNull(stringArg()),
+        roleId: nonNull(stringArg()),
+        userId: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { assignerId, roleId, userId } = args;
+        const relationRoleToUser = await ctx.db.relationRoleToUser.create({
+          data: {
+            assignerId,
+            roleId,
+            userId,
+          },
+        });
+        return relationRoleToUser;
+      },
+    });
+    t.nonNull.field('updateRelationRoleToUser', {
+      type: 'RelationRoleToUser',
+      args: {
+        id: nonNull(stringArg()),
+        data: nonNull(
+          inputObjectType({
+            name: 'RelationRoleToUserUpdateInput',
+            definition(t) {
+              t.string('assignerId');
+              t.string('roleId');
+              t.string('userId');
+            },
+          })
+        ),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, data } = args;
+        const relationRoleToUser = await ctx.db.relationRoleToUser.update({
+          where: { id },
+          data: {
+            userId: data.userId ?? undefined,
+            assignerId: data.assignerId ?? undefined,
+            roleId: data.roleId ?? undefined,
+          },
+        });
+        return relationRoleToUser;
+      },
+    });
+
     t.field('deleteRelationRoleToUser', {
       type: 'RelationRoleToUser',
       args: {
