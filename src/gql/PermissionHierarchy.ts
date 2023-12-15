@@ -14,7 +14,14 @@ model PermissionHierarchy {
 
 import { Prisma } from '@prisma/client';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { extendType, inputObjectType, list, objectType } from 'nexus';
+import {
+  extendType,
+  inputObjectType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from 'nexus';
 
 export const PermissionHierarchyObject = objectType({
   name: 'PermissionHierarchy',
@@ -105,6 +112,99 @@ export const PermissionHierarchyQuery = extendType({
         const permissionHierarchiesCount =
           await ctx.db.permissionHierarchy.count(prismaArgs);
         return permissionHierarchiesCount;
+      },
+    });
+  },
+});
+
+export const PermissionHierarchyMutation = extendType({
+  type: 'Mutation',
+  definition(t) {
+    t.nonNull.field('createPermissionHierarchy', {
+      type: 'PermissionHierarchy',
+      args: {
+        parentPermissionId: nonNull(stringArg()),
+        childPermissionId: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { parentPermissionId, childPermissionId } = args;
+        const permissionHierarchy = await ctx.db.permissionHierarchy.create({
+          data: {
+            parentPermissionId,
+            childPermissionId,
+          },
+        });
+        return permissionHierarchy;
+      },
+    });
+    t.field('updatePermissionHierarchy', {
+      type: 'PermissionHierarchy',
+      args: {
+        id: nonNull(stringArg()),
+        data: nonNull(
+          inputObjectType({
+            name: 'PermissionHierarchyUpdateInput',
+            definition(t) {
+              t.string('parentPermissionId');
+              t.string('childPermissionId');
+            },
+          })
+        ),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, data } = args;
+        const permissionHierarchy = await ctx.db.permissionHierarchy.update({
+          where: {
+            id: id,
+          },
+          data: {
+            childPermissionId: data.childPermissionId ?? undefined,
+            parentPermissionId: data.parentPermissionId ?? undefined,
+          },
+        });
+        return permissionHierarchy;
+      },
+    });
+    t.field('deletePermissionHierarchy', {
+      type: 'PermissionHierarchy',
+      args: {
+        id: nonNull(stringArg()),
+      },
+      async resolve(root, args, ctx, info) {
+        const { id, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.PermissionHierarchyDeleteArgs>(
+            info,
+            restArgs
+          );
+        const permissionHierarchy = await ctx.db.permissionHierarchy.delete({
+          ...prismaArgs,
+          where: {
+            id: id,
+          },
+        });
+        return permissionHierarchy;
+      },
+    });
+    t.field('deletePermissionHierarchies', {
+      type: 'BatchPayload',
+      args: {
+        ids: nonNull(list(nonNull(stringArg()))),
+      },
+      async resolve(root, args, ctx, info) {
+        const { ids, ...restArgs } = args;
+        const prismaArgs =
+          parseGraphQLQuery<Prisma.PermissionHierarchyDeleteManyArgs>(
+            info,
+            restArgs
+          );
+        const batchPayload = await ctx.db.permissionHierarchy.deleteMany({
+          ...prismaArgs,
+          where: {
+            id: { in: ids },
+          },
+        });
+        return batchPayload;
       },
     });
   },

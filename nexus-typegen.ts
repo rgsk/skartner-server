@@ -63,6 +63,10 @@ export interface NexusGenInputs {
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
+  PermissionHierarchyUpdateInput: { // input type
+    childPermissionId?: string | null; // String
+    parentPermissionId?: string | null; // String
+  }
   PermissionHierarchyWhereInput: { // input type
     childPermissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -480,6 +484,7 @@ export interface NexusGenFieldTypes {
     createGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     createNotification: NexusGenRootTypes['Notification']; // Notification!
     createPermission: NexusGenRootTypes['Permission']; // Permission!
+    createPermissionHierarchy: NexusGenRootTypes['PermissionHierarchy']; // PermissionHierarchy!
     createRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     createRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     createRelationRoleToUser: NexusGenRootTypes['RelationRoleToUser']; // RelationRoleToUser!
@@ -490,6 +495,8 @@ export interface NexusGenFieldTypes {
     deleteGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     deleteGreWordTag: NexusGenRootTypes['GreWordTag']; // GreWordTag!
     deletePermission: NexusGenRootTypes['Permission'] | null; // Permission
+    deletePermissionHierarchies: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
+    deletePermissionHierarchy: NexusGenRootTypes['PermissionHierarchy'] | null; // PermissionHierarchy
     deletePermissions: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     deleteRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'] | null; // RelationPermissionToRole
     deleteRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'] | null; // RelationPermissionToUser
@@ -505,6 +512,7 @@ export interface NexusGenFieldTypes {
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updatePermission: NexusGenRootTypes['Permission']; // Permission!
+    updatePermissionHierarchy: NexusGenRootTypes['PermissionHierarchy'] | null; // PermissionHierarchy
     updateRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     updateRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     updateRelationRoleToUser: NexusGenRootTypes['RelationRoleToUser']; // RelationRoleToUser!
@@ -774,6 +782,7 @@ export interface NexusGenFieldTypeNames {
     createGreWordTag: 'GreWordTag'
     createNotification: 'Notification'
     createPermission: 'Permission'
+    createPermissionHierarchy: 'PermissionHierarchy'
     createRelationPermissionToRole: 'RelationPermissionToRole'
     createRelationPermissionToUser: 'RelationPermissionToUser'
     createRelationRoleToUser: 'RelationRoleToUser'
@@ -784,6 +793,8 @@ export interface NexusGenFieldTypeNames {
     deleteGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     deleteGreWordTag: 'GreWordTag'
     deletePermission: 'Permission'
+    deletePermissionHierarchies: 'BatchPayload'
+    deletePermissionHierarchy: 'PermissionHierarchy'
     deletePermissions: 'BatchPayload'
     deleteRelationPermissionToRole: 'RelationPermissionToRole'
     deleteRelationPermissionToUser: 'RelationPermissionToUser'
@@ -799,6 +810,7 @@ export interface NexusGenFieldTypeNames {
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updatePermission: 'Permission'
+    updatePermissionHierarchy: 'PermissionHierarchy'
     updateRelationPermissionToRole: 'RelationPermissionToRole'
     updateRelationPermissionToUser: 'RelationPermissionToUser'
     updateRelationRoleToUser: 'RelationRoleToUser'
@@ -1000,6 +1012,10 @@ export interface NexusGenArgTypes {
     createPermission: { // args
       name: string; // String!
     }
+    createPermissionHierarchy: { // args
+      childPermissionId: string; // String!
+      parentPermissionId: string; // String!
+    }
     createRelationPermissionToRole: { // args
       granterId: string; // String!
       isAllowed?: boolean | null; // Boolean
@@ -1038,6 +1054,12 @@ export interface NexusGenArgTypes {
       userId: string; // String!
     }
     deletePermission: { // args
+      id: string; // String!
+    }
+    deletePermissionHierarchies: { // args
+      ids: string[]; // [String!]!
+    }
+    deletePermissionHierarchy: { // args
       id: string; // String!
     }
     deletePermissions: { // args
@@ -1090,6 +1112,10 @@ export interface NexusGenArgTypes {
     }
     updatePermission: { // args
       data: NexusGenInputs['PermissionUpdateInput']; // PermissionUpdateInput!
+      id: string; // String!
+    }
+    updatePermissionHierarchy: { // args
+      data: NexusGenInputs['PermissionHierarchyUpdateInput']; // PermissionHierarchyUpdateInput!
       id: string; // String!
     }
     updateRelationPermissionToRole: { // args

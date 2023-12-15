@@ -179,6 +179,7 @@ type Mutation {
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
   createPermission(name: String!): Permission!
+  createPermissionHierarchy(childPermissionId: String!, parentPermissionId: String!): PermissionHierarchy!
   createRelationPermissionToRole(granterId: String!, isAllowed: Boolean, permissionId: String!, roleId: String!): RelationPermissionToRole!
   createRelationPermissionToUser(granterId: String!, isAllowed: Boolean, permissionId: String!, userId: String!): RelationPermissionToUser!
   createRelationRoleToUser(assignerId: String!, roleId: String!, userId: String!): RelationRoleToUser!
@@ -189,6 +190,8 @@ type Mutation {
   deleteGreWordSearchPromptInput(id: String!): GreWordSearchPromptInput
   deleteGreWordTag(name: String!, userId: String!): GreWordTag!
   deletePermission(id: String!): Permission
+  deletePermissionHierarchies(ids: [String!]!): BatchPayload
+  deletePermissionHierarchy(id: String!): PermissionHierarchy
   deletePermissions(ids: [String!]!): BatchPayload
   deleteRelationPermissionToRole(id: String!): RelationPermissionToRole
   deleteRelationPermissionToUser(id: String!): RelationPermissionToUser
@@ -204,6 +207,7 @@ type Mutation {
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updatePermission(data: PermissionUpdateInput!, id: String!): Permission!
+  updatePermissionHierarchy(data: PermissionHierarchyUpdateInput!, id: String!): PermissionHierarchy
   updateRelationPermissionToRole(data: RelationPermissionToRoleUpdateInput!, id: String!): RelationPermissionToRole!
   updateRelationPermissionToUser(data: RelationPermissionToUserUpdateInput!, id: String!): RelationPermissionToUser!
   updateRelationRoleToUser(data: RelationRoleToUserUpdateInput!, id: String!): RelationRoleToUser!
@@ -240,6 +244,11 @@ type PermissionHierarchy {
 input PermissionHierarchyOrderByWithRelationInput {
   createdAt: SortOrder
   id: SortOrder
+}
+
+input PermissionHierarchyUpdateInput {
+  childPermissionId: String
+  parentPermissionId: String
 }
 
 input PermissionHierarchyWhereInput {
