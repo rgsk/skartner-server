@@ -85,6 +85,7 @@ export interface NexusGenInputs {
   RelationPermissionToRoleWhereInput: { // input type
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     permissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    roleId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
   RelationPermissionToUserOrderByWithRelationInput: { // input type
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
@@ -548,7 +549,7 @@ export interface NexusGenFieldTypes {
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     permission: NexusGenRootTypes['Permission'] | null; // Permission
     permissionHierarchies: Array<NexusGenRootTypes['PermissionHierarchy'] | null> | null; // [PermissionHierarchy]
-    permissions: Array<NexusGenRootTypes['Permission'] | null> | null; // [Permission]
+    permissions: NexusGenRootTypes['Permission'][]; // [Permission!]!
     permissionsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     relationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole'] | null; // RelationPermissionToRole

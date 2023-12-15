@@ -60,6 +60,9 @@ export const RelationPermissionToRoleWhereInput = inputObjectType({
     t.field('permissionId', {
       type: 'StringFilter',
     });
+    t.field('roleId', {
+      type: 'StringFilter',
+    });
   },
 });
 

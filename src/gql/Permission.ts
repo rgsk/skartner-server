@@ -84,7 +84,7 @@ export const PermissionOrderByWithRelationInput = inputObjectType({
 export const PermissionQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('permissions', {
+    t.nonNull.list.nonNull.field('permissions', {
       type: 'Permission',
       args: {
         ...findManyGraphqlArgs,

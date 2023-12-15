@@ -277,7 +277,7 @@ type Query {
   hello: HelloWorld!
   permission(where: PermissionWhereInput): Permission
   permissionHierarchies: [PermissionHierarchy]
-  permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission]
+  permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission!]!
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]
   relationPermissionToRole(where: RelationPermissionToRoleWhereInput!): RelationPermissionToRole
@@ -335,6 +335,7 @@ input RelationPermissionToRoleUpdateInput {
 input RelationPermissionToRoleWhereInput {
   id: StringFilter
   permissionId: StringFilter
+  roleId: StringFilter
 }
 
 type RelationPermissionToUser {
