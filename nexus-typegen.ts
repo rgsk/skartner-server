@@ -557,7 +557,9 @@ export interface NexusGenFieldTypes {
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     permission: NexusGenRootTypes['Permission'] | null; // Permission
-    permissionHierarchies: Array<NexusGenRootTypes['PermissionHierarchy'] | null> | null; // [PermissionHierarchy]
+    permissionHierarchies: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
+    permissionHierarchiesCount: number; // Int!
+    permissionHierarchy: NexusGenRootTypes['PermissionHierarchy'] | null; // PermissionHierarchy
     permissions: NexusGenRootTypes['Permission'][]; // [Permission!]!
     permissionsCount: number; // Int!
     posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
@@ -850,6 +852,8 @@ export interface NexusGenFieldTypeNames {
     hello: 'HelloWorld'
     permission: 'Permission'
     permissionHierarchies: 'PermissionHierarchy'
+    permissionHierarchiesCount: 'Int'
+    permissionHierarchy: 'PermissionHierarchy'
     permissions: 'Permission'
     permissionsCount: 'Int'
     posts: 'Post'
@@ -1154,6 +1158,12 @@ export interface NexusGenArgTypes {
       orderBy?: Array<NexusGenInputs['PermissionHierarchyOrderByWithRelationInput'] | null> | null; // [PermissionHierarchyOrderByWithRelationInput]
       skip?: number | null; // Int
       take?: number | null; // Int
+      where?: NexusGenInputs['PermissionHierarchyWhereInput'] | null; // PermissionHierarchyWhereInput
+    }
+    permissionHierarchiesCount: { // args
+      where?: NexusGenInputs['PermissionHierarchyWhereInput'] | null; // PermissionHierarchyWhereInput
+    }
+    permissionHierarchy: { // args
       where?: NexusGenInputs['PermissionHierarchyWhereInput'] | null; // PermissionHierarchyWhereInput
     }
     permissions: { // args

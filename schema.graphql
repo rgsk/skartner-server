@@ -287,7 +287,9 @@ type Query {
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
   permission(where: PermissionWhereInput): Permission
-  permissionHierarchies(orderBy: [PermissionHierarchyOrderByWithRelationInput], skip: Int, take: Int, where: PermissionHierarchyWhereInput): [PermissionHierarchy]
+  permissionHierarchies(orderBy: [PermissionHierarchyOrderByWithRelationInput], skip: Int, take: Int, where: PermissionHierarchyWhereInput): [PermissionHierarchy!]!
+  permissionHierarchiesCount(where: PermissionHierarchyWhereInput): Int!
+  permissionHierarchy(where: PermissionHierarchyWhereInput): PermissionHierarchy
   permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission!]!
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]

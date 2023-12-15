@@ -65,7 +65,7 @@ export const PermissionHierarchyOrderByWithRelationInput = inputObjectType({
 export const PermissionHierarchyQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('permissionHierarchies', {
+    t.nonNull.list.nonNull.field('permissionHierarchies', {
       type: 'PermissionHierarchy',
       args: {
         ...findManyGraphqlArgs,
@@ -79,6 +79,32 @@ export const PermissionHierarchyQuery = extendType({
           prismaArgs
         );
         return permissionHierarchies;
+      },
+    });
+    t.field('permissionHierarchy', {
+      type: 'PermissionHierarchy',
+      args: {
+        where: 'PermissionHierarchyWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionHierarchyFindFirstArgs =
+          parseGraphQLQuery(info, args);
+        const permissionHierarchy = await ctx.db.permissionHierarchy.findFirst(
+          prismaArgs
+        );
+        return permissionHierarchy;
+      },
+    });
+    t.nonNull.int('permissionHierarchiesCount', {
+      args: {
+        where: 'PermissionHierarchyWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionHierarchyCountArgs =
+          parseGraphQLQuery(info, args);
+        const permissionHierarchiesCount =
+          await ctx.db.permissionHierarchy.count(prismaArgs);
+        return permissionHierarchiesCount;
       },
     });
   },
