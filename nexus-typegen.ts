@@ -59,6 +59,15 @@ export interface NexusGenInputs {
     user?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     userId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  PermissionHierarchyOrderByWithRelationInput: { // input type
+    createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
+  PermissionHierarchyWhereInput: { // input type
+    childPermissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    id?: NexusGenInputs['StringFilter'] | null; // StringFilter
+    parentPermissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
+  }
   PermissionOrderByWithRelationInput: { // input type
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
@@ -1140,6 +1149,12 @@ export interface NexusGenArgTypes {
     }
     permission: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
+    permissionHierarchies: { // args
+      orderBy?: Array<NexusGenInputs['PermissionHierarchyOrderByWithRelationInput'] | null> | null; // [PermissionHierarchyOrderByWithRelationInput]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['PermissionHierarchyWhereInput'] | null; // PermissionHierarchyWhereInput
     }
     permissions: { // args
       orderBy?: Array<NexusGenInputs['PermissionOrderByWithRelationInput'] | null> | null; // [PermissionOrderByWithRelationInput]

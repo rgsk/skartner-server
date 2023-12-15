@@ -237,6 +237,17 @@ type PermissionHierarchy {
   parentPermissionId: String!
 }
 
+input PermissionHierarchyOrderByWithRelationInput {
+  createdAt: SortOrder
+  id: SortOrder
+}
+
+input PermissionHierarchyWhereInput {
+  childPermissionId: StringFilter
+  id: StringFilter
+  parentPermissionId: StringFilter
+}
+
 input PermissionOrderByWithRelationInput {
   createdAt: SortOrder
   id: SortOrder
@@ -276,7 +287,7 @@ type Query {
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
   permission(where: PermissionWhereInput): Permission
-  permissionHierarchies: [PermissionHierarchy]
+  permissionHierarchies(orderBy: [PermissionHierarchyOrderByWithRelationInput], skip: Int, take: Int, where: PermissionHierarchyWhereInput): [PermissionHierarchy]
   permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission!]!
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]
