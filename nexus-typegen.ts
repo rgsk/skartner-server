@@ -569,6 +569,7 @@ export interface NexusGenFieldTypes {
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     permission: NexusGenRootTypes['Permission'] | null; // Permission
+    permissionChildrenInHierarchy: NexusGenRootTypes['Permission'][]; // [Permission!]!
     permissionHierarchies: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
     permissionHierarchiesCount: number; // Int!
     permissionHierarchy: NexusGenRootTypes['PermissionHierarchy'] | null; // PermissionHierarchy
@@ -868,6 +869,7 @@ export interface NexusGenFieldTypeNames {
     greWordsCount: 'Int'
     hello: 'HelloWorld'
     permission: 'Permission'
+    permissionChildrenInHierarchy: 'Permission'
     permissionHierarchies: 'PermissionHierarchy'
     permissionHierarchiesCount: 'Int'
     permissionHierarchy: 'PermissionHierarchy'
@@ -1184,6 +1186,9 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['GreWordWhereInput'] | null; // GreWordWhereInput
     }
     permission: { // args
+      where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
+    permissionChildrenInHierarchy: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
     }
     permissionHierarchies: { // args
