@@ -12,6 +12,10 @@ import {
   objectType,
   stringArg,
 } from 'nexus';
+import {
+  fetchChildHierarchy,
+  fetchParentHierarchy,
+} from './PermissionHierarchy';
 
 /*
 model Permission {
@@ -199,6 +203,48 @@ export const PermissionQuery = extendType({
           (h) => h.parentPermission
         );
         return parentPermissions as any;
+      },
+    });
+    t.field('permissionParentHierarchy', {
+      type: 'Json',
+      args: {
+        where: 'PermissionWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionFindFirstArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const permission: any = await ctx.db.permission.findFirst({
+          ...prismaArgs,
+          select: undefined,
+        });
+        if (!permission) {
+          throw new Error('permission not found');
+        }
+        const parentHierarchy = await fetchParentHierarchy(permission.name);
+        return parentHierarchy;
+      },
+    });
+    t.field('permissionChildHierarchy', {
+      type: 'Json',
+      args: {
+        where: 'PermissionWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionFindFirstArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const permission: any = await ctx.db.permission.findFirst({
+          ...prismaArgs,
+          select: undefined,
+        });
+        if (!permission) {
+          throw new Error('permission not found');
+        }
+        const childHierarchy = await fetchChildHierarchy(permission.name);
+        return childHierarchy;
       },
     });
   },

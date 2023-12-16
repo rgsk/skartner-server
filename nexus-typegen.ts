@@ -564,10 +564,12 @@ export interface NexusGenFieldTypes {
     greWordsCount: number; // Int!
     hello: NexusGenRootTypes['HelloWorld']; // HelloWorld!
     permission: NexusGenRootTypes['Permission'] | null; // Permission
+    permissionChildHierarchy: NexusGenScalars['Json'] | null; // Json
     permissionChildrenInHierarchy: NexusGenRootTypes['Permission'][]; // [Permission!]!
     permissionHierarchies: NexusGenRootTypes['PermissionHierarchy'][]; // [PermissionHierarchy!]!
     permissionHierarchiesCount: number; // Int!
     permissionHierarchy: NexusGenRootTypes['PermissionHierarchy'] | null; // PermissionHierarchy
+    permissionParentHierarchy: NexusGenScalars['Json'] | null; // Json
     permissionParentsInHierarchy: NexusGenRootTypes['Permission'][]; // [Permission!]!
     permissions: NexusGenRootTypes['Permission'][]; // [Permission!]!
     permissionsCount: number; // Int!
@@ -864,10 +866,12 @@ export interface NexusGenFieldTypeNames {
     greWordsCount: 'Int'
     hello: 'HelloWorld'
     permission: 'Permission'
+    permissionChildHierarchy: 'Json'
     permissionChildrenInHierarchy: 'Permission'
     permissionHierarchies: 'PermissionHierarchy'
     permissionHierarchiesCount: 'Int'
     permissionHierarchy: 'PermissionHierarchy'
+    permissionParentHierarchy: 'Json'
     permissionParentsInHierarchy: 'Permission'
     permissions: 'Permission'
     permissionsCount: 'Int'
@@ -1180,6 +1184,9 @@ export interface NexusGenArgTypes {
     permission: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
     }
+    permissionChildHierarchy: { // args
+      where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
+    }
     permissionChildrenInHierarchy: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
     }
@@ -1194,6 +1201,9 @@ export interface NexusGenArgTypes {
     }
     permissionHierarchy: { // args
       where?: NexusGenInputs['PermissionHierarchyWhereInput'] | null; // PermissionHierarchyWhereInput
+    }
+    permissionParentHierarchy: { // args
+      where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput
     }
     permissionParentsInHierarchy: { // args
       where?: NexusGenInputs['PermissionWhereInput'] | null; // PermissionWhereInput

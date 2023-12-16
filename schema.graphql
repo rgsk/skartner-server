@@ -290,10 +290,12 @@ type Query {
   greWordsCount(where: GreWordWhereInput): Int!
   hello: HelloWorld!
   permission(where: PermissionWhereInput): Permission
+  permissionChildHierarchy(where: PermissionWhereInput): Json
   permissionChildrenInHierarchy(where: PermissionWhereInput): [Permission!]!
   permissionHierarchies(orderBy: [PermissionHierarchyOrderByWithRelationInput], skip: Int, take: Int, where: PermissionHierarchyWhereInput): [PermissionHierarchy!]!
   permissionHierarchiesCount(where: PermissionHierarchyWhereInput): Int!
   permissionHierarchy(where: PermissionHierarchyWhereInput): PermissionHierarchy
+  permissionParentHierarchy(where: PermissionWhereInput): Json
   permissionParentsInHierarchy(where: PermissionWhereInput): [Permission!]!
   permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission!]!
   permissionsCount(where: PermissionWhereInput): Int!
