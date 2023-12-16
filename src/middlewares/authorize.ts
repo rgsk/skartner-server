@@ -3,17 +3,21 @@ import { NextFunction, Request, Response } from 'express';
 import { addProps, getProps } from 'middlewareProps';
 import { Middlewares } from 'middlewares';
 
+const circularHierarchyMessage = 'Circular Permission Hierarchy detected';
 const goUpInHierarchyToCheckIfExplicitFalseIsSet: (data: {
   permissionName: string;
   userId: string;
-  hierarchyChecked?: string[];
+  hierarchyChecked: string[];
 }) => Promise<{
   hasPermission: boolean;
-  hierarchyChecked?: string[];
-  permissionFailed?: string;
-  assignedPermissionsThatFailed?: string[];
-  assignedRolesThatFailed?: string[];
-}> = async ({ permissionName, userId, hierarchyChecked = [] }) => {
+  hierarchyChecked: string[];
+  permissionFailed: string;
+  assignedPermissionsThatFailed: string[];
+  assignedRolesThatFailed: string[];
+} | null> = async ({ permissionName, userId, hierarchyChecked }) => {
+  if (hierarchyChecked.includes(permissionName)) {
+    throw new Error(circularHierarchyMessage);
+  }
   const falseExists = await db.permission.findFirst({
     where: {
       name: permissionName,
@@ -83,36 +87,36 @@ const goUpInHierarchyToCheckIfExplicitFalseIsSet: (data: {
   });
   if (permission) {
     // check for all the parents
-    const newHierarchy = [...hierarchyChecked, permissionName];
     for (const {
       parentPermission: { name },
     } of permission.permissionHierarchyAsChild) {
       const result = await goUpInHierarchyToCheckIfExplicitFalseIsSet({
         userId,
         permissionName: name,
-        hierarchyChecked: newHierarchy,
+        hierarchyChecked: [...hierarchyChecked, permissionName],
       });
-      if (!result.hasPermission) {
+      if (result && !result.hasPermission) {
         return result;
       }
     }
   }
-  return {
-    hasPermission: true,
-  };
+  return null;
 };
 
 const goUpInHierarchyToCheckIfExplicitTrueIsSet: (data: {
   permissionName: string;
   userId: string;
-  hierarchyChecked?: string[];
+  hierarchyChecked: string[];
 }) => Promise<{
   hasPermission: boolean;
-  hierarchyChecked?: string[];
-  permissionSucceeded?: string;
-  assignedPermissionsThatSucceeded?: string[];
-  assignedRolesThatSucceeded?: string[];
-}> = async ({ permissionName, userId, hierarchyChecked = [] }) => {
+  hierarchyChecked: string[];
+  permissionSucceeded: string;
+  assignedPermissionsThatSucceeded: string[];
+  assignedRolesThatSucceeded: string[];
+} | null> = async ({ permissionName, userId, hierarchyChecked }) => {
+  if (hierarchyChecked.includes(permissionName)) {
+    throw new Error(circularHierarchyMessage);
+  }
   const trueExists = await db.permission.findFirst({
     where: {
       name: permissionName,
@@ -179,23 +183,20 @@ const goUpInHierarchyToCheckIfExplicitTrueIsSet: (data: {
   });
   if (permission) {
     // check for all the parents
-    const newHierarchy = [...hierarchyChecked, permissionName];
     for (const {
       parentPermission: { name },
     } of permission.permissionHierarchyAsChild) {
       const result = await goUpInHierarchyToCheckIfExplicitTrueIsSet({
         userId,
         permissionName: name,
-        hierarchyChecked: newHierarchy,
+        hierarchyChecked: [...hierarchyChecked, permissionName],
       });
-      if (result.hasPermission) {
+      if (result && result.hasPermission) {
         return result;
       }
     }
   }
-  return {
-    hasPermission: false,
-  };
+  return null;
 };
 
 type RoleThatAffect = {
@@ -206,10 +207,14 @@ type RoleThatAffect = {
 
 const goUpInHierarchyToCheckWhereTrueCanBeSet: (data: {
   permissionName: string;
+  hierarchyChecked: string[];
 }) => Promise<{
   permissionsThatCanBeGranted: Set<string>;
   rolesThatAffectThisPermission: RoleThatAffect[];
-}> = async ({ permissionName }) => {
+}> = async ({ permissionName, hierarchyChecked }) => {
+  if (hierarchyChecked.includes(permissionName)) {
+    throw new Error(circularHierarchyMessage);
+  }
   const exists = await db.permission.findFirst({
     where: {
       name: permissionName,
@@ -252,6 +257,7 @@ const goUpInHierarchyToCheckWhereTrueCanBeSet: (data: {
     } of exists.permissionHierarchyAsChild) {
       const result = await goUpInHierarchyToCheckWhereTrueCanBeSet({
         permissionName: name,
+        hierarchyChecked: [...hierarchyChecked, permissionName],
       });
 
       result.permissionsThatCanBeGranted.forEach((name) =>
@@ -305,22 +311,25 @@ export const checkUserAuthorizedForPermission = async ({
   const falseResult = await goUpInHierarchyToCheckIfExplicitFalseIsSet({
     permissionName,
     userId,
+    hierarchyChecked: [],
   });
   // console.log({ falseResult });
-  if (!falseResult.hasPermission) {
+  if (falseResult && !falseResult.hasPermission) {
     return falseResult;
   }
   const trueResult = await goUpInHierarchyToCheckIfExplicitTrueIsSet({
     permissionName,
     userId,
+    hierarchyChecked: [],
   });
   // console.log({ trueResult });
-  if (trueResult.hasPermission) {
+  if (trueResult && trueResult.hasPermission) {
     return trueResult;
   }
 
   const whereTrueResult = await goUpInHierarchyToCheckWhereTrueCanBeSet({
     permissionName,
+    hierarchyChecked: [],
   });
   const rolesThatCanBeGranted = getRolesThatCanBeGranted(
     whereTrueResult.rolesThatAffectThisPermission

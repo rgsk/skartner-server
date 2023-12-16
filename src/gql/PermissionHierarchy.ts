@@ -229,6 +229,9 @@ const checkForCircularHierarchyByName = async ({
   parentPermissionName: string;
   childPermissionName: string;
 }) => {
+  if (parentPermissionName === childPermissionName) {
+    return true;
+  }
   const result = await checkIfChildPermissionIsParent({
     childPermissionName: childPermissionName,
     permissionName: parentPermissionName,
@@ -248,6 +251,9 @@ const checkForCircularHierarchyByIds = async ({
   parentPermissionId: string;
   childPermissionId: string;
 }) => {
+  if (parentPermissionId === childPermissionId) {
+    return true;
+  }
   const parentPermission = await db.permission.findUnique({
     where: { id: parentPermissionId },
   });
