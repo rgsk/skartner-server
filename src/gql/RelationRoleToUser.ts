@@ -1,5 +1,7 @@
 import { Prisma } from '@prisma/client';
+import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
+
 import {
   extendType,
   inputObjectType,
@@ -65,11 +67,28 @@ export const RelationRoleToUserWhereInput = inputObjectType({
   },
 });
 
+export const RelationRoleToUserOrderByWithRelationInput = inputObjectType({
+  name: 'RelationRoleToUserOrderByWithRelationInput',
+  definition(t) {
+    t.field('id', {
+      type: 'SortOrder',
+    });
+    t.field('assignedAt', {
+      type: 'SortOrder',
+    });
+  },
+});
+
 export const RelationRoleToUserQuery = extendType({
   type: 'Query',
   definition(t) {
     t.nonNull.list.nonNull.field('relationsRoleToUser', {
       type: 'RelationRoleToUser',
+      args: {
+        ...findManyGraphqlArgs,
+        where: 'RelationRoleToUserWhereInput',
+        orderBy: list('RelationRoleToUserOrderByWithRelationInput'),
+      },
       async resolve(root, args, ctx, info) {
         const prismaArgs: Prisma.RelationRoleToUserFindManyArgs =
           parseGraphQLQuery(info, args);
@@ -91,6 +110,17 @@ export const RelationRoleToUserQuery = extendType({
           prismaArgs
         );
         return relationRoleToUser;
+      },
+    });
+    t.nonNull.int('relationsRoleToUserCount', {
+      args: {
+        where: 'RelationRoleToUserWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RelationRoleToUserCountArgs =
+          parseGraphQLQuery(info, args);
+        const count = await ctx.db.relationRoleToUser.count(prismaArgs);
+        return count;
       },
     });
   },

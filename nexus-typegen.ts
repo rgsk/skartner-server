@@ -115,6 +115,10 @@ export interface NexusGenInputs {
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
     permissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  RelationRoleToUserOrderByWithRelationInput: { // input type
+    assignedAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
+    id?: NexusGenEnums['SortOrder'] | null; // SortOrder
+  }
   RelationRoleToUserUpdateInput: { // input type
     assignerId?: string | null; // String
     roleId?: string | null; // String
@@ -579,6 +583,7 @@ export interface NexusGenFieldTypes {
     relationsPermissionToUser: NexusGenRootTypes['RelationPermissionToUser'][]; // [RelationPermissionToUser!]!
     relationsPermissionToUserCount: number; // Int!
     relationsRoleToUser: NexusGenRootTypes['RelationRoleToUser'][]; // [RelationRoleToUser!]!
+    relationsRoleToUserCount: number; // Int!
     role: NexusGenRootTypes['Role'] | null; // Role
     roles: NexusGenRootTypes['Role'][]; // [Role!]!
     rolesCount: number; // Int!
@@ -877,6 +882,7 @@ export interface NexusGenFieldTypeNames {
     relationsPermissionToUser: 'RelationPermissionToUser'
     relationsPermissionToUserCount: 'Int'
     relationsRoleToUser: 'RelationRoleToUser'
+    relationsRoleToUserCount: 'Int'
     role: 'Role'
     roles: 'Role'
     rolesCount: 'Int'
@@ -1227,6 +1233,15 @@ export interface NexusGenArgTypes {
     }
     relationsPermissionToUserCount: { // args
       where?: NexusGenInputs['RelationPermissionToUserWhereInput'] | null; // RelationPermissionToUserWhereInput
+    }
+    relationsRoleToUser: { // args
+      orderBy?: Array<NexusGenInputs['RelationRoleToUserOrderByWithRelationInput'] | null> | null; // [RelationRoleToUserOrderByWithRelationInput]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+      where?: NexusGenInputs['RelationRoleToUserWhereInput'] | null; // RelationRoleToUserWhereInput
+    }
+    relationsRoleToUserCount: { // args
+      where?: NexusGenInputs['RelationRoleToUserWhereInput'] | null; // RelationRoleToUserWhereInput
     }
     role: { // args
       where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
