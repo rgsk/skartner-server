@@ -300,6 +300,7 @@ type Query {
   permissionHierarchies(orderBy: [PermissionHierarchyOrderByWithRelationInput], skip: Int, take: Int, where: PermissionHierarchyWhereInput): [PermissionHierarchy!]!
   permissionHierarchiesCount(where: PermissionHierarchyWhereInput): Int!
   permissionHierarchy(where: PermissionHierarchyWhereInput): PermissionHierarchy
+  permissionParentsInHierarchy(where: PermissionWhereInput): [Permission!]!
   permissions(orderBy: [PermissionOrderByWithRelationInput], skip: Int, take: Int, where: PermissionWhereInput): [Permission!]!
   permissionsCount(where: PermissionWhereInput): Int!
   posts: [Post]

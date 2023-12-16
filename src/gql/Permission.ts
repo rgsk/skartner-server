@@ -159,8 +159,46 @@ export const PermissionQuery = extendType({
             },
           }
         );
-        const permissions = permissionHierarchies.map((h) => h.childPermission);
-        return permissions as any;
+        const childPermissions = permissionHierarchies.map(
+          (h) => h.childPermission
+        );
+        return childPermissions as any;
+      },
+    });
+    t.nonNull.list.nonNull.field('permissionParentsInHierarchy', {
+      type: 'Permission',
+      args: {
+        where: 'PermissionWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.PermissionFindFirstArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const permission: any = await ctx.db.permission.findFirst({
+          ...prismaArgs,
+          select: undefined,
+        });
+        if (!permission) {
+          throw new Error('permission not found');
+        }
+        const permissionHierarchies = await ctx.db.permissionHierarchy.findMany(
+          {
+            where: {
+              childPermissionId: permission.id,
+            },
+            select: {
+              childPermissionId: true,
+              parentPermission: {
+                select: prismaArgs.select,
+              },
+            },
+          }
+        );
+        const parentPermissions = permissionHierarchies.map(
+          (h) => h.parentPermission
+        );
+        return parentPermissions as any;
       },
     });
   },
