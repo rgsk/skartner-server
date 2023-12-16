@@ -9,7 +9,7 @@
     "dev": "sh ./bin.dev/start.sh",
     "build": "tsc",
     "run:file": "NODE_PATH=src ts-node",
-    "kill:process": "kill -9 $(lsof -t -i:8001)",
+    "kill:process": "kill -9 $(lsof -t -i:8000)",
     "generate": "NODE_PATH=src ts-node --transpile-only src/schema.ts",
     "propagate:schema": "cp schema.graphql ../skartner-app/lib/schema.graphql",
     "watch:schema": "nodemon -w schema.graphql --exec \"yarn propagate:schema\"",

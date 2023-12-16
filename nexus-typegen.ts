@@ -63,10 +63,6 @@ export interface NexusGenInputs {
     createdAt?: NexusGenEnums['SortOrder'] | null; // SortOrder
     id?: NexusGenEnums['SortOrder'] | null; // SortOrder
   }
-  PermissionHierarchyUpdateInput: { // input type
-    childPermissionId?: string | null; // String
-    parentPermissionId?: string | null; // String
-  }
   PermissionHierarchyWhereInput: { // input type
     childPermissionId?: NexusGenInputs['StringFilter'] | null; // StringFilter
     id?: NexusGenInputs['StringFilter'] | null; // StringFilter
@@ -516,7 +512,6 @@ export interface NexusGenFieldTypes {
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
     updatePermission: NexusGenRootTypes['Permission']; // Permission!
-    updatePermissionHierarchy: NexusGenRootTypes['PermissionHierarchy'] | null; // PermissionHierarchy
     updateRelationPermissionToRole: NexusGenRootTypes['RelationPermissionToRole']; // RelationPermissionToRole!
     updateRelationPermissionToUser: NexusGenRootTypes['RelationPermissionToUser']; // RelationPermissionToUser!
     updateRelationRoleToUser: NexusGenRootTypes['RelationRoleToUser']; // RelationRoleToUser!
@@ -817,7 +812,6 @@ export interface NexusGenFieldTypeNames {
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
     updatePermission: 'Permission'
-    updatePermissionHierarchy: 'PermissionHierarchy'
     updateRelationPermissionToRole: 'RelationPermissionToRole'
     updateRelationPermissionToUser: 'RelationPermissionToUser'
     updateRelationRoleToUser: 'RelationRoleToUser'
@@ -1122,10 +1116,6 @@ export interface NexusGenArgTypes {
     }
     updatePermission: { // args
       data: NexusGenInputs['PermissionUpdateInput']; // PermissionUpdateInput!
-      id: string; // String!
-    }
-    updatePermissionHierarchy: { // args
-      data: NexusGenInputs['PermissionHierarchyUpdateInput']; // PermissionHierarchyUpdateInput!
       id: string; // String!
     }
     updateRelationPermissionToRole: { // args

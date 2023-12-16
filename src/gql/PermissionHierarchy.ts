@@ -13,6 +13,7 @@ model PermissionHierarchy {
 */
 
 import { Prisma } from '@prisma/client';
+import { db } from 'db';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   extendType,
@@ -117,6 +118,155 @@ export const PermissionHierarchyQuery = extendType({
   },
 });
 
+export const fetchParentHierarchy = async (permissionName: string) => {
+  const memo: any = {};
+  const helper = async (permissionName: string) => {
+    if (memo[permissionName]) {
+      return memo[permissionName];
+    }
+    const currentLevel = await db.permissionHierarchy.findMany({
+      where: {
+        childPermission: {
+          name: permissionName,
+        },
+      },
+      select: {
+        parentPermission: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    const result: any = {};
+    for (const {
+      parentPermission: { name },
+    } of currentLevel) {
+      result[name] = await helper(name);
+    }
+    memo[permissionName] = result;
+    return result;
+  };
+  const result = helper(permissionName);
+  return result;
+};
+
+export const fetchChildHierarchy = async (permissionName: string) => {
+  const memo: any = {};
+  const helper = async (permissionName: string) => {
+    if (memo[permissionName]) {
+      return memo[permissionName];
+    }
+    const currentLevel = await db.permissionHierarchy.findMany({
+      where: {
+        parentPermission: {
+          name: permissionName,
+        },
+      },
+      select: {
+        childPermission: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    const result: any = {};
+    for (const {
+      childPermission: { name },
+    } of currentLevel) {
+      result[name] = await helper(name);
+    }
+    memo[permissionName] = result;
+    return result;
+  };
+  const result = helper(permissionName);
+  return result;
+};
+
+export const flattenKeys = (obj: Record<string, any>) => {
+  const set = new Set<string>();
+  const helper = (obj: Record<string, any>) => {
+    for (const key in obj) {
+      set.add(key);
+      helper(obj[key]);
+    }
+  };
+  helper(obj);
+  return set;
+};
+
+const checkIfChildPermissionIsParent = async ({
+  permissionName,
+  childPermissionName,
+}: {
+  permissionName: string;
+  childPermissionName: string;
+}) => {
+  const parentHierarchy = await fetchParentHierarchy(permissionName);
+  const parents = flattenKeys(parentHierarchy);
+  // console.log({ permissionName, childPermissionName, parents });
+  return parents.has(childPermissionName);
+};
+
+const checkIfParentPermissionIsChild = async ({
+  permissionName,
+  parentPermissionName,
+}: {
+  permissionName: string;
+  parentPermissionName: string;
+}) => {
+  const childHierarchy = await fetchChildHierarchy(permissionName);
+  const children = flattenKeys(childHierarchy);
+  // console.log({ permissionName, parentPermissionName, children });
+  return children.has(parentPermissionName);
+};
+
+const checkForCircularHierarchyByName = async ({
+  parentPermissionName,
+  childPermissionName,
+}: {
+  parentPermissionName: string;
+  childPermissionName: string;
+}) => {
+  const result = await checkIfChildPermissionIsParent({
+    childPermissionName: childPermissionName,
+    permissionName: parentPermissionName,
+  });
+  // below can also be used
+  // const result = await checkIfParentPermissionIsChild({
+  //   permissionName: childPermissionName,
+  //   parentPermissionName: parentPermissionName,
+  // });
+  return result;
+};
+
+const checkForCircularHierarchyByIds = async ({
+  parentPermissionId,
+  childPermissionId,
+}: {
+  parentPermissionId: string;
+  childPermissionId: string;
+}) => {
+  const parentPermission = await db.permission.findUnique({
+    where: { id: parentPermissionId },
+  });
+  const childPermission = await db.permission.findUnique({
+    where: { id: childPermissionId },
+  });
+  if (!parentPermission) {
+    throw new Error('parent permission id not valid');
+  }
+  if (!childPermission) {
+    throw new Error('child permission id not valid');
+  }
+  const result = await checkForCircularHierarchyByName({
+    parentPermissionName: parentPermission.name,
+    childPermissionName: childPermission.name,
+  });
+  return result;
+};
+
 export const PermissionHierarchyMutation = extendType({
   type: 'Mutation',
   definition(t) {
@@ -128,6 +278,17 @@ export const PermissionHierarchyMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { parentPermissionId, childPermissionId } = args;
+        const wouldResultInCircularHierarchy =
+          await checkForCircularHierarchyByIds({
+            parentPermissionId,
+            childPermissionId,
+          });
+
+        if (wouldResultInCircularHierarchy) {
+          throw new Error(
+            'operation not allowed as it would result in Circular Hierarchy'
+          );
+        }
         const permissionHierarchy = await ctx.db.permissionHierarchy.create({
           data: {
             parentPermissionId,
@@ -137,34 +298,7 @@ export const PermissionHierarchyMutation = extendType({
         return permissionHierarchy;
       },
     });
-    t.field('updatePermissionHierarchy', {
-      type: 'PermissionHierarchy',
-      args: {
-        id: nonNull(stringArg()),
-        data: nonNull(
-          inputObjectType({
-            name: 'PermissionHierarchyUpdateInput',
-            definition(t) {
-              t.string('parentPermissionId');
-              t.string('childPermissionId');
-            },
-          })
-        ),
-      },
-      async resolve(root, args, ctx, info) {
-        const { id, data } = args;
-        const permissionHierarchy = await ctx.db.permissionHierarchy.update({
-          where: {
-            id: id,
-          },
-          data: {
-            childPermissionId: data.childPermissionId ?? undefined,
-            parentPermissionId: data.parentPermissionId ?? undefined,
-          },
-        });
-        return permissionHierarchy;
-      },
-    });
+
     t.field('deletePermissionHierarchy', {
       type: 'PermissionHierarchy',
       args: {

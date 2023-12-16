@@ -207,7 +207,6 @@ type Mutation {
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
   updatePermission(data: PermissionUpdateInput!, id: String!): Permission!
-  updatePermissionHierarchy(data: PermissionHierarchyUpdateInput!, id: String!): PermissionHierarchy
   updateRelationPermissionToRole(data: RelationPermissionToRoleUpdateInput!, id: String!): RelationPermissionToRole!
   updateRelationPermissionToUser(data: RelationPermissionToUserUpdateInput!, id: String!): RelationPermissionToUser!
   updateRelationRoleToUser(data: RelationRoleToUserUpdateInput!, id: String!): RelationRoleToUser!
@@ -244,11 +243,6 @@ type PermissionHierarchy {
 input PermissionHierarchyOrderByWithRelationInput {
   createdAt: SortOrder
   id: SortOrder
-}
-
-input PermissionHierarchyUpdateInput {
-  childPermissionId: String
-  parentPermissionId: String
 }
 
 input PermissionHierarchyWhereInput {
