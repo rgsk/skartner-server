@@ -310,6 +310,7 @@ type Query {
   relationsRoleToUser(orderBy: [RelationRoleToUserOrderByWithRelationInput], skip: Int, take: Int, where: RelationRoleToUserWhereInput): [RelationRoleToUser!]!
   relationsRoleToUserCount(where: RelationRoleToUserWhereInput): Int!
   role(where: RoleWhereInput): Role
+  rolePermissionsGraph(where: RoleWhereInput): Json
   roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   rolesCount(where: RoleWhereInput): Int!
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!

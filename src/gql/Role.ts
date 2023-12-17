@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { db } from 'db';
 import {
   addDateFieldsDefinitions,
   findManyGraphqlArgs,
@@ -72,6 +73,51 @@ export const RoleOrderByWithRelationInput = inputObjectType({
   },
 });
 
+export const fetchChildHierarchyForRole = async (
+  permissionName: string,
+  roleId: string
+) => {
+  const memo: any = {};
+  const helper = async (permissionName: string) => {
+    if (memo[permissionName]) {
+      return memo[permissionName];
+    }
+    const currentLevel = await db.permissionHierarchy.findMany({
+      where: {
+        parentPermission: {
+          name: permissionName,
+        },
+      },
+      select: {
+        childPermission: {
+          select: {
+            name: true,
+            relationPermissionToRoleAsPermission: {
+              where: { roleId: roleId },
+              select: {
+                isAllowed: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    const result: any = {};
+    for (const {
+      childPermission: { name, relationPermissionToRoleAsPermission },
+    } of currentLevel) {
+      result[name] = {
+        isAllowed: relationPermissionToRoleAsPermission[0]?.isAllowed,
+        ...(await helper(name)),
+      };
+    }
+    memo[permissionName] = result;
+    return result;
+  };
+  const result = helper(permissionName);
+  return result;
+};
+
 export const RoleQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -113,6 +159,74 @@ export const RoleQuery = extendType({
         const prismaArgs: Prisma.RoleCountArgs = parseGraphQLQuery(info, args);
         const rolesCount = await ctx.db.role.count(prismaArgs);
         return rolesCount;
+      },
+    });
+    t.field('rolePermissionsGraph', {
+      type: 'Json',
+      args: {
+        where: 'RoleWhereInput',
+      },
+      async resolve(root, args, ctx, info) {
+        const prismaArgs: Prisma.RoleFindFirstArgs = parseGraphQLQuery(
+          info,
+          args
+        );
+        const role = await ctx.db.role.findFirst(prismaArgs);
+        if (role) {
+          const permissions = await ctx.db.permission.findMany({
+            where: {
+              relationPermissionToRoleAsPermission: {
+                some: {
+                  roleId: role.id,
+                },
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              relationPermissionToRoleAsPermission: {
+                where: { roleId: role.id },
+                select: {
+                  isAllowed: true,
+                },
+              },
+            },
+          });
+          const permissionHierarchies =
+            await ctx.db.permissionHierarchy.findMany({
+              where: {
+                childPermissionId: {
+                  in: permissions.map((p) => p.id),
+                },
+              },
+              select: {
+                childPermissionId: true,
+              },
+            });
+
+          const result: any = {};
+          for (const permission of permissions) {
+            if (
+              permissionHierarchies.some(
+                (ph) => ph.childPermissionId === permission.id
+              )
+            ) {
+              continue;
+            }
+            const childHierarchy = await fetchChildHierarchyForRole(
+              permission.name,
+              role.id
+            );
+            result[permission.name] = {
+              isAllowed:
+                permission.relationPermissionToRoleAsPermission[0].isAllowed,
+              ...childHierarchy,
+            };
+          }
+          return result;
+        } else {
+          throw new Error('role not found');
+        }
       },
     });
   },

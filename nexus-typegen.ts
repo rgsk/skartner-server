@@ -584,6 +584,7 @@ export interface NexusGenFieldTypes {
     relationsRoleToUser: NexusGenRootTypes['RelationRoleToUser'][]; // [RelationRoleToUser!]!
     relationsRoleToUserCount: number; // Int!
     role: NexusGenRootTypes['Role'] | null; // Role
+    rolePermissionsGraph: NexusGenScalars['Json'] | null; // Json
     roles: NexusGenRootTypes['Role'][]; // [Role!]!
     rolesCount: number; // Int!
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
@@ -886,6 +887,7 @@ export interface NexusGenFieldTypeNames {
     relationsRoleToUser: 'RelationRoleToUser'
     relationsRoleToUserCount: 'Int'
     role: 'Role'
+    rolePermissionsGraph: 'Json'
     roles: 'Role'
     rolesCount: 'Int'
     sendSinglePrompt: 'SendSinglePromptResponse'
@@ -1254,6 +1256,9 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['RelationRoleToUserWhereInput'] | null; // RelationRoleToUserWhereInput
     }
     role: { // args
+      where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
+    }
+    rolePermissionsGraph: { // args
       where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
     }
     roles: { // args
