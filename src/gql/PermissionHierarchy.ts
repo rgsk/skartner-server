@@ -124,6 +124,10 @@ export const fetchParentHierarchy = async (permissionName: string) => {
     if (memo[permissionName]) {
       return memo[permissionName];
     }
+
+    const result: any = {};
+    memo[permissionName] = result;
+
     const currentLevel = await db.permissionHierarchy.findMany({
       where: {
         childPermission: {
@@ -138,13 +142,13 @@ export const fetchParentHierarchy = async (permissionName: string) => {
         },
       },
     });
-    const result: any = {};
-    for (const {
-      parentPermission: { name },
-    } of currentLevel) {
-      result[name] = await helper(name);
-    }
-    memo[permissionName] = result;
+
+    await Promise.all(
+      currentLevel.map(async ({ parentPermission: { name } }) => {
+        result[name] = await helper(name);
+      })
+    );
+
     return result;
   };
   const result = helper(permissionName);
@@ -157,6 +161,10 @@ export const fetchChildHierarchy = async (permissionName: string) => {
     if (memo[permissionName]) {
       return memo[permissionName];
     }
+
+    const result: any = {};
+    memo[permissionName] = result;
+
     const currentLevel = await db.permissionHierarchy.findMany({
       where: {
         parentPermission: {
@@ -171,13 +179,13 @@ export const fetchChildHierarchy = async (permissionName: string) => {
         },
       },
     });
-    const result: any = {};
-    for (const {
-      childPermission: { name },
-    } of currentLevel) {
-      result[name] = await helper(name);
-    }
-    memo[permissionName] = result;
+
+    await Promise.all(
+      currentLevel.map(async ({ childPermission: { name } }) => {
+        result[name] = await helper(name);
+      })
+    );
+
     return result;
   };
   const result = helper(permissionName);
