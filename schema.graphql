@@ -315,6 +315,7 @@ type Query {
   rolesCount(where: RoleWhereInput): Int!
   sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
   user(where: UserWhereInput!): User
+  userPermissionsGraph(where: UserWhereInput): Json
   userSession(where: UserSessionWhereUniqueInput!): UserSession
   userSessions(orderBy: [UserSessionOrderByWithRelationInput], skip: Int, take: Int, where: UserSessionWhereInput): [UserSession!]!
   userSessionsCount(where: UserSessionWhereInput): Int!

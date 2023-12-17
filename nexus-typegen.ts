@@ -589,6 +589,7 @@ export interface NexusGenFieldTypes {
     rolesCount: number; // Int!
     sendSinglePrompt: NexusGenRootTypes['SendSinglePromptResponse']; // SendSinglePromptResponse!
     user: NexusGenRootTypes['User'] | null; // User
+    userPermissionsGraph: NexusGenScalars['Json'] | null; // Json
     userSession: NexusGenRootTypes['UserSession'] | null; // UserSession
     userSessions: NexusGenRootTypes['UserSession'][]; // [UserSession!]!
     userSessionsCount: number; // Int!
@@ -892,6 +893,7 @@ export interface NexusGenFieldTypeNames {
     rolesCount: 'Int'
     sendSinglePrompt: 'SendSinglePromptResponse'
     user: 'User'
+    userPermissionsGraph: 'Json'
     userSession: 'UserSession'
     userSessions: 'UserSession'
     userSessionsCount: 'Int'
@@ -1279,6 +1281,9 @@ export interface NexusGenArgTypes {
     }
     user: { // args
       where: NexusGenInputs['UserWhereInput']; // UserWhereInput!
+    }
+    userPermissionsGraph: { // args
+      where?: NexusGenInputs['UserWhereInput'] | null; // UserWhereInput
     }
     userSession: { // args
       where: NexusGenInputs['UserSessionWhereUniqueInput']; // UserSessionWhereUniqueInput!
