@@ -107,7 +107,7 @@ export const fetchChildHierarchyForRole = async (
       childPermission: { name, relationPermissionToRoleAsPermission },
     } of currentLevel) {
       result[name] = {
-        isAllowed: relationPermissionToRoleAsPermission[0]?.isAllowed,
+        ...relationPermissionToRoleAsPermission[0],
         ...(await helper(name)),
       };
     }
@@ -205,24 +205,24 @@ export const RoleQuery = extendType({
             });
 
           const result: any = {};
-          for (const permission of permissions) {
-            if (
-              permissionHierarchies.some(
+          await Promise.all(
+            permissions.map(async (permission) => {
+              const isChild = permissionHierarchies.some(
                 (ph) => ph.childPermissionId === permission.id
-              )
-            ) {
-              continue;
-            }
-            const childHierarchy = await fetchChildHierarchyForRole(
-              permission.name,
-              role.id
-            );
-            result[permission.name] = {
-              isAllowed:
-                permission.relationPermissionToRoleAsPermission[0].isAllowed,
-              ...childHierarchy,
-            };
-          }
+              );
+              if (!isChild) {
+                const childHierarchy = await fetchChildHierarchyForRole(
+                  permission.name,
+                  role.id
+                );
+                result[permission.name] = {
+                  ...permission.relationPermissionToRoleAsPermission[0],
+                  ...childHierarchy,
+                };
+              }
+            })
+          );
+
           return result;
         } else {
           throw new Error('role not found');
