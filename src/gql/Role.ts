@@ -82,6 +82,10 @@ export const fetchChildHierarchyForRole = async (
     if (memo[permissionName]) {
       return memo[permissionName];
     }
+
+    const result: any = {};
+    memo[permissionName] = result;
+
     const currentLevel = await db.permissionHierarchy.findMany({
       where: {
         parentPermission: {
@@ -102,16 +106,22 @@ export const fetchChildHierarchyForRole = async (
         },
       },
     });
-    const result: any = {};
-    for (const {
-      childPermission: { name, relationPermissionToRoleAsPermission },
-    } of currentLevel) {
-      result[name] = {
-        ...relationPermissionToRoleAsPermission[0],
-        ...(await helper(name)),
-      };
-    }
-    memo[permissionName] = result;
+    await Promise.all(
+      currentLevel.map(
+        async ({
+          childPermission: { name, relationPermissionToRoleAsPermission },
+        }) => {
+          const childProps = await helper(name);
+          for (let key in relationPermissionToRoleAsPermission[0]) {
+            childProps[key] = (relationPermissionToRoleAsPermission[0] as any)[
+              key
+            ];
+          }
+          result[name] = childProps;
+        }
+      )
+    );
+
     return result;
   };
   const result = helper(permissionName);
