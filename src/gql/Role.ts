@@ -185,6 +185,13 @@ export const RoleQuery = extendType({
         if (role) {
           const permissions = await ctx.db.permission.findMany({
             where: {
+              permissionHierarchyAsChild: {
+                none: {
+                  id: {
+                    startsWith: '',
+                  },
+                },
+              },
               relationPermissionToRoleAsPermission: {
                 some: {
                   roleId: role.id,
@@ -202,34 +209,18 @@ export const RoleQuery = extendType({
               },
             },
           });
-          const permissionHierarchies =
-            await ctx.db.permissionHierarchy.findMany({
-              where: {
-                childPermissionId: {
-                  in: permissions.map((p) => p.id),
-                },
-              },
-              select: {
-                childPermissionId: true,
-              },
-            });
 
           const result: any = {};
           await Promise.all(
             permissions.map(async (permission) => {
-              const isChild = permissionHierarchies.some(
-                (ph) => ph.childPermissionId === permission.id
+              const childHierarchy = await fetchChildHierarchyForRole(
+                permission.name,
+                role.id
               );
-              if (!isChild) {
-                const childHierarchy = await fetchChildHierarchyForRole(
-                  permission.name,
-                  role.id
-                );
-                result[permission.name] = {
-                  ...permission.relationPermissionToRoleAsPermission[0],
-                  ...childHierarchy,
-                };
-              }
+              result[permission.name] = {
+                ...permission.relationPermissionToRoleAsPermission[0],
+                ...childHierarchy,
+              };
             })
           );
 
