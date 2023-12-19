@@ -1,1 +1,1 @@
-docker build . -t rgskartner/skartner-server --platform linux/amd64
+docker build . -t rgskartner/skartner-server

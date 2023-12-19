@@ -12,7 +12,7 @@ const rootRouter = Router();
 rootRouter.use('/sample', sampleRouter);
 
 rootRouter.get('/', async (req, res, next) => {
-  res.json({ message: 'skartner-server is working 123' });
+  res.json({ message: 'skartner-server is working sona hai ab' });
 });
 rootRouter.post('/', async (req, res, next) => {
   res.json(req.body);
