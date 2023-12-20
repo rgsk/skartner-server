@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_PATH=src ts-node src/server.ts",
     "serve": "NODE_PATH=src ts-node-dev --transpile-only --no-notify src/server.ts",
-    "dev": "sh ./bin.dev/start.sh",
+    "dev": "sh ./bin.dev/run.sh",
     "build": "tsc",
     "run:file": "NODE_PATH=src ts-node",
     "kill:process": "kill -9 $(lsof -t -i:8000)",
