@@ -1,3 +1,6 @@
+sh ./bin.dev/restart-postgres.sh
+sh ./bin.dev/restart-redis.sh
+
 sed -i '' 's/localhost/host.docker.internal/g' .env
 
 docker run -d \
