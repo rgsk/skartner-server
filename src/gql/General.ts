@@ -22,7 +22,7 @@ export const GeneralQuery = extendType({
       ),
       async resolve(root, args, ctx, info) {
         return {
-          message: `Server is running on PORT: ${environmentVars.PORT}`,
+          message: `GRAPHQL: Server is running on PORT: ${environmentVars.PORT}`,
         };
       },
     });

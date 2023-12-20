@@ -1,6 +1,7 @@
 import axios from 'axios';
 import permissions from 'constants/permissions';
 import { Request, Router } from 'express';
+import environmentVars from 'lib/environmentVars';
 import fileLogger from 'lib/fileLogger';
 import authenticate from 'middlewares/authenticate';
 import authorize from 'middlewares/authorize';
@@ -13,7 +14,7 @@ rootRouter.use('/sample', sampleRouter);
 
 rootRouter.get('/', async (req, res, next) => {
   res.json({
-    message: 'skartner-server is working sona hai ab final krde yaar',
+    message: `REST: Server is running on PORT: ${environmentVars.PORT}`,
   });
 });
 rootRouter.post('/', async (req, res, next) => {
