@@ -1,5 +1,6 @@
-import { Prisma, RelationPermissionToUser } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { db } from 'db';
+import deepmerge from 'deepmerge';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
@@ -142,16 +143,19 @@ export const RelationPermissionToUserMutation = extendType({
         granterId: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { permissionId, userId, isAllowed, granterId } = args;
+        const { permissionId, userId, isAllowed, granterId, ...restArgs } =
+          args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationPermissionToUser =
           await ctx.db.relationPermissionToUser.create({
+            ...cacheArgs,
             data: {
               permissionId,
               userId,
               isAllowed,
               granterId,
             },
-            include: cacheUpdater.include,
           });
         await cacheUpdater.one(relationPermissionToUser);
         return relationPermissionToUser as any;
@@ -174,9 +178,12 @@ export const RelationPermissionToUserMutation = extendType({
         ),
       },
       async resolve(root, args, ctx, info) {
-        const { id, data } = args;
+        const { id, data, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationPermissionToUser =
           await ctx.db.relationPermissionToUser.update({
+            ...cacheArgs,
             where: { id },
             data: {
               permissionId: data.permissionId ?? undefined,
@@ -184,7 +191,6 @@ export const RelationPermissionToUserMutation = extendType({
               granterId: data.granterId ?? undefined,
               isAllowed: data.isAllowed,
             },
-            include: cacheUpdater.include,
           });
         await cacheUpdater.one(relationPermissionToUser);
         return relationPermissionToUser as any;
@@ -196,13 +202,15 @@ export const RelationPermissionToUserMutation = extendType({
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { id } = args;
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationPermissionToUser =
           await ctx.db.relationPermissionToUser.delete({
+            ...cacheArgs,
             where: {
               id: id,
             },
-            include: cacheUpdater.include,
           });
         await cacheUpdater.one(relationPermissionToUser);
         return relationPermissionToUser as any;
@@ -228,20 +236,26 @@ export const RelationPermissionToUserMutation = extendType({
 });
 
 const cacheUpdater = {
-  include: {
-    permission: {
+  formArgs: (args: any) => {
+    const extraArgs = {
       select: {
-        name: true,
+        permission: {
+          select: {
+            name: true,
+          },
+        },
+        userId: true,
       },
-    },
+    };
+    const result = deepmerge(args, extraArgs);
+    return result;
   },
-  one: async (
-    relationPermissionToUser?: RelationPermissionToUser & {
-      permission: {
-        name: string;
-      };
-    }
-  ) => {
+  one: async (relationPermissionToUser?: {
+    permission: {
+      name: string;
+    };
+    userId: string;
+  }) => {
     if (relationPermissionToUser) {
       await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser({
         permissionName: relationPermissionToUser.permission.name,
@@ -252,10 +266,10 @@ const cacheUpdater = {
   many: async function (ids: string[]) {
     const relationsPermissionToUser =
       await db.relationPermissionToUser.findMany({
+        ...this.formArgs({}),
         where: {
           id: { in: ids },
         },
-        include: this.include,
       });
     const keys = relationsPermissionToUser.map((r) => {
       return {

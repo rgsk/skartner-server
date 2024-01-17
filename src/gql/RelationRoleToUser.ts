@@ -1,5 +1,6 @@
-import { Prisma, RelationRoleToUser } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { db } from 'db';
+import deepmerge from 'deepmerge';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
@@ -139,14 +140,16 @@ export const RelationRoleToUserMutation = extendType({
         userId: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { assignerId, roleId, userId } = args;
+        const { assignerId, roleId, userId, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationRoleToUser = await ctx.db.relationRoleToUser.create({
+          ...cacheArgs,
           data: {
             assignerId,
             roleId,
             userId,
           },
-          include: cacheUpdater.include,
         });
         await cacheUpdater.one(relationRoleToUser);
         return relationRoleToUser as any;
@@ -168,15 +171,17 @@ export const RelationRoleToUserMutation = extendType({
         ),
       },
       async resolve(root, args, ctx, info) {
-        const { id, data } = args;
+        const { id, data, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationRoleToUser = await ctx.db.relationRoleToUser.update({
+          ...cacheArgs,
           where: { id },
           data: {
             userId: data.userId ?? undefined,
             assignerId: data.assignerId ?? undefined,
             roleId: data.roleId ?? undefined,
           },
-          include: cacheUpdater.include,
         });
         await cacheUpdater.one(relationRoleToUser);
         return relationRoleToUser as any;
@@ -189,13 +194,14 @@ export const RelationRoleToUserMutation = extendType({
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { id } = args;
-
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationRoleToUser = await ctx.db.relationRoleToUser.delete({
+          ...cacheArgs,
           where: {
             id: id,
           },
-          include: cacheUpdater.include,
         });
         await cacheUpdater.one(relationRoleToUser);
         return relationRoleToUser as any;
@@ -221,26 +227,32 @@ export const RelationRoleToUserMutation = extendType({
 });
 
 const cacheUpdater = {
-  include: {
-    role: {
+  formArgs: (args: any) => {
+    const extraArgs = {
       select: {
-        relationPermissionToRoleAsRole: {
-          select: { permission: { select: { name: true } } },
+        userId: true,
+        role: {
+          select: {
+            relationPermissionToRoleAsRole: {
+              select: { permission: { select: { name: true } } },
+            },
+          },
         },
       },
-    },
+    };
+    const result = deepmerge(args, extraArgs);
+    return result;
   },
-  one: async (
-    relationRoleToUser: RelationRoleToUser & {
-      role: {
-        relationPermissionToRoleAsRole: {
-          permission: {
-            name: string;
-          };
-        }[];
-      };
-    }
-  ) => {
+  one: async (relationRoleToUser: {
+    role: {
+      relationPermissionToRoleAsRole: {
+        permission: {
+          name: string;
+        };
+      }[];
+    };
+    userId: string;
+  }) => {
     const permissionNames =
       relationRoleToUser.role.relationPermissionToRoleAsRole.map(
         (r) => r.permission.name
@@ -252,10 +264,10 @@ const cacheUpdater = {
   },
   many: async function (ids: string[]) {
     const relationsRoleToUser = await db.relationRoleToUser.findMany({
+      ...this.formArgs({}),
       where: {
         id: { in: ids },
       },
-      include: this.include,
     });
     await Promise.all(
       relationsRoleToUser.map(async (relationRoleToUser) => {

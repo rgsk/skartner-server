@@ -1,5 +1,6 @@
-import { Prisma, RelationPermissionToRole } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { db } from 'db';
+import deepmerge from 'deepmerge';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
@@ -145,16 +146,19 @@ export const RelationPermissionToRoleMutation = extendType({
         granterId: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { permissionId, roleId, isAllowed, granterId } = args;
+        const { permissionId, roleId, isAllowed, granterId, ...restArgs } =
+          args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationPermissionToRole =
           await ctx.db.relationPermissionToRole.create({
+            ...cacheArgs,
             data: {
               permissionId,
               roleId,
               isAllowed,
               granterId,
             },
-            include: cacheUpdater.include,
           });
         await cacheUpdater.one(relationPermissionToRole);
         return relationPermissionToRole as any;
@@ -177,9 +181,12 @@ export const RelationPermissionToRoleMutation = extendType({
         ),
       },
       async resolve(root, args, ctx, info) {
-        const { id, data } = args;
+        const { id, data, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationPermissionToRole =
           await ctx.db.relationPermissionToRole.update({
+            ...cacheArgs,
             where: { id },
             data: {
               permissionId: data.permissionId ?? undefined,
@@ -187,7 +194,6 @@ export const RelationPermissionToRoleMutation = extendType({
               granterId: data.granterId ?? undefined,
               isAllowed: data.isAllowed,
             },
-            include: cacheUpdater.include,
           });
         await cacheUpdater.one(relationPermissionToRole);
         return relationPermissionToRole as any;
@@ -199,13 +205,15 @@ export const RelationPermissionToRoleMutation = extendType({
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { id } = args;
+        const { id, ...restArgs } = args;
+        const prismaArgs = parseGraphQLQuery(info, restArgs);
+        const cacheArgs = cacheUpdater.formArgs(prismaArgs);
         const relationPermissionToRole =
           await ctx.db.relationPermissionToRole.delete({
+            ...cacheArgs,
             where: {
               id: id,
             },
-            include: cacheUpdater.include,
           });
         await cacheUpdater.one(relationPermissionToRole);
         return relationPermissionToRole as any;
@@ -231,20 +239,26 @@ export const RelationPermissionToRoleMutation = extendType({
 });
 
 const cacheUpdater = {
-  include: {
-    permission: {
+  formArgs: (args: any) => {
+    const extraArgs = {
       select: {
-        name: true,
+        permission: {
+          select: {
+            name: true,
+          },
+        },
+        roleId: true,
       },
-    },
+    };
+    const result = deepmerge(args, extraArgs);
+    return result;
   },
-  one: async (
-    relationPermissionToRole?: RelationPermissionToRole & {
-      permission: {
-        name: string;
-      };
-    }
-  ) => {
+  one: async (relationPermissionToRole?: {
+    permission: {
+      name: string;
+    };
+    roleId: string;
+  }) => {
     if (relationPermissionToRole) {
       const permissionName = relationPermissionToRole.permission.name;
       const users = await db.user.findMany({
@@ -266,10 +280,10 @@ const cacheUpdater = {
   many: async function (ids: string[]) {
     const relationsPermissionToRole =
       await db.relationPermissionToRole.findMany({
+        ...this.formArgs({}),
         where: {
           id: { in: ids },
         },
-        include: this.include,
       });
     const users = await db.user.findMany({
       where: {
