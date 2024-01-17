@@ -1,6 +1,8 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, RelationRoleToUser } from '@prisma/client';
+import { db } from 'db';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
+import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
 
 import {
   extendType,
@@ -144,8 +146,10 @@ export const RelationRoleToUserMutation = extendType({
             roleId,
             userId,
           },
+          include: cacheUpdater.include,
         });
-        return relationRoleToUser;
+        await cacheUpdater.one(relationRoleToUser);
+        return relationRoleToUser as any;
       },
     });
     t.nonNull.field('updateRelationRoleToUser', {
@@ -172,8 +176,10 @@ export const RelationRoleToUserMutation = extendType({
             assignerId: data.assignerId ?? undefined,
             roleId: data.roleId ?? undefined,
           },
+          include: cacheUpdater.include,
         });
-        return relationRoleToUser;
+        await cacheUpdater.one(relationRoleToUser);
+        return relationRoleToUser as any;
       },
     });
 
@@ -183,18 +189,15 @@ export const RelationRoleToUserMutation = extendType({
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { id, ...restArgs } = args;
-        const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationRoleToUserDeleteArgs>(
-            info,
-            restArgs
-          );
+        const { id } = args;
+
         const relationRoleToUser = await ctx.db.relationRoleToUser.delete({
-          ...prismaArgs,
           where: {
             id: id,
           },
+          include: cacheUpdater.include,
         });
+        await cacheUpdater.one(relationRoleToUser);
         return relationRoleToUser as any;
       },
     });
@@ -204,14 +207,9 @@ export const RelationRoleToUserMutation = extendType({
         ids: nonNull(list(nonNull(stringArg()))),
       },
       async resolve(root, args, ctx, info) {
-        const { ids, ...restArgs } = args;
-        const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationRoleToUserDeleteManyArgs>(
-            info,
-            restArgs
-          );
+        const { ids } = args;
+        await cacheUpdater.many(ids);
         const batchPayload = await ctx.db.relationRoleToUser.deleteMany({
-          ...prismaArgs,
           where: {
             id: { in: ids },
           },
@@ -221,3 +219,48 @@ export const RelationRoleToUserMutation = extendType({
     });
   },
 });
+
+const cacheUpdater = {
+  include: {
+    role: {
+      select: {
+        relationPermissionToRoleAsRole: {
+          select: { permission: { select: { name: true } } },
+        },
+      },
+    },
+  },
+  one: async (
+    relationRoleToUser: RelationRoleToUser & {
+      role: {
+        relationPermissionToRoleAsRole: {
+          permission: {
+            name: string;
+          };
+        }[];
+      };
+    }
+  ) => {
+    const permissionNames =
+      relationRoleToUser.role.relationPermissionToRoleAsRole.map(
+        (r) => r.permission.name
+      );
+    await checkUserAuthorizedForPermissionCache.invalidatePermissionsForUser({
+      permissionNames,
+      userId: relationRoleToUser.userId,
+    });
+  },
+  many: async function (ids: string[]) {
+    const relationsRoleToUser = await db.relationRoleToUser.findMany({
+      where: {
+        id: { in: ids },
+      },
+      include: this.include,
+    });
+    await Promise.all(
+      relationsRoleToUser.map(async (relationRoleToUser) => {
+        await this.one(relationRoleToUser);
+      })
+    );
+  },
+};

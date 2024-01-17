@@ -393,6 +393,27 @@ export const checkUserAuthorizedForPermissionCache = {
     }
     await checkUserAuthorizedForPermission.invalidateMany(keys);
   },
+  invalidatePermissionsForUser: async ({
+    permissionNames,
+    userId,
+  }: {
+    permissionNames: string[];
+    userId: string;
+  }) => {
+    const keys: [
+      {
+        permissionName: string;
+        userId: string;
+      }
+    ][] = [];
+    for (const permissionName of permissionNames) {
+      const permissionsImpacted = await getPermissionsImpacted(permissionName);
+      for (const pname of permissionsImpacted) {
+        keys.push([{ permissionName: pname, userId: userId }]);
+      }
+    }
+    await checkUserAuthorizedForPermission.invalidateMany(keys);
+  },
   invalidatePermissionForUsers: async ({
     permissionName,
     userIds,
