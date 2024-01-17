@@ -1,5 +1,6 @@
 import { db } from 'db';
 import { NextFunction, Request, Response } from 'express';
+import memoize from 'lib/cache/memoize';
 import { addProps, getProps } from 'middlewareProps';
 import { Middlewares } from 'middlewares';
 
@@ -301,53 +302,62 @@ const getRolesThatCanBeGranted = (
   return rolesThatCanBeGranted;
 };
 
-export const checkUserAuthorizedForPermission = async ({
-  permissionName,
-  userId,
-}: {
-  permissionName: string;
-  userId: string;
-}) => {
-  const falseResult = await goUpInHierarchyToCheckIfExplicitFalseIsSet({
+export const checkUserAuthorizedForPermission = memoize(
+  'db',
+  'checkUserAuthorizedForPermission',
+  async ({
     permissionName,
     userId,
-    hierarchyChecked: [],
-  });
-  // console.log({ falseResult });
-  if (falseResult && !falseResult.hasPermission) {
-    return falseResult;
-  }
-  const trueResult = await goUpInHierarchyToCheckIfExplicitTrueIsSet({
-    permissionName,
-    userId,
-    hierarchyChecked: [],
-  });
-  // console.log({ trueResult });
-  if (trueResult && trueResult.hasPermission) {
-    return trueResult;
-  }
+  }: {
+    permissionName: string;
+    userId: string;
+  }) => {
+    // console.log('checkUserAuthorizedForPermission called');
+    // console.log({
+    //   permissionName,
+    //   userId,
+    // });
+    const falseResult = await goUpInHierarchyToCheckIfExplicitFalseIsSet({
+      permissionName,
+      userId,
+      hierarchyChecked: [],
+    });
+    // console.log({ falseResult });
+    if (falseResult && !falseResult.hasPermission) {
+      return falseResult;
+    }
+    const trueResult = await goUpInHierarchyToCheckIfExplicitTrueIsSet({
+      permissionName,
+      userId,
+      hierarchyChecked: [],
+    });
+    // console.log({ trueResult });
+    if (trueResult && trueResult.hasPermission) {
+      return trueResult;
+    }
 
-  const whereTrueResult = await goUpInHierarchyToCheckWhereTrueCanBeSet({
-    permissionName,
-    hierarchyChecked: [],
-  });
-  const rolesThatCanBeGranted = getRolesThatCanBeGranted(
-    whereTrueResult.rolesThatAffectThisPermission
-  );
-  const finalResult = {
-    hasPermission: false,
-    permissionsThatCanBeGranted: [
-      ...whereTrueResult.permissionsThatCanBeGranted,
-    ],
-    // set was not properly sent as json
-    // so we convert to array
-    rolesThatCanBeGranted: [...rolesThatCanBeGranted],
-    rolesThatAffectThisPermission:
-      whereTrueResult.rolesThatAffectThisPermission,
-  };
-  // console.log({ finalResult });
-  return finalResult;
-};
+    const whereTrueResult = await goUpInHierarchyToCheckWhereTrueCanBeSet({
+      permissionName,
+      hierarchyChecked: [],
+    });
+    const rolesThatCanBeGranted = getRolesThatCanBeGranted(
+      whereTrueResult.rolesThatAffectThisPermission
+    );
+    const finalResult = {
+      hasPermission: false,
+      permissionsThatCanBeGranted: [
+        ...whereTrueResult.permissionsThatCanBeGranted,
+      ],
+      // set was not properly sent as json
+      // so we convert to array
+      rolesThatCanBeGranted: [...rolesThatCanBeGranted],
+      rolesThatAffectThisPermission:
+        whereTrueResult.rolesThatAffectThisPermission,
+    };
+    // console.log({ finalResult });
+    return finalResult;
+  }
+);
 
 const authorize =
   (permissionName: string) =>
