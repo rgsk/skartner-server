@@ -13,11 +13,13 @@ const cacheNotExpired = (cache: Cache) => {
 };
 
 const dbCache: CacheHandler = {
-  get: async (key: any) => {
+  get: async function (key: any) {
     const cache = await db.cache.findUnique({ where: { key: key } });
     if (cache) {
       if (cacheNotExpired(cache)) {
         return cache.value as any;
+      } else {
+        this.delete(key);
       }
     }
     return null;
@@ -41,17 +43,15 @@ const dbCache: CacheHandler = {
     });
   },
   delete: async (key) => {
-    await db.cache.update({
+    await db.cache.delete({
       where: { key },
-      data: { expirationTimestamp: new Date() },
     });
   },
   deleteMany: async (keys) => {
-    await db.cache.updateMany({
+    await db.cache.deleteMany({
       where: {
         OR: keys.map((keyValue) => ({ key: { equals: keyValue } })),
       },
-      data: { expirationTimestamp: new Date() },
     });
   },
 };
