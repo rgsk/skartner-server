@@ -10,6 +10,7 @@ export type CacheHandler = {
     expirationTimestamp?: Date | null
   ) => Promise<void>;
   delete: (key: any) => Promise<void>;
+  deleteMany?: (keys: any[]) => Promise<void>;
 };
 export const handlers = {
   db: dbCache,

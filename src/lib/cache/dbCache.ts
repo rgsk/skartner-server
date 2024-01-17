@@ -46,5 +46,13 @@ const dbCache: CacheHandler = {
       data: { expirationTimestamp: new Date() },
     });
   },
+  deleteMany: async (keys) => {
+    await db.cache.updateMany({
+      where: {
+        OR: keys.map((keyValue) => ({ key: { equals: keyValue } })),
+      },
+      data: { expirationTimestamp: new Date() },
+    });
+  },
 };
 export default dbCache;

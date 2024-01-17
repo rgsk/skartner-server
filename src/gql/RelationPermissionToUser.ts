@@ -1,6 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
+import { tuple } from 'lib/typescrptMagic';
+import { checkUserAuthorizedForPermission } from 'middlewares/authorize';
 import {
   booleanArg,
   extendType,
@@ -149,8 +151,21 @@ export const RelationPermissionToUserMutation = extendType({
               isAllowed,
               granterId,
             },
+            include: {
+              permission: {
+                select: {
+                  name: true,
+                },
+              },
+            },
           });
-        return relationPermissionToUser;
+        if (relationPermissionToUser) {
+          checkUserAuthorizedForPermission.invalidate({
+            permissionName: relationPermissionToUser.permission.name,
+            userId: relationPermissionToUser.userId,
+          });
+        }
+        return relationPermissionToUser as any;
       },
     });
     t.nonNull.field('updateRelationPermissionToUser', {
@@ -180,8 +195,21 @@ export const RelationPermissionToUserMutation = extendType({
               granterId: data.granterId ?? undefined,
               isAllowed: data.isAllowed,
             },
+            include: {
+              permission: {
+                select: {
+                  name: true,
+                },
+              },
+            },
           });
-        return relationPermissionToUser;
+        if (relationPermissionToUser) {
+          checkUserAuthorizedForPermission.invalidate({
+            permissionName: relationPermissionToUser.permission.name,
+            userId: relationPermissionToUser.userId,
+          });
+        }
+        return relationPermissionToUser as any;
       },
     });
     t.field('deleteRelationPermissionToUser', {
@@ -190,19 +218,26 @@ export const RelationPermissionToUserMutation = extendType({
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { id, ...restArgs } = args;
-        const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationPermissionToUserDeleteArgs>(
-            info,
-            restArgs
-          );
+        const { id } = args;
         const relationPermissionToUser =
           await ctx.db.relationPermissionToUser.delete({
-            ...prismaArgs,
             where: {
               id: id,
             },
+            include: {
+              permission: {
+                select: {
+                  name: true,
+                },
+              },
+            },
           });
+        if (relationPermissionToUser) {
+          checkUserAuthorizedForPermission.invalidate({
+            permissionName: relationPermissionToUser.permission.name,
+            userId: relationPermissionToUser.userId,
+          });
+        }
         return relationPermissionToUser as any;
       },
     });
@@ -212,14 +247,28 @@ export const RelationPermissionToUserMutation = extendType({
         ids: nonNull(list(nonNull(stringArg()))),
       },
       async resolve(root, args, ctx, info) {
-        const { ids, ...restArgs } = args;
-        const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationPermissionToUserDeleteManyArgs>(
-            info,
-            restArgs
-          );
+        const { ids } = args;
+        const relationsPermissionToUser =
+          await ctx.db.relationPermissionToUser.findMany({
+            where: {
+              id: { in: ids },
+            },
+            include: {
+              permission: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          });
+        const keys = relationsPermissionToUser.map((r) => {
+          return tuple({
+            permissionName: r.permission.name,
+            userId: r.userId,
+          });
+        });
+        checkUserAuthorizedForPermission.invalidateMany(keys);
         const batchPayload = await ctx.db.relationPermissionToUser.deleteMany({
-          ...prismaArgs,
           where: {
             id: { in: ids },
           },
