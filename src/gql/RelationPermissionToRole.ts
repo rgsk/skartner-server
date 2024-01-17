@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
+import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
 import {
   booleanArg,
   extendType,
@@ -183,8 +184,35 @@ export const RelationPermissionToRoleMutation = extendType({
               granterId: data.granterId ?? undefined,
               isAllowed: data.isAllowed,
             },
+            include: {
+              permission: {
+                select: {
+                  name: true,
+                },
+              },
+            },
           });
-        return relationPermissionToRole;
+        if (relationPermissionToRole) {
+          const permissionName = relationPermissionToRole.permission.name;
+          const users = await ctx.db.user.findMany({
+            where: {
+              relationRoleToUserAsUser: {
+                some: { roleId: relationPermissionToRole.roleId },
+              },
+            },
+            select: {
+              id: true,
+            },
+          });
+          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUsers(
+            {
+              permissionName: permissionName,
+              userIds: users.map((u) => u.id),
+            }
+          );
+        }
+
+        return relationPermissionToRole as any;
       },
     });
     t.field('deleteRelationPermissionToRole', {

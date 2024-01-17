@@ -1,6 +1,8 @@
 import { db } from 'db';
 import { NextFunction, Request, Response } from 'express';
+import { fetchChildHierarchy, flattenKeys } from 'gql';
 import memoize from 'lib/cache/memoize';
+import { tuple } from 'lib/typescrptMagic';
 import { addProps, getProps } from 'middlewareProps';
 import { Middlewares } from 'middlewares';
 
@@ -358,6 +360,91 @@ export const checkUserAuthorizedForPermission = memoize(
     return finalResult;
   }
 );
+
+const getPermissionsImpacted = async (permissionName: string) => {
+  const childHierarchy = await fetchChildHierarchy(permissionName);
+  const childPermissionNames = flattenKeys(childHierarchy);
+  const permissionsImpacted = [permissionName, ...childPermissionNames];
+  return permissionsImpacted;
+};
+
+export const checkUserAuthorizedForPermissionCache = {
+  invalidatePermissionForUser: async ({
+    permissionName,
+    userId,
+  }: {
+    permissionName: string;
+    userId: string;
+  }) => {
+    const permissionsImpacted = await getPermissionsImpacted(permissionName);
+    const keys: [
+      {
+        permissionName: string;
+        userId: string;
+      }
+    ][] = [];
+    for (const permissionName of permissionsImpacted) {
+      keys.push(
+        tuple({
+          permissionName: permissionName,
+          userId: userId,
+        })
+      );
+    }
+    await checkUserAuthorizedForPermission.invalidateMany(keys);
+  },
+  invalidatePermissionForUsers: async ({
+    permissionName,
+    userIds,
+  }: {
+    permissionName: string;
+    userIds: string[];
+  }) => {
+    const permissionsImpacted = await getPermissionsImpacted(permissionName);
+    const keys: [
+      {
+        permissionName: string;
+        userId: string;
+      }
+    ][] = [];
+    for (const permissionName of permissionsImpacted) {
+      for (const userId of userIds) {
+        keys.push(
+          tuple({
+            permissionName: permissionName,
+            userId: userId,
+          })
+        );
+      }
+    }
+    await checkUserAuthorizedForPermission.invalidateMany(keys);
+  },
+  invalidatePermissionsForUsers: async (
+    items: {
+      permissionName: string;
+      userId: string;
+    }[]
+  ) => {
+    const keys: [
+      {
+        permissionName: string;
+        userId: string;
+      }
+    ][] = [];
+    for (const { permissionName, userId } of items) {
+      const permissionsImpacted = await getPermissionsImpacted(permissionName);
+      for (const pname of permissionsImpacted) {
+        keys.push(
+          tuple({
+            permissionName: pname,
+            userId: userId,
+          })
+        );
+      }
+    }
+    await checkUserAuthorizedForPermission.invalidateMany(keys);
+  },
+};
 
 const authorize =
   (permissionName: string) =>

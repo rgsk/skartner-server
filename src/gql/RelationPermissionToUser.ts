@@ -1,8 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
-import { tuple } from 'lib/typescrptMagic';
-import { checkUserAuthorizedForPermission } from 'middlewares/authorize';
+import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
 import {
   booleanArg,
   extendType,
@@ -160,10 +159,12 @@ export const RelationPermissionToUserMutation = extendType({
             },
           });
         if (relationPermissionToUser) {
-          checkUserAuthorizedForPermission.invalidate({
-            permissionName: relationPermissionToUser.permission.name,
-            userId: relationPermissionToUser.userId,
-          });
+          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser(
+            {
+              permissionName: relationPermissionToUser.permission.name,
+              userId: relationPermissionToUser.userId,
+            }
+          );
         }
         return relationPermissionToUser as any;
       },
@@ -204,10 +205,12 @@ export const RelationPermissionToUserMutation = extendType({
             },
           });
         if (relationPermissionToUser) {
-          checkUserAuthorizedForPermission.invalidate({
-            permissionName: relationPermissionToUser.permission.name,
-            userId: relationPermissionToUser.userId,
-          });
+          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser(
+            {
+              permissionName: relationPermissionToUser.permission.name,
+              userId: relationPermissionToUser.userId,
+            }
+          );
         }
         return relationPermissionToUser as any;
       },
@@ -233,10 +236,12 @@ export const RelationPermissionToUserMutation = extendType({
             },
           });
         if (relationPermissionToUser) {
-          checkUserAuthorizedForPermission.invalidate({
-            permissionName: relationPermissionToUser.permission.name,
-            userId: relationPermissionToUser.userId,
-          });
+          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser(
+            {
+              permissionName: relationPermissionToUser.permission.name,
+              userId: relationPermissionToUser.userId,
+            }
+          );
         }
         return relationPermissionToUser as any;
       },
@@ -262,12 +267,14 @@ export const RelationPermissionToUserMutation = extendType({
             },
           });
         const keys = relationsPermissionToUser.map((r) => {
-          return tuple({
+          return {
             permissionName: r.permission.name,
             userId: r.userId,
-          });
+          };
         });
-        checkUserAuthorizedForPermission.invalidateMany(keys);
+        await checkUserAuthorizedForPermissionCache.invalidatePermissionsForUsers(
+          keys
+        );
         const batchPayload = await ctx.db.relationPermissionToUser.deleteMany({
           where: {
             id: { in: ids },
