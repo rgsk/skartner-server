@@ -1,4 +1,5 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, RelationPermissionToUser } from '@prisma/client';
+import { db } from 'db';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
@@ -150,22 +151,9 @@ export const RelationPermissionToUserMutation = extendType({
               isAllowed,
               granterId,
             },
-            include: {
-              permission: {
-                select: {
-                  name: true,
-                },
-              },
-            },
+            include: cacheUpdater.include,
           });
-        if (relationPermissionToUser) {
-          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser(
-            {
-              permissionName: relationPermissionToUser.permission.name,
-              userId: relationPermissionToUser.userId,
-            }
-          );
-        }
+        await cacheUpdater.one(relationPermissionToUser);
         return relationPermissionToUser as any;
       },
     });
@@ -196,22 +184,9 @@ export const RelationPermissionToUserMutation = extendType({
               granterId: data.granterId ?? undefined,
               isAllowed: data.isAllowed,
             },
-            include: {
-              permission: {
-                select: {
-                  name: true,
-                },
-              },
-            },
+            include: cacheUpdater.include,
           });
-        if (relationPermissionToUser) {
-          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser(
-            {
-              permissionName: relationPermissionToUser.permission.name,
-              userId: relationPermissionToUser.userId,
-            }
-          );
-        }
+        await cacheUpdater.one(relationPermissionToUser);
         return relationPermissionToUser as any;
       },
     });
@@ -227,22 +202,9 @@ export const RelationPermissionToUserMutation = extendType({
             where: {
               id: id,
             },
-            include: {
-              permission: {
-                select: {
-                  name: true,
-                },
-              },
-            },
+            include: cacheUpdater.include,
           });
-        if (relationPermissionToUser) {
-          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser(
-            {
-              permissionName: relationPermissionToUser.permission.name,
-              userId: relationPermissionToUser.userId,
-            }
-          );
-        }
+        await cacheUpdater.one(relationPermissionToUser);
         return relationPermissionToUser as any;
       },
     });
@@ -253,28 +215,7 @@ export const RelationPermissionToUserMutation = extendType({
       },
       async resolve(root, args, ctx, info) {
         const { ids } = args;
-        const relationsPermissionToUser =
-          await ctx.db.relationPermissionToUser.findMany({
-            where: {
-              id: { in: ids },
-            },
-            include: {
-              permission: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          });
-        const keys = relationsPermissionToUser.map((r) => {
-          return {
-            permissionName: r.permission.name,
-            userId: r.userId,
-          };
-        });
-        await checkUserAuthorizedForPermissionCache.invalidatePermissionsForUsers(
-          keys
-        );
+        await cacheUpdater.many(ids);
         const batchPayload = await ctx.db.relationPermissionToUser.deleteMany({
           where: {
             id: { in: ids },
@@ -285,3 +226,45 @@ export const RelationPermissionToUserMutation = extendType({
     });
   },
 });
+
+const cacheUpdater = {
+  include: {
+    permission: {
+      select: {
+        name: true,
+      },
+    },
+  },
+  one: async (
+    relationPermissionToUser?: RelationPermissionToUser & {
+      permission: {
+        name: string;
+      };
+    }
+  ) => {
+    if (relationPermissionToUser) {
+      await checkUserAuthorizedForPermissionCache.invalidatePermissionForUser({
+        permissionName: relationPermissionToUser.permission.name,
+        userId: relationPermissionToUser.userId,
+      });
+    }
+  },
+  many: async function (ids: string[]) {
+    const relationsPermissionToUser =
+      await db.relationPermissionToUser.findMany({
+        where: {
+          id: { in: ids },
+        },
+        include: this.include,
+      });
+    const keys = relationsPermissionToUser.map((r) => {
+      return {
+        permissionName: r.permission.name,
+        userId: r.userId,
+      };
+    });
+    await checkUserAuthorizedForPermissionCache.invalidatePermissionUserPairs(
+      keys
+    );
+  },
+};

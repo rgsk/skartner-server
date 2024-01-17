@@ -1,4 +1,5 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, RelationPermissionToRole } from '@prisma/client';
+import { db } from 'db';
 import { findManyGraphqlArgs } from 'lib/graphqlUtils';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import { checkUserAuthorizedForPermissionCache } from 'middlewares/authorize';
@@ -153,8 +154,10 @@ export const RelationPermissionToRoleMutation = extendType({
               isAllowed,
               granterId,
             },
+            include: cacheUpdater.include,
           });
-        return relationPermissionToRole;
+        await cacheUpdater.one(relationPermissionToRole);
+        return relationPermissionToRole as any;
       },
     });
     t.nonNull.field('updateRelationPermissionToRole', {
@@ -184,34 +187,9 @@ export const RelationPermissionToRoleMutation = extendType({
               granterId: data.granterId ?? undefined,
               isAllowed: data.isAllowed,
             },
-            include: {
-              permission: {
-                select: {
-                  name: true,
-                },
-              },
-            },
+            include: cacheUpdater.include,
           });
-        if (relationPermissionToRole) {
-          const permissionName = relationPermissionToRole.permission.name;
-          const users = await ctx.db.user.findMany({
-            where: {
-              relationRoleToUserAsUser: {
-                some: { roleId: relationPermissionToRole.roleId },
-              },
-            },
-            select: {
-              id: true,
-            },
-          });
-          await checkUserAuthorizedForPermissionCache.invalidatePermissionForUsers(
-            {
-              permissionName: permissionName,
-              userIds: users.map((u) => u.id),
-            }
-          );
-        }
-
+        await cacheUpdater.one(relationPermissionToRole);
         return relationPermissionToRole as any;
       },
     });
@@ -221,19 +199,15 @@ export const RelationPermissionToRoleMutation = extendType({
         id: nonNull(stringArg()),
       },
       async resolve(root, args, ctx, info) {
-        const { id, ...restArgs } = args;
-        const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationPermissionToRoleDeleteArgs>(
-            info,
-            restArgs
-          );
+        const { id } = args;
         const relationPermissionToRole =
           await ctx.db.relationPermissionToRole.delete({
-            ...prismaArgs,
             where: {
               id: id,
             },
+            include: cacheUpdater.include,
           });
+        await cacheUpdater.one(relationPermissionToRole);
         return relationPermissionToRole as any;
       },
     });
@@ -243,14 +217,9 @@ export const RelationPermissionToRoleMutation = extendType({
         ids: nonNull(list(nonNull(stringArg()))),
       },
       async resolve(root, args, ctx, info) {
-        const { ids, ...restArgs } = args;
-        const prismaArgs =
-          parseGraphQLQuery<Prisma.RelationPermissionToRoleDeleteManyArgs>(
-            info,
-            restArgs
-          );
+        const { ids } = args;
+        await cacheUpdater.many(ids);
         const batchPayload = await ctx.db.relationPermissionToRole.deleteMany({
-          ...prismaArgs,
           where: {
             id: { in: ids },
           },
@@ -260,3 +229,82 @@ export const RelationPermissionToRoleMutation = extendType({
     });
   },
 });
+
+const cacheUpdater = {
+  include: {
+    permission: {
+      select: {
+        name: true,
+      },
+    },
+  },
+  one: async (
+    relationPermissionToRole?: RelationPermissionToRole & {
+      permission: {
+        name: string;
+      };
+    }
+  ) => {
+    if (relationPermissionToRole) {
+      const permissionName = relationPermissionToRole.permission.name;
+      const users = await db.user.findMany({
+        where: {
+          relationRoleToUserAsUser: {
+            some: { roleId: relationPermissionToRole.roleId },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      await checkUserAuthorizedForPermissionCache.invalidatePermissionForUsers({
+        permissionName: permissionName,
+        userIds: users.map((u) => u.id),
+      });
+    }
+  },
+  many: async function (ids: string[]) {
+    const relationsPermissionToRole =
+      await db.relationPermissionToRole.findMany({
+        where: {
+          id: { in: ids },
+        },
+        include: this.include,
+      });
+    const users = await db.user.findMany({
+      where: {
+        relationRoleToUserAsUser: {
+          some: {
+            roleId: { in: relationsPermissionToRole.map((r) => r.roleId) },
+          },
+        },
+      },
+      select: {
+        id: true,
+        relationRoleToUserAsUser: { select: { roleId: true } },
+      },
+    });
+    const roleIdToUsersMap: any = {};
+    for (const user of users) {
+      const roleId = user.relationRoleToUserAsUser[0].roleId;
+      if (roleId in roleIdToUsersMap) {
+        roleIdToUsersMap[roleId] = [...roleIdToUsersMap[roleId], user];
+      } else {
+        roleIdToUsersMap[roleId] = [user];
+      }
+    }
+    const items: {
+      permissionName: string;
+      userIds: string[];
+    }[] = [];
+    for (const relation of relationsPermissionToRole) {
+      const permissionName = relation.permission.name;
+      const roleId = relation.roleId;
+      const userIds = roleIdToUsersMap[roleId].map((u: any) => u.id);
+      items.push({ permissionName, userIds });
+    }
+    await checkUserAuthorizedForPermissionCache.invalidatePermissionsForUsers(
+      items
+    );
+  },
+};

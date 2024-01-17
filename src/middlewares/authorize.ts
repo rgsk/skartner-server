@@ -419,7 +419,7 @@ export const checkUserAuthorizedForPermissionCache = {
     }
     await checkUserAuthorizedForPermission.invalidateMany(keys);
   },
-  invalidatePermissionsForUsers: async (
+  invalidatePermissionUserPairs: async (
     items: {
       permissionName: string;
       userId: string;
@@ -440,6 +440,33 @@ export const checkUserAuthorizedForPermissionCache = {
             userId: userId,
           })
         );
+      }
+    }
+    await checkUserAuthorizedForPermission.invalidateMany(keys);
+  },
+  invalidatePermissionsForUsers: async (
+    items: {
+      permissionName: string;
+      userIds: string[];
+    }[]
+  ) => {
+    const keys: [
+      {
+        permissionName: string;
+        userId: string;
+      }
+    ][] = [];
+    for (const { permissionName, userIds } of items) {
+      const permissionsImpacted = await getPermissionsImpacted(permissionName);
+      for (const pname of permissionsImpacted) {
+        for (const userId of userIds) {
+          keys.push(
+            tuple({
+              permissionName: pname,
+              userId: userId,
+            })
+          );
+        }
       }
     }
     await checkUserAuthorizedForPermission.invalidateMany(keys);
