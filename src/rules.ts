@@ -101,7 +101,7 @@ export const graphqlPermissions = shield(
         rules.canAccessUsersTable.rule
       ),
       userSessions: rules.canAccessAdminDashboard.rule,
-      greWords: rules.canAccessGreWordsTable.rule,
+      // greWords: rules.canAccessGreWordsTable.rule,
     },
     Mutation: {
       deleteGreWord: rules.isGreWordOwner.rule,
