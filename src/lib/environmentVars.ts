@@ -33,6 +33,7 @@ const environmentVarsSchema = z.object({
     APP_ID: z.string(),
     PERMANENT_TOKEN: z.string(),
   }),
+  HUGGING_FACE_TOKEN: z.string().optional(),
 });
 
 const fields: z.infer<typeof environmentVarsSchema> = {
@@ -56,6 +57,7 @@ const fields: z.infer<typeof environmentVarsSchema> = {
     APP_ID: process.env.WHATSAPP_APP_ID!,
     PERMANENT_TOKEN: process.env.WHATSAPP_PERMANENT_TOKEN!,
   },
+  HUGGING_FACE_TOKEN: process.env.HUGGING_FACE_TOKEN,
 };
 
 const environmentVars = environmentVarsSchema.parse(fields);
