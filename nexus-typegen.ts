@@ -17,6 +17,11 @@ export interface NexusGenInputs {
   CacheWordWhereInput: { // input type
     text?: NexusGenInputs['StringFilter'] | null; // StringFilter
   }
+  CreateCacheResponseData: { // input type
+    prompt: string; // String!
+    result: string; // String!
+    word: string; // String!
+  }
   EnumGreWordStatusFilter: { // input type
     equals?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
     in?: NexusGenEnums['GreWordStatus'][] | null; // [GreWordStatus!]
@@ -193,7 +198,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  FetchPolicy: "cache_first" | "cache_only" | "network_only" | "no_cache"
+  FetchPolicy: "cacheFirst" | "cacheOnly" | "networkOnly" | "noCache"
   GreWordStatus: "ALMOST_LEARNT" | "FINISHED_LEARNING" | "MASTERED" | "MEMORY_MODE" | "STARTED_LEARNING" | "STILL_LEARNING"
   QueryMode: "default" | "insensitive"
   SortOrder: "asc" | "desc"
@@ -344,7 +349,7 @@ export interface NexusGenObjects {
     s3Url?: string | null; // String
   }
   SendSinglePromptResponse: { // root type
-    cacheResponseId: string; // String!
+    cacheResponseId?: string | null; // String
     result: string; // String!
     resultIndex?: number | null; // Int
     totalResultsInCache?: number | null; // Int
@@ -644,7 +649,7 @@ export interface NexusGenFieldTypes {
     s3Url: string | null; // String
   }
   SendSinglePromptResponse: { // field return type
-    cacheResponseId: string; // String!
+    cacheResponseId: string | null; // String
     result: string; // String!
     resultIndex: number | null; // Int
     totalResultsInCache: number | null; // Int
@@ -1001,11 +1006,13 @@ export interface NexusGenArgTypes {
       title: string; // String!
     }
     createGptPrompt: { // args
-      cacheResponseId: string; // String!
+      cacheResponseId?: string | null; // String
+      createCacheResponseData?: NexusGenInputs['CreateCacheResponseData'] | null; // CreateCacheResponseData
       greWordId: string; // String!
     }
     createGreWord: { // args
-      cacheResponseId: string; // String!
+      cacheResponseId?: string | null; // String
+      createCacheResponseData?: NexusGenInputs['CreateCacheResponseData'] | null; // CreateCacheResponseData
       greWordTags?: Array<NexusGenInputs['GreWordTagWhereUniqueInput'] | null> | null; // [GreWordTagWhereUniqueInput]
       status?: NexusGenEnums['GreWordStatus'] | null; // GreWordStatus
       userId: string; // String!

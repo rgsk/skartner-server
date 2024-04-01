@@ -84,5 +84,5 @@ export const SortOrderEnum = enumType({
 
 export const FetchPolicyEnum = enumType({
   name: 'FetchPolicy',
-  members: ['cache_first', 'network_only', 'no_cache', 'cache_only'],
+  members: ['cacheFirst', 'networkOnly', 'noCache', 'cacheOnly'],
 });

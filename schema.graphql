@@ -44,6 +44,12 @@ input CacheWordWhereInput {
   text: StringFilter
 }
 
+input CreateCacheResponseData {
+  prompt: String!
+  result: String!
+  word: String!
+}
+
 input EnumGreWordStatusFilter {
   equals: GreWordStatus
   in: [GreWordStatus!]
@@ -52,10 +58,10 @@ input EnumGreWordStatusFilter {
 }
 
 enum FetchPolicy {
-  cache_first
-  cache_only
-  network_only
-  no_cache
+  cacheFirst
+  cacheOnly
+  networkOnly
+  noCache
 }
 
 type GenerateImagesForPromptResponse {
@@ -180,8 +186,8 @@ scalar Json
 
 type Mutation {
   createDraft(body: String!, title: String!): Post
-  createGptPrompt(cacheResponseId: String!, greWordId: String!): GptPrompt!
-  createGreWord(cacheResponseId: String!, greWordTags: [GreWordTagWhereUniqueInput], status: GreWordStatus, userId: String!): GreWord!
+  createGptPrompt(cacheResponseId: String, createCacheResponseData: CreateCacheResponseData, greWordId: String!): GptPrompt!
+  createGreWord(cacheResponseId: String, createCacheResponseData: CreateCacheResponseData, greWordTags: [GreWordTagWhereUniqueInput], status: GreWordStatus, userId: String!): GreWord!
   createGreWordSearchPromptInput(text: String!, userId: String!): GreWordSearchPromptInput!
   createGreWordTag(name: String!, userId: String!): GreWordTag!
   createNotification(message: String!, userId: String!): Notification!
@@ -320,7 +326,7 @@ type Query {
   rolePermissionsGraph(where: RoleWhereInput): Json
   roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   rolesCount(where: RoleWhereInput): Int!
-  sendSinglePrompt(fetchPolicy: FetchPolicy! = cache_first, indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, word: String!): SendSinglePromptResponse!
+  sendSinglePrompt(fetchPolicy: FetchPolicy! = cacheFirst, indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, word: String!): SendSinglePromptResponse!
   user(where: UserWhereInput!): User
   userPermissionsGraph(where: UserWhereInput): Json
   userSession(where: UserSessionWhereUniqueInput!): UserSession
@@ -457,7 +463,7 @@ type SaveImageToS3Response {
 }
 
 type SendSinglePromptResponse {
-  cacheResponseId: String!
+  cacheResponseId: String
   result: String!
   resultIndex: Int
   totalResultsInCache: Int

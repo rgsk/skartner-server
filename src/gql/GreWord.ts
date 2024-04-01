@@ -7,8 +7,10 @@ import {
 } from 'lib/graphqlUtils';
 
 import { db } from 'db';
+import { GraphQLError } from 'graphql';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
+  arg,
   enumType,
   extendType,
   inputObjectType,
@@ -19,6 +21,7 @@ import {
 } from 'nexus';
 import { rules } from 'rules';
 import { z } from 'zod';
+import { savePromptAsCacheResponse } from './GptPrompt/GptPrompt';
 import { ZGreWordTagWhereUniqueInput } from './GreWordTag';
 import { notifyUser } from './Notification';
 import { getEnumFilter } from './Types';
@@ -201,13 +204,25 @@ export const GreWordQuery = extendType({
   },
 });
 
+export const CreateCacheResponseData = inputObjectType({
+  name: 'CreateCacheResponseData',
+  definition(t) {
+    t.nonNull.string('word');
+    t.nonNull.string('prompt');
+    t.nonNull.string('result');
+  },
+});
+
 export const GreWordMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createGreWord', {
       type: nonNull('GreWord'),
       args: {
-        cacheResponseId: nonNull(stringArg()),
+        cacheResponseId: stringArg(),
+        createCacheResponseData: arg({
+          type: 'CreateCacheResponseData',
+        }),
         userId: nonNull(stringArg()),
         status: 'GreWordStatus',
         greWordTags: list('GreWordTagWhereUniqueInput'),
@@ -215,6 +230,7 @@ export const GreWordMutation = extendType({
       async resolve(root, args, ctx, info) {
         const {
           cacheResponseId,
+          createCacheResponseData,
           userId,
           greWordTags: _greWordTags,
           status,
@@ -231,11 +247,19 @@ export const GreWordMutation = extendType({
         const { greWordTags } = validator.parse({
           greWordTags: _greWordTags,
         });
+        if (!cacheResponseId && !createCacheResponseData) {
+          throw new GraphQLError(
+            `either cacheResponseId or createCacheResponseData must be present`
+          );
+        }
 
-        const cacheResponse = await ctx.db.cacheResponse.findUnique({
-          where: { id: cacheResponseId },
-          include: { cacheWord: true },
-        });
+        const cacheResponse = cacheResponseId
+          ? await ctx.db.cacheResponse.findUnique({
+              where: { id: cacheResponseId },
+              include: { cacheWord: true },
+            })
+          : await savePromptAsCacheResponse(createCacheResponseData!);
+
         if (!cacheResponse) {
           throw new Error("cacheResponse doesn't exists");
         }
@@ -248,7 +272,7 @@ export const GreWordMutation = extendType({
             gptPrompts: {
               create: {
                 userId: userId,
-                cacheResponseId: cacheResponseId,
+                cacheResponseId: cacheResponse.id,
               },
             },
             greWordTags: {

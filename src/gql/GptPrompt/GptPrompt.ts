@@ -1,4 +1,4 @@
-import { GreWord, Prisma } from '@prisma/client';
+import { CacheResponse, GreWord, Prisma } from '@prisma/client';
 import DataLoader from 'dataloader';
 import { db } from 'db';
 import { GraphQLError } from 'graphql';
@@ -164,7 +164,7 @@ export const SendSinglePromptResponseObject = objectType({
     t.nonNull.string('result');
     t.int('resultIndex');
     t.int('totalResultsInCache');
-    t.nonNull.string('cacheResponseId');
+    t.string('cacheResponseId');
   },
 });
 
@@ -183,6 +183,51 @@ export const WordsCountForGptPromptsObject = objectType({
     t.nonNull.int('count');
   },
 });
+
+export const savePromptAsCacheResponse = async ({
+  word,
+  prompt,
+  result,
+}: {
+  word: string;
+  prompt: string;
+  result: string;
+}) => {
+  // save the result in cache
+  const cacheWord = await db.cacheWord.findUnique({
+    where: { text: word },
+  });
+  const pronunciationAudioUrl =
+    cacheWord?.pronunciationAudioUrl ?? (await getWordSpeechUrl(word));
+  const createdCacheResponse = await db.cacheResponse.create({
+    data: {
+      cachePrompt: {
+        connectOrCreate: {
+          create: {
+            text: prompt,
+          },
+          where: {
+            text: prompt,
+          },
+        },
+      },
+      cacheWord: {
+        connectOrCreate: {
+          create: {
+            text: word,
+            pronunciationAudioUrl: pronunciationAudioUrl,
+          },
+          where: {
+            text: word,
+          },
+        },
+      },
+      text: result,
+    },
+    include: { cacheWord: true },
+  });
+  return createdCacheResponse;
+};
 
 export const GptPromptQuery = extendType({
   type: 'Query',
@@ -262,7 +307,7 @@ export const GptPromptQuery = extendType({
         prompt: nonNull(stringArg()),
         word: nonNull(stringArg()),
         fetchPolicy: nonNull(
-          arg({ type: 'FetchPolicy', default: 'cache_first' })
+          arg({ type: 'FetchPolicy', default: 'cacheFirst' })
         ),
         indexesReturned: list(nonNull(intArg())),
         resultIndexFromCache: intArg(),
@@ -275,13 +320,9 @@ export const GptPromptQuery = extendType({
           resultIndexFromCache,
           fetchPolicy,
         } = args;
-        if (fetchPolicy === 'no_cache') {
-          throw new GraphQLError(
-            `no_cache fetchPolicy is not supported for this endpoint`
-          );
-        }
+
         let len: number | undefined;
-        if (fetchPolicy === 'cache_first' || fetchPolicy === 'cache_only') {
+        if (fetchPolicy === 'cacheFirst' || fetchPolicy === 'cacheOnly') {
           const cacheResponses = await ctx.db.cacheResponse.findMany({
             where: {
               cacheWord: {
@@ -327,7 +368,7 @@ export const GptPromptQuery = extendType({
                 cacheResponseId: cacheResponses[idx].id,
               };
             } else {
-              if (fetchPolicy === 'cache_only') {
+              if (fetchPolicy === 'cacheOnly') {
                 throw new GraphQLError(`no more results in cache`, {
                   extensions: {
                     totalResultsInCache: len,
@@ -341,43 +382,19 @@ export const GptPromptQuery = extendType({
         const input = prompt.replaceAll('{word}', word);
 
         const result = await sendPrompt(input, 'llama2');
-        // save the result in cache
-        const cacheWord = await ctx.db.cacheWord.findUnique({
-          where: { text: word },
-        });
-        const pronunciationAudioUrl =
-          cacheWord?.pronunciationAudioUrl ?? (await getWordSpeechUrl(word));
-        const createdCacheResponse = await ctx.db.cacheResponse.create({
-          data: {
-            cachePrompt: {
-              connectOrCreate: {
-                create: {
-                  text: prompt,
-                },
-                where: {
-                  text: prompt,
-                },
-              },
-            },
-            cacheWord: {
-              connectOrCreate: {
-                create: {
-                  text: word,
-                  pronunciationAudioUrl: pronunciationAudioUrl,
-                },
-                where: {
-                  text: word,
-                },
-              },
-            },
-            text: result,
-          },
-        });
+        let createdCacheResponse: CacheResponse | undefined;
+        if (fetchPolicy !== 'noCache') {
+          createdCacheResponse = await savePromptAsCacheResponse({
+            word,
+            prompt,
+            result,
+          });
+        }
         return {
           result: result,
           resultIndex: len,
           totalResultsInCache: len ? len + 1 : undefined,
-          cacheResponseId: createdCacheResponse.id,
+          cacheResponseId: createdCacheResponse?.id,
         };
       },
     });
@@ -522,21 +539,46 @@ export const GptPromptMutation = extendType({
       t.field('createGptPrompt', {
         type: nonNull('GptPrompt'),
         args: {
-          cacheResponseId: nonNull(stringArg()),
+          cacheResponseId: stringArg(),
+          createCacheResponseData: arg({
+            type: 'CreateCacheResponseData',
+          }),
           greWordId: nonNull(stringArg()),
         },
         async resolve(root, args, ctx, info) {
-          const { cacheResponseId, greWordId, ...restArgs } = args;
+          const {
+            cacheResponseId,
+            createCacheResponseData,
+            greWordId,
+            ...restArgs
+          } = args;
+
           const prismaArgs = parseGraphQLQuery<Prisma.GptPromptCreateArgs>(
             info,
             restArgs
           );
 
+          if (!cacheResponseId && !createCacheResponseData) {
+            throw new GraphQLError(
+              `either cacheResponseId or createCacheResponseData must be present`
+            );
+          }
+
+          const cacheResponse = cacheResponseId
+            ? await ctx.db.cacheResponse.findUnique({
+                where: { id: cacheResponseId },
+                include: { cacheWord: true },
+              })
+            : await savePromptAsCacheResponse(createCacheResponseData!);
+
+          if (!cacheResponse) {
+            throw new GraphQLError(`no cacheResponse`);
+          }
           const gptPrompt = await ctx.db.gptPrompt.create({
             ...prismaArgs,
             data: {
               greWordId: greWordId,
-              cacheResponseId: cacheResponseId,
+              cacheResponseId: cacheResponse.id,
             },
           });
           // creation of gptPrompt updates the greWord updatedAt
