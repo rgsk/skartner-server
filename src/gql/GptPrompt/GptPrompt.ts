@@ -342,7 +342,11 @@ export const GptPromptQuery = extendType({
 
         const result = await sendPrompt(input, 'llama2');
         // save the result in cache
-        const pronunciationAudioUrl = await getWordSpeechUrl(word);
+        const cacheWord = await ctx.db.cacheWord.findUnique({
+          where: { text: word },
+        });
+        const pronunciationAudioUrl =
+          cacheWord?.pronunciationAudioUrl ?? (await getWordSpeechUrl(word));
         const createdCacheResponse = await ctx.db.cacheResponse.create({
           data: {
             cachePrompt: {
