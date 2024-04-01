@@ -414,7 +414,7 @@ export const GptPromptQuery = extendType({
 
         const input = prompt.replaceAll('{word}', word);
 
-        const result = await sendPrompt(input, 'llama2');
+        const result = await sendPrompt(input, 'openAI');
         let createdCacheResponse: CacheResponse | undefined;
         if (fetchPolicy !== 'noCache') {
           createdCacheResponse = await savePromptAsCacheResponse({
