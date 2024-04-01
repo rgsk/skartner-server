@@ -81,3 +81,8 @@ export const SortOrderEnum = enumType({
   name: 'SortOrder',
   members: [Prisma.SortOrder.asc, Prisma.SortOrder.desc],
 });
+
+export const FetchPolicyEnum = enumType({
+  name: 'FetchPolicy',
+  members: ['cache_first', 'network_only', 'no_cache', 'cache_only'],
+});

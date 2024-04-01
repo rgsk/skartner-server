@@ -1,4 +1,4 @@
-import { CacheResponse, GreWord, Prisma } from '@prisma/client';
+import { GreWord, Prisma } from '@prisma/client';
 import DataLoader from 'dataloader';
 import { db } from 'db';
 import { GraphQLError } from 'graphql';
@@ -19,7 +19,6 @@ import {
 } from 'lib/thirdPartyUtils';
 import {
   arg,
-  enumType,
   extendType,
   intArg,
   list,
@@ -165,7 +164,7 @@ export const SendSinglePromptResponseObject = objectType({
     t.nonNull.string('result');
     t.int('resultIndex');
     t.int('totalResultsInCache');
-    t.string('cacheResponseId');
+    t.nonNull.string('cacheResponseId');
   },
 });
 
@@ -183,11 +182,6 @@ export const WordsCountForGptPromptsObject = objectType({
     t.nonNull.string('prompt');
     t.nonNull.int('count');
   },
-});
-
-export const FetchPolicyEnum = enumType({
-  name: 'FetchPolicy',
-  members: ['cache_first', 'network_only', 'no_cache', 'cache_only'],
 });
 
 export const GptPromptQuery = extendType({
@@ -281,6 +275,11 @@ export const GptPromptQuery = extendType({
           resultIndexFromCache,
           fetchPolicy,
         } = args;
+        if (fetchPolicy === 'no_cache') {
+          throw new GraphQLError(
+            `no_cache fetchPolicy is not supported for this endpoint`
+          );
+        }
         let len: number | undefined;
         if (fetchPolicy === 'cache_first' || fetchPolicy === 'cache_only') {
           const cacheResponses = await ctx.db.cacheResponse.findMany({
@@ -344,40 +343,37 @@ export const GptPromptQuery = extendType({
         const result = await sendPrompt(input, 'llama2');
         // save the result in cache
         const pronunciationAudioUrl = await getWordSpeechUrl(word);
-        let createdCacheResponse: CacheResponse | undefined;
-        if (fetchPolicy !== 'no_cache') {
-          createdCacheResponse = await ctx.db.cacheResponse.create({
-            data: {
-              cachePrompt: {
-                connectOrCreate: {
-                  create: {
-                    text: prompt,
-                  },
-                  where: {
-                    text: prompt,
-                  },
+        const createdCacheResponse = await ctx.db.cacheResponse.create({
+          data: {
+            cachePrompt: {
+              connectOrCreate: {
+                create: {
+                  text: prompt,
+                },
+                where: {
+                  text: prompt,
                 },
               },
-              cacheWord: {
-                connectOrCreate: {
-                  create: {
-                    text: word,
-                    pronunciationAudioUrl: pronunciationAudioUrl,
-                  },
-                  where: {
-                    text: word,
-                  },
-                },
-              },
-              text: result,
             },
-          });
-        }
+            cacheWord: {
+              connectOrCreate: {
+                create: {
+                  text: word,
+                  pronunciationAudioUrl: pronunciationAudioUrl,
+                },
+                where: {
+                  text: word,
+                },
+              },
+            },
+            text: result,
+          },
+        });
         return {
           result: result,
           resultIndex: len,
           totalResultsInCache: len ? len + 1 : undefined,
-          cacheResponseId: createdCacheResponse?.id,
+          cacheResponseId: createdCacheResponse.id,
         };
       },
     });

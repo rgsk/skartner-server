@@ -457,7 +457,7 @@ type SaveImageToS3Response {
 }
 
 type SendSinglePromptResponse {
-  cacheResponseId: String
+  cacheResponseId: String!
   result: String!
   resultIndex: Int
   totalResultsInCache: Int

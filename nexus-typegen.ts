@@ -344,7 +344,7 @@ export interface NexusGenObjects {
     s3Url?: string | null; // String
   }
   SendSinglePromptResponse: { // root type
-    cacheResponseId?: string | null; // String
+    cacheResponseId: string; // String!
     result: string; // String!
     resultIndex?: number | null; // Int
     totalResultsInCache?: number | null; // Int
@@ -644,7 +644,7 @@ export interface NexusGenFieldTypes {
     s3Url: string | null; // String
   }
   SendSinglePromptResponse: { // field return type
-    cacheResponseId: string | null; // String
+    cacheResponseId: string; // String!
     result: string; // String!
     resultIndex: number | null; // Int
     totalResultsInCache: number | null; // Int
