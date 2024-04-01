@@ -7,7 +7,6 @@ import {
 } from 'lib/graphqlUtils';
 
 import { db } from 'db';
-import { GraphQLError } from 'graphql';
 import parseGraphQLQuery from 'lib/parseGraphQLQuery/parseGraphQLQuery';
 import {
   arg,
@@ -21,7 +20,7 @@ import {
 } from 'nexus';
 import { rules } from 'rules';
 import { z } from 'zod';
-import { savePromptAsCacheResponse } from './GptPrompt/GptPrompt';
+import { getOrCreateCacheResponse } from './GptPrompt/GptPrompt';
 import { ZGreWordTagWhereUniqueInput } from './GreWordTag';
 import { notifyUser } from './Notification';
 import { getEnumFilter } from './Types';
@@ -247,22 +246,10 @@ export const GreWordMutation = extendType({
         const { greWordTags } = validator.parse({
           greWordTags: _greWordTags,
         });
-        if (!cacheResponseId && !createCacheResponseData) {
-          throw new GraphQLError(
-            `either cacheResponseId or createCacheResponseData must be present`
-          );
-        }
-
-        const cacheResponse = cacheResponseId
-          ? await ctx.db.cacheResponse.findUnique({
-              where: { id: cacheResponseId },
-              include: { cacheWord: true },
-            })
-          : await savePromptAsCacheResponse(createCacheResponseData!);
-
-        if (!cacheResponse) {
-          throw new Error("cacheResponse doesn't exists");
-        }
+        const cacheResponse = await getOrCreateCacheResponse({
+          cacheResponseId,
+          createCacheResponseData,
+        });
         const greWord = await ctx.db.greWord.create({
           ...prismaArgs,
           data: {

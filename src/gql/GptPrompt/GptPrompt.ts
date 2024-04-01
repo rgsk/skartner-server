@@ -229,6 +229,39 @@ export const savePromptAsCacheResponse = async ({
   return createdCacheResponse;
 };
 
+export const getOrCreateCacheResponse = async ({
+  cacheResponseId,
+  createCacheResponseData,
+}: {
+  cacheResponseId: string | null | undefined;
+  createCacheResponseData:
+    | {
+        prompt: string;
+        result: string;
+        word: string;
+      }
+    | null
+    | undefined;
+}) => {
+  if (!cacheResponseId && !createCacheResponseData) {
+    throw new Error(
+      `either cacheResponseId or createCacheResponseData must be present`
+    );
+  }
+
+  const cacheResponse = cacheResponseId
+    ? await db.cacheResponse.findUnique({
+        where: { id: cacheResponseId },
+        include: { cacheWord: true },
+      })
+    : await savePromptAsCacheResponse(createCacheResponseData!);
+
+  if (!cacheResponse) {
+    throw new Error("cacheResponse doesn't exists");
+  }
+  return cacheResponse;
+};
+
 export const GptPromptQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -557,23 +590,10 @@ export const GptPromptMutation = extendType({
             info,
             restArgs
           );
-
-          if (!cacheResponseId && !createCacheResponseData) {
-            throw new GraphQLError(
-              `either cacheResponseId or createCacheResponseData must be present`
-            );
-          }
-
-          const cacheResponse = cacheResponseId
-            ? await ctx.db.cacheResponse.findUnique({
-                where: { id: cacheResponseId },
-                include: { cacheWord: true },
-              })
-            : await savePromptAsCacheResponse(createCacheResponseData!);
-
-          if (!cacheResponse) {
-            throw new GraphQLError(`no cacheResponse`);
-          }
+          const cacheResponse = await getOrCreateCacheResponse({
+            cacheResponseId,
+            createCacheResponseData,
+          });
           const gptPrompt = await ctx.db.gptPrompt.create({
             ...prismaArgs,
             data: {
