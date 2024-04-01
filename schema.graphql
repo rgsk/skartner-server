@@ -51,6 +51,13 @@ input EnumGreWordStatusFilter {
   notIn: [GreWordStatus!]
 }
 
+enum FetchPolicy {
+  cache_first
+  cache_only
+  network_only
+  no_cache
+}
+
 type GenerateImagesForPromptResponse {
   imageUrls: [String]
 }
@@ -313,7 +320,7 @@ type Query {
   rolePermissionsGraph(where: RoleWhereInput): Json
   roles(orderBy: [RoleOrderByWithRelationInput], skip: Int, take: Int, where: RoleWhereInput): [Role!]!
   rolesCount(where: RoleWhereInput): Int!
-  sendSinglePrompt(indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, skipCache: Boolean, word: String!): SendSinglePromptResponse!
+  sendSinglePrompt(fetchPolicy: FetchPolicy! = cache_first, indexesReturned: [Int!], prompt: String!, resultIndexFromCache: Int, word: String!): SendSinglePromptResponse!
   user(where: UserWhereInput!): User
   userPermissionsGraph(where: UserWhereInput): Json
   userSession(where: UserSessionWhereUniqueInput!): UserSession
@@ -450,10 +457,10 @@ type SaveImageToS3Response {
 }
 
 type SendSinglePromptResponse {
-  cacheResponseId: String!
+  cacheResponseId: String
   result: String!
-  resultIndex: Int!
-  totalResultsInCache: Int!
+  resultIndex: Int
+  totalResultsInCache: Int
 }
 
 enum SortOrder {

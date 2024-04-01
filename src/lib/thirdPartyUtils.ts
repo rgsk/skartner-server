@@ -5,8 +5,8 @@ import axios from 'axios';
 import { secondsInDay } from 'date-fns';
 import openAI from 'lib/openAI';
 import s3Client, { s3ClientBuckets, s3ClientRegion } from 'lib/s3Client';
-import { ChatCompletionMessageParam } from 'openai/resources';
 import { Readable } from 'stream';
+import ollama from './ollama';
 
 export async function getWordSpeechUrl(word: string) {
   return getSpeechUrl({ input: word, key: `${word}.mp3` });
@@ -136,12 +136,37 @@ export const getPresignedUrl = async (url: string) => {
   return presignedUrl;
 };
 
-export const sendPrompt = async (messages: ChatCompletionMessageParam[]) => {
-  const result = await openAI.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages,
-  });
-  return result.choices[0].message;
+export const sendPrompt = async (
+  content: string,
+  model: 'openAI' | 'llama2'
+) => {
+  switch (model) {
+    case 'openAI': {
+      const result = await openAI.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: content }],
+      });
+
+      const responseContent = result.choices[0].message.content ?? '';
+      // console.log('openAI', responseContent);
+      return responseContent;
+    }
+    case 'llama2': {
+      const response = await ollama.chat({
+        model: 'llama2',
+        messages: [
+          {
+            role: 'user',
+            content: content,
+          },
+        ],
+        stream: false,
+      });
+      const responseContent = response.message.content;
+      // console.log('llama2', responseContent);
+      return responseContent;
+    }
+  }
 };
 
 const getDallePrompt = async (word: string) => {

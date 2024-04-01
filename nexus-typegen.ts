@@ -193,6 +193,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  FetchPolicy: "cache_first" | "cache_only" | "network_only" | "no_cache"
   GreWordStatus: "ALMOST_LEARNT" | "FINISHED_LEARNING" | "MASTERED" | "MEMORY_MODE" | "STARTED_LEARNING" | "STILL_LEARNING"
   QueryMode: "default" | "insensitive"
   SortOrder: "asc" | "desc"
@@ -343,10 +344,10 @@ export interface NexusGenObjects {
     s3Url?: string | null; // String
   }
   SendSinglePromptResponse: { // root type
-    cacheResponseId: string; // String!
+    cacheResponseId?: string | null; // String
     result: string; // String!
-    resultIndex: number; // Int!
-    totalResultsInCache: number; // Int!
+    resultIndex?: number | null; // Int
+    totalResultsInCache?: number | null; // Int
   }
   Subscription: {};
   User: { // root type
@@ -643,10 +644,10 @@ export interface NexusGenFieldTypes {
     s3Url: string | null; // String
   }
   SendSinglePromptResponse: { // field return type
-    cacheResponseId: string; // String!
+    cacheResponseId: string | null; // String
     result: string; // String!
-    resultIndex: number; // Int!
-    totalResultsInCache: number; // Int!
+    resultIndex: number | null; // Int
+    totalResultsInCache: number | null; // Int
   }
   Subscription: { // field return type
     notificationReceived: NexusGenRootTypes['Notification'] | null; // Notification
@@ -1273,10 +1274,10 @@ export interface NexusGenArgTypes {
       where?: NexusGenInputs['RoleWhereInput'] | null; // RoleWhereInput
     }
     sendSinglePrompt: { // args
+      fetchPolicy: NexusGenEnums['FetchPolicy']; // FetchPolicy!
       indexesReturned?: number[] | null; // [Int!]
       prompt: string; // String!
       resultIndexFromCache?: number | null; // Int
-      skipCache?: boolean | null; // Boolean
       word: string; // String!
     }
     user: { // args

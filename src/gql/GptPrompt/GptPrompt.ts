@@ -1,4 +1,4 @@
-import { GreWord, Prisma } from '@prisma/client';
+import { CacheResponse, GreWord, Prisma } from '@prisma/client';
 import DataLoader from 'dataloader';
 import { db } from 'db';
 import { GraphQLError } from 'graphql';
@@ -18,7 +18,8 @@ import {
   uploadImageToS3,
 } from 'lib/thirdPartyUtils';
 import {
-  booleanArg,
+  arg,
+  enumType,
   extendType,
   intArg,
   list,
@@ -162,9 +163,9 @@ export const SendSinglePromptResponseObject = objectType({
   name: 'SendSinglePromptResponse',
   definition(t) {
     t.nonNull.string('result');
-    t.nonNull.int('resultIndex');
-    t.nonNull.int('totalResultsInCache');
-    t.nonNull.string('cacheResponseId');
+    t.int('resultIndex');
+    t.int('totalResultsInCache');
+    t.string('cacheResponseId');
   },
 });
 
@@ -182,6 +183,11 @@ export const WordsCountForGptPromptsObject = objectType({
     t.nonNull.string('prompt');
     t.nonNull.int('count');
   },
+});
+
+export const FetchPolicyEnum = enumType({
+  name: 'FetchPolicy',
+  members: ['cache_first', 'network_only', 'no_cache', 'cache_only'],
 });
 
 export const GptPromptQuery = extendType({
@@ -261,7 +267,9 @@ export const GptPromptQuery = extendType({
       args: {
         prompt: nonNull(stringArg()),
         word: nonNull(stringArg()),
-        skipCache: booleanArg(),
+        fetchPolicy: nonNull(
+          arg({ type: 'FetchPolicy', default: 'cache_first' })
+        ),
         indexesReturned: list(nonNull(intArg())),
         resultIndexFromCache: intArg(),
       },
@@ -269,102 +277,107 @@ export const GptPromptQuery = extendType({
         const {
           prompt,
           word,
-          skipCache,
           indexesReturned,
           resultIndexFromCache,
+          fetchPolicy,
         } = args;
-        const cacheResponses = await ctx.db.cacheResponse.findMany({
-          where: {
-            cacheWord: {
-              text: word,
+        let len: number | undefined;
+        if (fetchPolicy === 'cache_first' || fetchPolicy === 'cache_only') {
+          const cacheResponses = await ctx.db.cacheResponse.findMany({
+            where: {
+              cacheWord: {
+                text: word,
+              },
+              cachePrompt: {
+                text: prompt,
+              },
             },
-            cachePrompt: {
-              text: prompt,
+            orderBy: {
+              updatedAt: 'asc',
             },
-          },
-          orderBy: {
-            updatedAt: 'asc',
-          },
-        });
-        const len = cacheResponses.length;
-        if (len > 0) {
-          if (typeof resultIndexFromCache === 'number') {
-            if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
+          });
+          len = cacheResponses.length;
+          if (len > 0) {
+            if (typeof resultIndexFromCache === 'number') {
+              if (resultIndexFromCache >= 0 && resultIndexFromCache < len) {
+                return {
+                  result: cacheResponses[resultIndexFromCache].text,
+                  resultIndex: resultIndexFromCache,
+                  totalResultsInCache: len,
+                  cacheResponseId: cacheResponses[resultIndexFromCache].id,
+                };
+              } else {
+                throw new GraphQLError(
+                  `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
+                    len - 1
+                  }`,
+                  {
+                    extensions: {
+                      totalResultsInCache: len,
+                    },
+                  }
+                );
+              }
+            }
+            const idx = randomBetween(0, len - 1, indexesReturned ?? undefined);
+            if (idx !== null) {
               return {
-                result: cacheResponses[resultIndexFromCache].text,
-                resultIndex: resultIndexFromCache,
+                result: cacheResponses[idx].text,
+                resultIndex: idx,
                 totalResultsInCache: len,
-                cacheResponseId: cacheResponses[resultIndexFromCache].id,
+                cacheResponseId: cacheResponses[idx].id,
               };
             } else {
-              throw new GraphQLError(
-                `"resultIndexFromCache": ${resultIndexFromCache} index is not valid min: 0, max: ${
-                  len - 1
-                }`,
-                {
+              if (fetchPolicy === 'cache_only') {
+                throw new GraphQLError(`no more results in cache`, {
                   extensions: {
                     totalResultsInCache: len,
                   },
-                }
-              );
-            }
-          }
-          const idx = randomBetween(0, len - 1, indexesReturned ?? undefined);
-          if (idx !== null) {
-            return {
-              result: cacheResponses[idx].text,
-              resultIndex: idx,
-              totalResultsInCache: len,
-              cacheResponseId: cacheResponses[idx].id,
-            };
-          } else {
-            if (!skipCache) {
-              throw new GraphQLError(`no more results in cache`, {
-                extensions: {
-                  totalResultsInCache: len,
-                },
-              });
+                });
+              }
             }
           }
         }
 
         const input = prompt.replaceAll('{word}', word);
 
-        const message = await sendPrompt([{ role: 'user', content: input }]);
-        const result = message?.content ?? '';
+        const result = await sendPrompt(input, 'llama2');
         // save the result in cache
         const pronunciationAudioUrl = await getWordSpeechUrl(word);
-        const createdCacheResponse = await ctx.db.cacheResponse.create({
-          data: {
-            cachePrompt: {
-              connectOrCreate: {
-                create: {
-                  text: prompt,
-                },
-                where: {
-                  text: prompt,
-                },
-              },
-            },
-            cacheWord: {
-              connectOrCreate: {
-                create: {
-                  text: word,
-                  pronunciationAudioUrl: pronunciationAudioUrl,
-                },
-                where: {
-                  text: word,
+        let createdCacheResponse: CacheResponse | undefined;
+        if (fetchPolicy !== 'no_cache') {
+          createdCacheResponse = await ctx.db.cacheResponse.create({
+            data: {
+              cachePrompt: {
+                connectOrCreate: {
+                  create: {
+                    text: prompt,
+                  },
+                  where: {
+                    text: prompt,
+                  },
                 },
               },
+              cacheWord: {
+                connectOrCreate: {
+                  create: {
+                    text: word,
+                    pronunciationAudioUrl: pronunciationAudioUrl,
+                  },
+                  where: {
+                    text: word,
+                  },
+                },
+              },
+              text: result,
             },
-            text: result,
-          },
-        });
+          });
+        }
         return {
           result: result,
           resultIndex: len,
-          totalResultsInCache: len + 1,
-          cacheResponseId: createdCacheResponse.id,
+          totalResultsInCache: len ? len + 1 : undefined,
+          cacheResponseId: createdCacheResponse?.id,
         };
       },
     });
