@@ -4,6 +4,7 @@ export * from './GptPrompt/GptPrompt';
 export * from './GreWord';
 export * from './GreWordSearchPromptInput';
 export * from './GreWordTag';
+export * from './JsonData';
 export * from './Notification';
 export * from './Permission';
 export * from './PermissionHierarchy';

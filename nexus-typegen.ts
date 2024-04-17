@@ -281,6 +281,11 @@ export interface NexusGenObjects {
   HelloWorld: { // root type
     message: string; // String!
   }
+  JsonData: { // root type
+    id: string; // String!
+    key: string; // String!
+    value: NexusGenScalars['Json']; // Json!
+  }
   Mutation: {};
   Notification: { // root type
     message: string; // String!
@@ -482,6 +487,13 @@ export interface NexusGenFieldTypes {
   HelloWorld: { // field return type
     message: string; // String!
   }
+  JsonData: { // field return type
+    createdAt: string; // String!
+    id: string; // String!
+    key: string; // String!
+    updatedAt: string; // String!
+    value: NexusGenScalars['Json']; // Json!
+  }
   Mutation: { // field return type
     createDraft: NexusGenRootTypes['Post'] | null; // Post
     createGptPrompt: NexusGenRootTypes['GptPrompt']; // GptPrompt!
@@ -514,6 +526,7 @@ export interface NexusGenFieldTypes {
     deleteRoles: NexusGenRootTypes['BatchPayload'] | null; // BatchPayload
     publish: NexusGenRootTypes['Post'] | null; // Post
     saveImageToS3: NexusGenRootTypes['SaveImageToS3Response'] | null; // SaveImageToS3Response
+    setJsonDataKey: NexusGenRootTypes['JsonData']; // JsonData!
     updateGptPrompt: NexusGenRootTypes['GptPrompt'] | null; // GptPrompt
     updateGreWord: NexusGenRootTypes['GreWord'] | null; // GreWord
     updateGreWordSearchPromptInput: NexusGenRootTypes['GreWordSearchPromptInput'] | null; // GreWordSearchPromptInput
@@ -561,6 +574,7 @@ export interface NexusGenFieldTypes {
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     generateImagesForPrompt: NexusGenRootTypes['GenerateImagesForPromptResponse'] | null; // GenerateImagesForPromptResponse
     generateImagesForWord: NexusGenRootTypes['GenerateImagesForWordResponse'] | null; // GenerateImagesForWordResponse
+    getJsonDataKey: NexusGenRootTypes['JsonData'] | null; // JsonData
     gptPrompts: Array<NexusGenRootTypes['GptPrompt'] | null> | null; // [GptPrompt]
     greConfiguration: NexusGenRootTypes['GreConfiguration']; // GreConfiguration!
     greWord: NexusGenRootTypes['GreWord'] | null; // GreWord
@@ -786,6 +800,13 @@ export interface NexusGenFieldTypeNames {
   HelloWorld: { // field return type name
     message: 'String'
   }
+  JsonData: { // field return type name
+    createdAt: 'String'
+    id: 'String'
+    key: 'String'
+    updatedAt: 'String'
+    value: 'Json'
+  }
   Mutation: { // field return type name
     createDraft: 'Post'
     createGptPrompt: 'GptPrompt'
@@ -818,6 +839,7 @@ export interface NexusGenFieldTypeNames {
     deleteRoles: 'BatchPayload'
     publish: 'Post'
     saveImageToS3: 'SaveImageToS3Response'
+    setJsonDataKey: 'JsonData'
     updateGptPrompt: 'GptPrompt'
     updateGreWord: 'GreWord'
     updateGreWordSearchPromptInput: 'GreWordSearchPromptInput'
@@ -865,6 +887,7 @@ export interface NexusGenFieldTypeNames {
     drafts: 'Post'
     generateImagesForPrompt: 'GenerateImagesForPromptResponse'
     generateImagesForWord: 'GenerateImagesForWordResponse'
+    getJsonDataKey: 'JsonData'
     gptPrompts: 'GptPrompt'
     greConfiguration: 'GreConfiguration'
     greWord: 'GreWord'
@@ -1116,6 +1139,10 @@ export interface NexusGenArgTypes {
       imageUrl: string; // String!
       key?: string | null; // String
     }
+    setJsonDataKey: { // args
+      key: string; // String!
+      value: NexusGenScalars['Json']; // Json!
+    }
     updateGptPrompt: { // args
       editedResponse?: string | null; // String
       id: string; // String!
@@ -1166,6 +1193,9 @@ export interface NexusGenArgTypes {
     }
     generateImagesForWord: { // args
       word: string; // String!
+    }
+    getJsonDataKey: { // args
+      key: string; // String!
     }
     gptPrompts: { // args
       skip?: number | null; // Int

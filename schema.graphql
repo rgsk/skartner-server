@@ -184,6 +184,14 @@ type HelloWorld {
 """The `Json` scalar type represents JSON objects."""
 scalar Json
 
+type JsonData {
+  createdAt: String!
+  id: String!
+  key: String!
+  updatedAt: String!
+  value: Json!
+}
+
 type Mutation {
   createDraft(body: String!, title: String!): Post
   createGptPrompt(cacheResponseId: String, createCacheResponseData: CreateCacheResponseData, greWordId: String!): GptPrompt!
@@ -216,6 +224,7 @@ type Mutation {
   deleteRoles(ids: [String!]!): BatchPayload
   publish(draftId: String!): Post
   saveImageToS3(imageUrl: String!, key: String): SaveImageToS3Response
+  setJsonDataKey(key: String!, value: Json!): JsonData!
   updateGptPrompt(editedResponse: String, id: String!, imageUrls: [String!]): GptPrompt
   updateGreWord(greWordTags: [GreWordTagWhereUniqueInput], id: String!, status: GreWordStatus): GreWord
   updateGreWordSearchPromptInput(id: String!, text: String): GreWordSearchPromptInput
@@ -294,6 +303,7 @@ type Query {
   drafts: [Post]
   generateImagesForPrompt(prompt: String!): GenerateImagesForPromptResponse
   generateImagesForWord(word: String!): GenerateImagesForWordResponse
+  getJsonDataKey(key: String!): JsonData
   gptPrompts(skip: Int, take: Int): [GptPrompt]
   greConfiguration: GreConfiguration!
   greWord(where: GreWordWhereInput): GreWord
