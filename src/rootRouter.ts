@@ -7,10 +7,12 @@ import authenticate from 'middlewares/authenticate';
 import authorize from 'middlewares/authorize';
 import conditionalMiddleware from 'middlewares/conditionalMiddleware';
 import { bullMonitorExpress } from 'queues';
+import jsonDataRouter from 'routers/jsonDataRouter';
 import sampleRouter from 'routers/sampleRouter';
 const rootRouter = Router();
 
 rootRouter.use('/sample', sampleRouter);
+rootRouter.use('/jsonData', jsonDataRouter);
 
 rootRouter.get('/', async (req, res, next) => {
   res.json({
