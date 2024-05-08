@@ -67,22 +67,36 @@ const upload = multer({
   storage: storage,
 });
 
+const speechToTextSchema = z.object({
+  prompt: z.string(),
+  type: z.enum(['transcription', 'translation']),
+});
+
 generalRouter.post(
   '/speech-to-text',
   upload.single('audio'),
   async (req, res, next) => {
+    const { prompt, type } = speechToTextSchema.parse(req.query);
     try {
       if (req.file) {
-        let data = fs.createReadStream(req.file.path);
-        const transcription = await openAI.audio.transcriptions.create({
-          model: 'whisper-1',
-          file: data,
-        });
-        data = fs.createReadStream(req.file.path);
-        const translation = await openAI.audio.translations.create({
-          model: 'whisper-1',
-          file: data,
-        });
+        const data = fs.createReadStream(req.file.path);
+        let text = '';
+        if (type == 'transcription') {
+          const transcription = await openAI.audio.transcriptions.create({
+            model: 'whisper-1',
+            file: data,
+            prompt,
+          });
+          text = transcription.text;
+        } else {
+          const translation = await openAI.audio.translations.create({
+            model: 'whisper-1',
+            file: data,
+            prompt,
+          });
+          text = translation.text;
+        }
+
         await new Promise((resolve, reject) => {
           fs.unlink(req.file!.path, (err) => {
             if (err) return reject(err);
@@ -90,8 +104,7 @@ generalRouter.post(
           });
         });
         return res.json({
-          transcription: transcription.text,
-          translation: translation.text,
+          text,
         });
       }
       throw new Error('no file provided');
