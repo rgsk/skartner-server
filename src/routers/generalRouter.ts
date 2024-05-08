@@ -28,6 +28,23 @@ generalRouter.post('/text-to-speech', async (req, res, next) => {
     next(err);
   }
 });
+
+generalRouter.post('/text-to-speech-buffer', async (req, res, next) => {
+  try {
+    const { input, voice } = textToSpeechSchema.parse(req.body);
+    const mp3 = await openAI.audio.speech.create({
+      model: 'tts-1',
+      voice: voice,
+      input: input,
+    });
+    const arrayBuffer = await mp3.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return res.send(buffer);
+  } catch (err) {
+    next(err);
+  }
+});
+
 const dest = path.join(__dirname, 'uploads');
 const storage = multer.diskStorage({
   destination: dest,
