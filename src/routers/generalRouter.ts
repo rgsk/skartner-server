@@ -68,7 +68,7 @@ const upload = multer({
 });
 
 const speechToTextSchema = z.object({
-  prompt: z.string(),
+  prompt: z.string().optional(),
   type: z.enum(['transcription', 'translation']),
 });
 
